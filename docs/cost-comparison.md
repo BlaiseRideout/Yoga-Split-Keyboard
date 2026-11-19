@@ -93,6 +93,31 @@ printer or a print service (about +$50).
 | Switches | 10-packs | 54 (+6 spare) | 6 |
 | Docking magnets | 50-pack | ≤ 26 | 24+ |
 
+## Where to order the PCBs (and assembly)
+
+Route A needs **bare boards only**, since nothing is surface-mount. That leaves the fab as the only
+thing to choose. Route B also needs SMD assembly. Prices are for one split set (left + right) or one
+mono board, delivered to Kirkland.
+
+| Source | Made in | Route A: bare boards | Route B: assembly | US tariff | Notes |
+|---|---|---|---|---|---|
+| **JLCPCB** | China | **≈ $66 split / ≈ $59 mono** (5 of each design, ~35% duty and DHL included) | ≈ $65 + 35% | ~35%, prepaid (DDP) | Cheapest even with the tariff. Instant quote |
+| PCBWay | China | Similar to JLC, a little higher | Yes, from qty 1 | Same China rate | Alternative if JLC is out of stock |
+| **OSH Park** | Oregon, USA | **≈ $234 split / ≈ $243 mono** for 3 copies ($5/in², free US shipping). Purple, 1.6 mm, ENIG | No | None | Cheapest US option. Boards are 1.6 mm, not 1.2, so the keycaps sit 0.4 mm higher (the case still fits) |
+| Aisler | Germany | Quote needed (sets of 3) | Yes, from 1 board, THT and SMD | EU rate (lower than China) | Free worldwide shipping per its site. Upload the Gerbers for a price |
+| MacroFab | Houston, USA | Via their platform | Yes, no minimum order | None | Instant quote from files. Expect well above JLC: forum reports put US assembly at $50–200 per board for tiny runs |
+| CircuitHub / Screaming Circuits | MA / OR, USA | Via them | Yes | None | Same price bracket as MacroFab |
+
+**Cheapest reputable choice: JLCPCB, route A.** The tariff adds about $11 per order on bare boards,
+which is far less than the price gap to US fabs. **If you'd rather not order from China,
+OSH Park** is the cheapest US source, at about $170 more for the split. It doesn't do assembly,
+so that works only with route A. US assembly for route B (MacroFab, CircuitHub) would run several
+hundred dollars for two boards, so route B makes sense only at JLC.
+
+Two things to check at checkout, because they move often. The China tariff stack changed several
+times in 2026: a Section 122 baseline expired in July, and PCB exclusions ended on November 10.
+And for exact US prices, upload the Gerber zips to the vendors' instant quotes; they need an account.
+
 ## Ways to cut more (any route)
 
 | Change | Split saves | Mono saves | Trade-off |
@@ -129,4 +154,5 @@ if being able to swap switches is worth ~$40 per keyboard over two builds.
 
 - JLCPCB, [U.S. tariff policy FAQ](https://jlcpcb.com/help/article/us-tariff-policy-faq) (updated Oct 29, 2026) and [logistics update](https://jlcpcb.com/news/logistics-update-us-china-tariff) (March 17, 2026 rates: PCB 35%, SMT 35%; DDP for individual US orders). The FAQ also lists rate components that changed during 2026, so confirm at checkout.
 - Switch prices: [splitkb Sunset](https://splitkb.com/products/sunset-kailh-low-profile-choc-switches), [kbd.news Sunset offers](https://kbd.news/switch/lowprokb-Choc-V1-Sunset-switch-65.html), [kbd.news Choc v2 Brown](https://kbd.news/switch/Kailh-Choc-V2-Brown-456.html), [Thock King Deep Sea](https://www.thockking.com/products/kailh-deep-sea-low-profile-choc-silent-tactile-switches), [CannonKeys KS-33 Chocolate](https://cannonkeys.com/products/gateron-ks-33-low-profile-2-0-chocolate-tactile-switch), [splitkb Ambients](https://splitkb.com/collections/all/products/ambients-kailh-low-profile-choc-switches).
+- US fabs and assembly: [OSH Park 2-layer service](https://docs.oshpark.com/services/two-layer/) ($5/in² for 3 copies, made in the US), [Maskset tariff math](https://www.maskset.net/blog/2025/05/15/tariff-math-for-two-layer-prototype-pcbs-oshpark-vs-imported-fabs/), [lcamtuf vendor comparison](https://blog.coredump.cx/p/comparing-hobby-pcb-vendors) (Jan 2026 update), [Hackaday on US prototyping](https://hackaday.com/2025/07/06/does-made-in-america-make-sense-for-pcb-prototyping/), [Octopart 2026 tariff reset](https://octopart.com/pulse/p/tariff-reset-pcb-workarounds), [Aisler assembly](https://aisler.net/en/products/assembly), [MacroFab](https://www.macrofab.com/platform), [KiCad forum on US low-quantity assembly](https://forum.kicad.info/t/usa-single-low-amount-assembly-anyone-got-any-pointers-for-me/23048), [Contextual Electronics forum](https://forum.contextualelectronics.com/t/recommendations-for-pcb-assembly-in-usa/5638).
 - Everything else (controllers, screens, JLC fab and assembly, shipping, small parts) is an estimate from typical late-2026 hobby pricing and wasn't checked against live listings.
