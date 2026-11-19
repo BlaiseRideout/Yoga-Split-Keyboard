@@ -103,7 +103,7 @@ mono board, delivered to Kirkland.
 |---|---|---|---|---|---|
 | **JLCPCB** | China | **≈ $66 split / ≈ $59 mono** (5 of each design, ~35% duty and DHL included) | ≈ $65 + 35% | ~35%, prepaid (DDP) | Cheapest even with the tariff. Instant quote |
 | PCBWay | China | Similar to JLC, a little higher | Yes, from qty 1 | Same China rate | Alternative if JLC is out of stock |
-| **OSH Park** | Oregon, USA | **≈ $234 split / ≈ $243 mono** for 3 copies ($5/in², free US shipping). Purple, 1.6 mm, ENIG | No | None | Cheapest US option. Boards are 1.6 mm, not 1.2, so the keycaps sit 0.4 mm higher (the case still fits) |
+| **OSH Park** | Oregon, USA | **≈ $234 split / ≈ $243 mono** for 3 copies ($5/in², free US shipping). Purple, 1.6 mm, ENIG | No | None | Cheapest US option. Boards are 1.6 mm, not 1.2: re-export the case with `-D pcb_t=1.6` (the case grows 0.4 mm taller) |
 | Aisler | Germany | Quote needed (sets of 3) | Yes, from 1 board, THT and SMD | EU rate (lower than China) | Free worldwide shipping per its site. Upload the Gerbers for a price |
 | MacroFab | Houston, USA | Via their platform | Yes, no minimum order | None | Instant quote from files. Expect well above JLC: forum reports put US assembly at $50–200 per board for tiny runs |
 | CircuitHub / Screaming Circuits | MA / OR, USA | Via them | Yes | None | Same price bracket as MacroFab |
