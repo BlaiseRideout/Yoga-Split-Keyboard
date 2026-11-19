@@ -59,14 +59,14 @@ run both. Only the physical layout ZMK Studio draws is the Choc one. The Choc ho
 | Layer | Thickness | Top at |
 |---|---|---|
 | Case floor (docking magnets sit in blind pockets with a 0.4 mm skin) | 1.0 | 1.0 |
-| Air gap for Choc hotswap sockets (1.85 mm) | 2.2 | 3.2 |
+| Air gap for the THT diode bodies (1.9 mm), or the hotswap sockets (1.85 mm) on route B | 2.2 | 3.2 |
 | PCB (order at 1.2 mm) | 1.2 | 4.4 |
 | Controller, battery and nice!view under the top frame | 4.4 | 8.8 |
 | Top frame | 1.2 | **10.0** |
 | Choc v1 switch + low-profile keycap above the PCB | ~8.3 | **~12.7** |
 
 Ways to get thinner, roughly in order of payoff:
-1. Solder the switches directly with no hotswap sockets: −1.2 mm (gap shrinks to ~1 mm).
+1. Route B with SMD diodes and the switches soldered in instead of the sockets: −1.2 mm (gap shrinks to ~1 mm).
 2. Kailh PG1316S ultra-low-profile switches (solder-only, own keycaps): roughly −3 mm. This
    needs a new footprint and isn't designed here.
 3. Mount the nice!nano face-down without sockets and use a 1 mm FR4 frame instead of print: −1 mm.
@@ -168,7 +168,8 @@ so plugging USB into **either** half charges **both**.
   **on**, the same as charging a single nice!nano today.
 * **Apart, on the desk:** each half charges from its own USB-C port as before.
 * **Parts:** a generic 2-pin right-angle magnetic pogo pair (spring pins on the left, flat targets on
-  the right), plus a 1206 PTC (0.1 A hold) and a 1206 10 Ω resistor on the bottom side of each half.
+  the right), plus per half a PTC (0.1 A hold) and a 10 Ω resistor. On route A these are a radial
+  Bourns MF-R010, bent flat, and an axial DIN0204. On route B they're 1206 SMD parts placed by JLC.
   Pogo modules vary by vendor, so check the `chg_link` land pattern against the one you buy.
   The case has a 6.6 mm wide slot in each join wall for it, open at the top so the PCB drops in.
 
@@ -178,6 +179,9 @@ so plugging USB into **either** half charges **both**.
   On the split boards, the battery also goes to the charge link (above).
 * Display: nice!view on the standard ZMK pins (CS = D1, MOSI = D2, SCK = D3), header order
   MOSI, SCK, VCC, GND, CS.
+* **N-key rollover:** one diode per key, thumbs included, anode to the switch and cathode to the
+  row (`col2row`), with no shared diodes and no shared matrix positions. `tools/check_matrix.py`
+  checks every board, and the firmware sends NKRO HID reports.
 * Matrix, split: rows D4–D8 (num, top, home, bottom, thumb), columns D21, D20, D19, D18, D15, D14
   (outer → inner), diodes col2row. The right half lists its columns inner → outer in firmware so
   matrix columns read left to right across the board.

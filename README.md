@@ -20,8 +20,10 @@ A ZMK-powered, low-profile, wireless columnar keyboard that drops onto the lower
   the same firmware.
 * **One cable charges both halves** while they're joined, through a magnetic pogo link in the join
   wall ([how](docs/design.md#charging-both-halves-from-one-cable-split-only)).
-* **Cost and complexity:** see [docs/bom-comparison.md](docs/bom-comparison.md). Split is about
-  $293 and monolithic about $216, both with a self-printed case.
+* **Two PCB routes:** all through-hole (default, no SMD soldering and no JLC assembly) or
+  hotswap with JLC assembly (`hotswap-smd/`). Both are fully diode-per-key for n-key rollover.
+* **Cost:** see [docs/cost-comparison.md](docs/cost-comparison.md). A first split build is about
+  $317 (through-hole) or $397 (hotswap), delivered to the US including tariffs. The leanest split is about $233.
 
 ## Repository layout
 
@@ -30,11 +32,11 @@ A ZMK-powered, low-profile, wireless columnar keyboard that drops onto the lower
 | `ergogen/config.yaml`, `ergogen/footprints/` | Source of truth for key positions, outlines and all three PCBs (ergogen 4.2.1, KiCad 5 template) |
 | `pcb/{left,right,mono}/` | KiCad boards (KiCad 7 format, opens in 7, 8 and 9), placed and autorouted with Freerouting |
 | `pcb/gerbers/` | Gerber + drill zips, ready to upload to JLCPCB |
-| `pcb/fab/` | JLCPCB BOM and CPL for the machine-assembled parts (diodes, hotswap sockets, power switch, reset button, charge-link fuse and resistor) |
-| `ergogen-mx/`, `pcb-mx/` | The MX-spaced (19.05 mm) variant: config, boards, Gerbers, fab files. `ergogen-mx/footprints` links to `ergogen/footprints` |
+| `ergogen-mx/`, `pcb-mx/` | The MX-spaced (19.05 mm) variant: config, boards, Gerbers. `ergogen-mx/footprints` links to `ergogen/footprints` |
+| `hotswap-smd/` | Route B: hotswap sockets and SMD parts placed by JLC. Its ergogen configs, KiCad boards, Gerbers, and JLC BOM/CPL (`fab/`), for Choc and MX |
 | `case/case.scad`, `case/outlines/`, `case/stl/` | Parametric OpenSCAD case, its DXF inputs, and exported STLs (tray and frame for left, right and mono). `-D 'spacing="mx"'` builds the MX variant from `case/outlines-mx/` into `case/stl-mx/` |
 | `config/`, `build.yaml` | ZMK user config: shields `yoga_split_left/right` and `yoga_mono`, plus blaise's Cannonkeys Link keymap ported to 54 keys (home row mods, NUM/NAV/FUN/MOUSE/BOARD layers; `tools/port_link_keymap.py`) and build matrix. Builds against the same `caps-word-v0.3` ZMK fork as the Link. `.github/workflows/build-zmk.yml` builds the firmware on push |
-| `docs/` | [Design notes and assumptions](docs/design.md), [BOM and complexity comparison](docs/bom-comparison.md), renders |
+| `docs/` | [Design notes and assumptions](docs/design.md), [cost comparison](docs/cost-comparison.md), renders |
 | `tools/` | Helper scripts: board prep / DSN export, ZMK generation from ergogen points, fab CSVs |
 
 ## Status
@@ -63,15 +65,21 @@ python3 tools/prep_dsn.py build/ergogen/pcbs/left.kicad_pcb pcb/left/yoga_left.k
 java -jar freerouting-2.1.0.jar --gui.enabled=false -de left.dsn -do left.ses -mp 200
 python3 tools/import_ses.py pcb/left/yoga_left.kicad_pcb left.ses left-drc.txt   # adds tracks, runs DRC
 tools/export_gerbers.sh pcb/left/yoga_left.kicad_pcb pcb/gerbers/yoga_left-gerbers.zip
-python3 tools/gen_fab.py pcb/left/yoga_left.kicad_pcb pcb/fab/yoga_left
+python3 tools/check_matrix.py pcb/*/*.kicad_pcb                 # one diode per key, col2row (NKRO)
+# route B only: python3 tools/gen_fab.py hotswap-smd/pcb/left/yoga_left.kicad_pcb hotswap-smd/pcb/fab/yoga_left
 # MX variant: same steps with ergogen-mx -> build/ergogen-mx, pcb-mx/, case/outlines-mx, -D 'spacing="mx"'
 ```
 
 ## Build notes
 
 1. Order the PCBs at **1.2 mm** thickness. That's what the case stack-up assumes.
-2. Hotswap sockets and diodes go on the **bottom** side. The controller, display, battery, power
-   switch and reset button go on the **top**.
+2. Route A (default, all through-hole): fit the 1N4148 diodes first, with their bodies flat on the
+   **bottom**, the banded end on the square pad. Solder them from the top and trim the leads flush,
+   because the gap under the PCB is 2.2 mm. Then fit the switches from the top and solder them from
+   the bottom, trimming their pins too. Bend the PTC flat before you solder it. The controller,
+   display, battery, power switch and pogo connector go on the **top**.
+   Route B (`hotswap-smd/`): JLC places the sockets and diodes on the bottom, and the switches
+   push in from the top.
 3. Mount the nice!nano with its components facing the PCB, matching the silkscreen labels. Solder
    it directly, without tall sockets, so the nice!view on top sits flush with the top frame.
 4. Press M2 heat-set inserts into the tray standoffs, and screw the PCB down from the top with

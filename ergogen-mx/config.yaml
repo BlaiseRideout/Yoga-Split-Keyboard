@@ -155,9 +155,9 @@ pcbs:
       choc:
         what: choc
         where: /^(matrix|thumb)_/
-        params: {hotswap: true, keycaps: true, from: "{{colrow}}", to: "{{column_net}}"}
+        params: {hotswap: false, keycaps: true, from: "{{colrow}}", to: "{{column_net}}"}
       diode:
-        what: diode_sod123
+        what: diode_tht
         where: /^(matrix|thumb)_/
         adjust: {shift: [0, -5.3]}
         params: {from: "{{colrow}}", to: "{{row_net}}"}
@@ -183,8 +183,8 @@ pcbs:
         what: nice_view
         adjust: {shift: [115, 51.6]}
       power:
-        what: power_switch
-        adjust: {shift: [100, 70.6], rotate: 0}
+        what: slide_switch_tht
+        adjust: {shift: [100, 71.0], rotate: 0}
         params: {from: BAT_P, to: RAW}
       battery:
         what: battery_pads
@@ -193,19 +193,19 @@ pcbs:
       chg_link:
         what: charge_link
         adjust: {shift: [125.65, 29.5], rotate: 0}
-        params: {a: LINK_B, b: GND, kind: male}
+        params: {a: LINK_B, b: GND, kind: male, tht: true}
       chg_fuse:
-        what: smd_1206
-        adjust: {shift: [121.15, 21.5], rotate: 90}
-        params: {designator: F, side: B, from: BAT_P, to: LINK_F, value: "PTC 0.1A hold 1206"}
+        what: tht2
+        adjust: {shift: [121.15, 23.0], rotate: 90}
+        params: {designator: F, from: BAT_P, to: LINK_F, pitch: 5.08, value: "PTC MF-R010 0.1A hold, radial, bent flat"}
       chg_res:
-        what: smd_1206
-        adjust: {shift: [121.15, 16.5], rotate: 90}
-        params: {designator: R, side: B, from: LINK_F, to: LINK_B, value: "10R 1206 0.25W"}
+        what: tht2
+        adjust: {shift: [121.15, 10.5], rotate: 90}
+        params: {designator: R, from: LINK_F, to: LINK_B, pitch: 7.62, value: "10R 0.4W axial DIN0204"}
       reset:
-        what: button
+        what: tht2
         adjust: {shift: [107, 27], rotate: 90}
-        params: {side: F, from: RST, to: GND}
+        params: {designator: SW, from: RST, to: GND, pitch: 2.54, value: "reset pads (short or 2-pin tact)", label: RST}
       h1: {what: mounting_hole, adjust.shift: [-11.5, 72]}
       h2: {what: mounting_hole, adjust.shift: [0, -25]}
       h3: {what: mounting_hole, adjust.shift: [40, -22]}
@@ -222,9 +222,9 @@ pcbs:
       choc:
         what: choc
         where: /^mirror_/
-        params: {hotswap: true, keycaps: true, from: "{{colrow}}", to: "{{column_net}}"}
+        params: {hotswap: false, keycaps: true, from: "{{colrow}}", to: "{{column_net}}"}
       diode:
-        what: diode_sod123
+        what: diode_tht
         where: /^mirror_/
         adjust: {shift: [0, -5.3]}
         params: {from: "{{colrow}}", to: "{{row_net}}"}
@@ -250,8 +250,8 @@ pcbs:
         what: nice_view
         adjust: {shift: [147.3, 51.6]}
       power:
-        what: power_switch
-        adjust: {shift: [162.3, 70.6], rotate: 0}
+        what: slide_switch_tht
+        adjust: {shift: [162.3, 71.0], rotate: 0}
         params: {from: BAT_P, to: RAW}
       battery:
         what: battery_pads
@@ -260,19 +260,19 @@ pcbs:
       chg_link:
         what: charge_link
         adjust: {shift: [136.65, 29.5], rotate: 180}
-        params: {a: GND, b: LINK_B, kind: female}
+        params: {a: GND, b: LINK_B, kind: female, tht: true}
       chg_fuse:
-        what: smd_1206
-        adjust: {shift: [141.15, 21.5], rotate: 90}
-        params: {designator: F, side: B, from: BAT_P, to: LINK_F, value: "PTC 0.1A hold 1206"}
+        what: tht2
+        adjust: {shift: [141.15, 23.0], rotate: 90}
+        params: {designator: F, from: BAT_P, to: LINK_F, pitch: 5.08, value: "PTC MF-R010 0.1A hold, radial, bent flat"}
       chg_res:
-        what: smd_1206
-        adjust: {shift: [141.15, 16.5], rotate: 90}
-        params: {designator: R, side: B, from: LINK_F, to: LINK_B, value: "10R 1206 0.25W"}
+        what: tht2
+        adjust: {shift: [141.15, 10.5], rotate: 90}
+        params: {designator: R, from: LINK_F, to: LINK_B, pitch: 7.62, value: "10R 0.4W axial DIN0204"}
       reset:
-        what: button
+        what: tht2
         adjust: {shift: [155.3, 27], rotate: 90}
-        params: {side: F, from: RST, to: GND}
+        params: {designator: SW, from: RST, to: GND, pitch: 2.54, value: "reset pads (short or 2-pin tact)", label: RST}
       h1: {what: mounting_hole, adjust.shift: [273.8, 72]}
       h2: {what: mounting_hole, adjust.shift: [262.3, -25]}
       h3: {what: mounting_hole, adjust.shift: [222.3, -22]}
@@ -289,9 +289,9 @@ pcbs:
       choc:
         what: choc
         where: /^(matrix|thumb|mirror)_/
-        params: {hotswap: true, keycaps: true, from: "{{colrow}}", to: "{{mono_col}}"}
+        params: {hotswap: false, keycaps: true, from: "{{colrow}}", to: "{{mono_col}}"}
       diode:
-        what: diode_sod123
+        what: diode_tht
         where: /^(matrix|thumb|mirror)_/
         adjust: {shift: [0, -5.3]}
         params: {from: "{{colrow}}", to: "{{mono_row}}"}
@@ -321,17 +321,17 @@ pcbs:
         what: nice_view
         adjust: {shift: [131.15, 51.6]}
       power:
-        what: power_switch
-        adjust: {shift: [115, 70.6], rotate: 0}
+        what: slide_switch_tht
+        adjust: {shift: [115, 71.0], rotate: 0}
         params: {from: BAT_P, to: RAW}
       battery:
         what: battery_pads
         adjust: {shift: [131.15, 27.5]}
         params: {pos: BAT_P, neg: GND}
       reset:
-        what: button
+        what: tht2
         adjust: {shift: [118, 30], rotate: 90}
-        params: {side: F, from: RST, to: GND}
+        params: {designator: SW, from: RST, to: GND, pitch: 2.54, value: "reset pads (short or 2-pin tact)", label: RST}
       h1: {what: mounting_hole, adjust.shift: [-11.5, 72]}
       h2: {what: mounting_hole, adjust.shift: [0, -25]}
       h3: {what: mounting_hole, adjust.shift: [40, -22]}

@@ -16,7 +16,7 @@ odir = is_mx ? "outlines-mx/" : "outlines/";
 
 /* ---------- stack-up (z = 0 is the bottom face that sits on the laptop's lower screen) ---------- */
 floor_t      = 1.0;   // case floor
-gap_under    = 2.2;   // room for Choc hotswap sockets (1.85 mm) under the PCB
+gap_under    = 2.2;   // room under the PCB for the DO-35 diode bodies (1.9 mm), laid flat on the bottom
 pcb_t        = 1.2;   // order the PCB at 1.2 mm to save height
 pcb_z        = floor_t + gap_under;          // PCB bottom
 pcb_top      = pcb_z + pcb_t;                // 4.4
@@ -108,7 +108,7 @@ module tray() {
         // USB-C opening above the nice!nano
         translate([nano_x, 80, usb_z]) cube([12.5, 20, 6.5], center = true);
         // power switch lever slot
-        translate([switch_x, 80, pcb_top + 0.8]) cube([6, 20, 3.0], center = true);
+        translate([switch_x, 80, pcb_top + 1.9]) cube([6, 20, 3.6], center = true);   // C&K OS102011MA1Q lever
         // split-face features
         if (variant != "mono") join_features();
     }
