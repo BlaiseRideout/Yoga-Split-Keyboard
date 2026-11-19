@@ -9,5 +9,9 @@ manifest:
       remote: blaise
       revision: caps-word-v0.3
       import: app/west.yml
+    # status LEDs for the screenless build (shield yoga_status_leds); branch must match the ZMK version
+    - name: zmk-rgbled-widget
+      url: https://github.com/caksoylar/zmk-rgbled-widget
+      revision: v0.3
   self:
     path: config

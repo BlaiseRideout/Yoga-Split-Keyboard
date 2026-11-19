@@ -63,14 +63,14 @@ run both. Only the physical layout ZMK Studio draws is the Choc one. The Choc ho
 | Layer | Thickness | Top at |
 |---|---|---|
 | Case floor (docking magnets sit in blind pockets with a 0.4 mm skin) | 1.0 | 1.0 |
-| Air gap for the THT diode bodies (1.9 mm), or the hotswap sockets (1.85 mm) on route B | 2.2 | 3.2 |
+| Air gap for the THT diode bodies (1.9 mm), or the hotswap sockets (1.85 mm) on the SMT build | 2.2 | 3.2 |
 | PCB (order at 1.2 mm) | 1.2 | 4.4 |
 | Controller, battery and nice!view under the top frame | 4.4 | 8.8 |
 | Top frame | 1.2 | **10.0** |
 | Choc v1 switch + low-profile keycap above the PCB | ~8.3 | **~12.7** |
 
 Ways to get thinner, roughly in order of payoff:
-1. Route B with SMD diodes and the switches soldered in instead of the sockets: −1.2 mm (gap shrinks to ~1 mm).
+1. The SMT build with SMD diodes and the switches soldered in instead of the sockets: −1.2 mm (gap shrinks to ~1 mm).
 2. Kailh PG1316S ultra-low-profile switches (solder-only, own keycaps): roughly −3 mm. This
    needs a new footprint and isn't designed here.
 3. Mount the nice!nano face-down without sockets and use a 1 mm FR4 frame instead of print: −1 mm.
@@ -172,8 +172,8 @@ so plugging USB into **either** half charges **both**.
   **on**, the same as charging a single nice!nano today.
 * **Apart, on the desk:** each half charges from its own USB-C port as before.
 * **Parts:** a generic 2-pin right-angle magnetic pogo pair (spring pins on the left, flat targets on
-  the right), plus per half a PTC (0.1 A hold) and a 10 Ω resistor. On route A these are a radial
-  Bourns MF-R010, bent flat, and an axial DIN0204. On route B they're 1206 SMD parts placed by JLC.
+  the right), plus per half a PTC (0.1 A hold) and a 10 Ω resistor. On the THT build these are a radial
+  Bourns MF-R010, bent flat, and an axial DIN0204. On the SMT build they're 1206 SMD parts placed by JLC.
   Pogo modules vary by vendor, so check the `chg_link` land pattern against the one you buy.
   The case has a 6.6 mm wide slot in each join wall for it, open at the top so the PCB drops in.
 
@@ -192,12 +192,63 @@ so plugging USB into **either** half charges **both**.
   Joined, the charge link keeps both halves topped up from the one cable. The mono has no such caveat.
 * Plug the cable into the **left** half for wired typing. Plugging it into the right half only charges.
 
+## Case styles: full frame or tray + cover
+
+![Tray and cover, split](img/case_open.png)
+
+`case/case.scad` has two styles. Both use the same PCB and the same tray floor, magnets and screw
+positions.
+
+* **`style = "frame"`** (default, `case/stl/`, `case/stl-mx/`): the tray walls rise to the frame, and a
+  full top frame drops in over everything except the keycaps. 10.0 mm to the frame top.
+* **`style = "open"`** (`case/stl-open/`, `case/stl-mx-open/`): a low tray whose wall stops 2.6 mm
+  above the PCB, with the PCB screwed straight into it, and a small **cover** over the centre only:
+  controller, battery, nice!view (with the same window), reset hole and charge link. The switches and
+  the rest of the PCB stay exposed. The cover stands on the PCB and wall top and is held by the two
+  PCB screws under it (use M2 × 8 there, M2 × 4 elsewhere). The tray's top edge is rounded R1, the
+  cover's R2.
+  * Less to print and a lighter look. The overall height doesn't change, because the keycaps
+    (~12.7 mm) set it, not the frame.
+  * The PCB edge and the switch bottoms are visible, so a black PCB looks best.
+  * The join faces, magnets, dowels and pogo slot are unchanged, so the halves still snap together.
+
+## Status LEDs instead of screens
+
+![Status LEDs in the cover](img/case_open_leds.png)
+
+Each half can take **three 3 mm LEDs (red, green, blue) instead of the nice!view**. The THT boards
+(`pcb/`, `pcb-mx/`) have pads for both. The SMT boards in `hotswap-smd/` don't have the LED
+pads yet. **Fit one or the other on a half, never both,** because the LEDs share the display's pins.
+
+* **Wiring:** the LEDs' cathodes go to GND, and each anode goes through a resistor to one display
+  pin: red from CS (D1), green from MOSI (D2), blue from SCK (D3). Resistors: 680 Ω for red, 150 Ω
+  for green and blue (axial DIN0204, mounted on the bottom like the diodes). The nRF52840's pins
+  only source a few mA, so buy high-brightness diffused LEDs. Raise the values if they're too bright.
+* **Fitting:** the LEDs sit between the nice!view header and the battery pads. Seat them flat on the
+  PCB. At 5.3 mm tall, their domes sit in 3.3 mm holes in the frame or cover, 0.3 mm under the top.
+  Print the frame or cover with `display = "leds"` (the `*_leds.stl` files) for the three holes
+  instead of the window.
+* **Firmware:** [zmk-rgbled-widget](https://github.com/caksoylar/zmk-rgbled-widget) (added to
+  `config/west.yml`, `v0.3` branch to match ZMK). Add the `yoga_status_leds` shield, as the
+  `*_leds` builds in `build.yaml` do. It blinks:
+  * **Battery** at power-on: green (above 80%), yellow, red (below 20%), and red again when
+    critical.
+  * **Connection** at power-on and on each profile change: blue when connected, yellow when
+    advertising, red when disconnected. On the right half, blue or red for the link to the left.
+  * Optional: the active layer (cyan blinks, or a colour per layer) on the left half or the mono.
+    Set `CONFIG_RGBLED_WIDGET_SHOW_LAYER_CHANGE` or `..._SHOW_LAYER_COLORS` in the `.conf`.
+* **What you lose:** the always-on readout. The LEDs blink on events and stay dark otherwise, which
+  saves power but means you don't see the layer or battery at a glance. A screen on the left and
+  LEDs on the right also works: build `yoga_split_left` with `nice_view` and `yoga_split_right_leds`.
+* **Cost:** about $1 of parts per half instead of a $17 nice!view.
+
 ## Electrical
 
 * MCU: nice!nano v2 (or any Pro Micro-footprint nRF52840). Battery → MSK-12C02 switch → RAW.
   On the split boards, the battery also goes to the charge link (above).
 * Display: nice!view on the standard ZMK pins (CS = D1, MOSI = D2, SCK = D3), header order
-  MOSI, SCK, VCC, GND, CS.
+  MOSI, SCK, VCC, GND, CS. Or, instead of the screen, three status LEDs on the same three pins
+  (see above).
 * **N-key rollover:** one diode per key, thumbs included, anode to the switch and cathode to the
   row (`col2row`), with no shared diodes and no shared matrix positions. `tools/check_matrix.py`
   checks every board, and the firmware sends NKRO HID reports.

@@ -7,10 +7,16 @@
 //   openscad -D 'variant="mono"'  -D 'part="tray"'  -o tray_mono.stl  case.scad
 // variant: "left" | "right" | "mono"     part: "tray" | "frame" | "assembly"
 // spacing: "choc" (18 x 17 mm, ergogen/) | "mx" (19.05 mm, ergogen-mx/)
+// style:   "frame" (tray + full top frame) | "open" (low tray + a small cover over the controller,
+//          battery and nice!view; the PCB and switches are exposed). part = "cover" in open style.
+// display: "view" (nice!view window) | "leds" (three light holes for the 3 mm status LEDs)
 
 variant = "left";
 part = "assembly";
 spacing = "choc";
+style = "frame";
+display = "view";   // "view": nice!view window | "leds": three 3 mm status-LED holes instead
+is_open = style == "open";
 is_mx = spacing == "mx";
 odir = is_mx ? "outlines-mx/" : "outlines/";
 
@@ -24,6 +30,7 @@ deck_h       = 5.6;   // frame top sits this far above PCB top (clears nano + ba
 frame_t      = 1.2;   // top frame thickness
 wall_top     = pcb_top + deck_h - frame_t;   // tray wall height where the frame drops in
 frame_top    = pcb_top + deck_h;             // overall case height (keycaps rise ~3 mm above this)
+wall_h       = is_open ? pcb_top + 2.6 : wall_top;   // tray wall height (open style: 2.6 mm above the PCB)
 wall         = 2.0;   // outer wall thickness
 pcb_gap      = 0.5;   // PCB to wall clearance (PCB outline already inset 2.5 from envelope)
 cx           = is_mx ? 131.15 : 131;   // split line / board centre x
@@ -67,6 +74,17 @@ switch_x    = is_mx ? (variant == "left" ? 100 : variant == "right" ? 162.3 : 11
 reset_xy    = is_mx ? (variant == "left" ? [107,27] : variant == "right" ? [155.3,27] : [118,30])
                     : (variant == "left" ? [104,28] : variant == "right" ? [158,28] : [118,28]);
 view_y      = is_mx ? 51.6 : 49.6;   // nice!view centre (display window)
+// optional status LEDs (3 mm, R/G/B) in place of the nice!view, see ergogen led_r/led_g/led_b
+led_x       = is_mx ? (variant == "left" ? [110, 113.8, 117.6] : variant == "right" ? [152.3, 148.5, 144.7]
+                                                                 : [127.35, 131.15, 134.95])
+                    : (variant == "left" ? [108.2, 112, 115.8] : variant == "right" ? [153.8, 150, 146.2]
+                                                                 : [127.2, 131, 134.8]);
+led_y       = is_mx ? 31.3 : 29.2;
+// display opening in the top: nice!view window, or three light holes the LED domes sit in
+module display2d() {
+    if (display == "leds") for (x = led_x) translate([x, led_y]) circle(d = 3.3, $fn = 32);
+    else translate([nano_x - 7.3, view_y - 18.3]) square([14.6, 36.6]);
+}
 usb_z       = pcb_top + 3.0;
 
 join_mag_y  = is_mx ? [-25, 22, 68] : [-25, 18, 62];
@@ -89,7 +107,8 @@ module envelope() import(env_file);
    edges too: the whole case is intersected with a stepped "pillow" whose outline shrinks toward the
    bottom face and the frame top. The split faces stay flat so the halves still mate flush. */
 edge_r_bottom = 1.0;   // bottom outer edge (sits on the screen)
-edge_r_top    = 2.0;   // top outer edge of the frame
+edge_r_top    = 2.0;   // top outer edge of the frame (or of the cover, open style)
+edge_r_tray   = 1.0;   // top outer edge of the low tray wall, open style
 edge_steps    = 6;     // slices per fillet (0.2-0.35 mm steps, below typical layer height x2)
 module env_inset(d) {
     if (variant == "mono") offset(r = -d) import(str(odir, "envelope.dxf"));
@@ -99,12 +118,12 @@ module env_inset(d) {
     }
 }
 function fillet_inset(r, h) = r - sqrt(max(0, r*r - (r - h)*(r - h)));   // h = distance from the face
-module round_mask() {
-    n = edge_steps; rb = edge_r_bottom; rt = edge_r_top;
+module round_mask(top = frame_top, rt = edge_r_top) {
+    n = edge_steps; rb = edge_r_bottom;
     for (i = [0 : n - 1]) translate([0, 0, i * rb / n])
         linear_extrude(rb / n + 0.001) env_inset(fillet_inset(rb, (i + 0.5) * rb / n));
-    translate([0, 0, rb]) linear_extrude(frame_top - rb - rt + 0.001) env_inset(0);
-    for (i = [0 : n - 1]) translate([0, 0, frame_top - rt + i * rt / n])
+    translate([0, 0, rb]) linear_extrude(top - rb - rt + 0.001) env_inset(0);
+    for (i = [0 : n - 1]) translate([0, 0, top - rt + i * rt / n])
         linear_extrude(rt / n + 0.001) env_inset(fillet_inset(rt, rt - (i + 0.5) * rt / n));
 }
 module pcb2d()    import(pcb_file);
@@ -118,8 +137,8 @@ module tray() {
         union() {
             // floor
             linear_extrude(floor_t) envelope();
-            // walls up to the frame ledge
-            linear_extrude(wall_top) difference() { envelope(); cavity2d(); }
+            // walls up to the frame ledge (or the low open-style wall)
+            linear_extrude(wall_h) difference() { envelope(); cavity2d(); }
             // bosses around docking magnet pockets (top stays below the hotswap-socket gap)
             for (p = dock) translate([p[0], p[1], 0]) cylinder(d = dock_mag_d + 2.4, h = dock_skin + dock_mag_h, $fn = 32);
             // PCB standoffs with heat-set inserts
@@ -141,14 +160,14 @@ module tray() {
 // magnets + dowels on the split face (x = cx)
 module join_features() {
     s = variant == "left" ? -1 : 1;  // direction into the half
-    zc = wall_top / 2;
+    zc = is_open ? 3.6 : wall_top / 2;   // open style: keeps the 6.2 mm magnets inside the 7 mm wall
     for (y = join_mag_y)
         translate([cx, y, zc]) rotate([0, s * 90, 0]) translate([0,0,-0.01]) cylinder(d = join_mag_d, h = join_mag_h, $fn = 32);
     for (y = dowel_y)
         translate([cx, y, zc]) rotate([0, s * 90, 0]) translate([0,0,-0.01]) cylinder(d = dowel_d, h = dowel_h, $fn = 24);
     // slot for the 2-pin magnetic pogo connector that carries battery charge across the join.
     // Open at the top so the PCB drops in with the connector fitted; its face sits flush with x = cx.
-    translate([s < 0 ? cx - 6.1 : cx - 0.01, link_y - 3.3, pcb_top - 0.2]) cube([6.11, 6.6, wall_top]);
+    translate([s < 0 ? cx - 6.1 : cx - 0.01, link_y - 3.3, pcb_top - 0.2]) cube([6.11, 6.6, frame_top]);
 }
 
 module frame() {
@@ -158,7 +177,8 @@ module frame() {
         envelope();
         caps2d();
         // nice!view: the whole 14 x 36 mm module sits in this opening, flush with the frame top
-        translate([nano_x - 7.3, view_y - 18.3]) square([14.6, 36.6]);
+        // (or the status-LED holes)
+        display2d();
         // reset button access
         translate(reset_xy) circle(d = 3, $fn = 24);
     }
@@ -167,20 +187,69 @@ module frame() {
         offset(delta = -0.15) cavity2d();
         offset(delta = -1.15) cavity2d();
         caps2d();
-        translate([nano_x - 7.3, view_y - 18.3]) square([14.6, 36.6]);
+        display2d();
     }
 }
 rim_h = 1.0;
 
 module assembly() {
     color("#555") tray_r();
-    color("#bbb", 0.6) frame_r();
+    if (is_open) color("#bbb", 0.8) cover_r(); else color("#bbb", 0.6) frame_r();
     color("green", 0.5) translate([0,0,pcb_z]) linear_extrude(pcb_t) pcb2d();
 }
 
-module tray_r()  intersection() { tray();  round_mask(); }
+/* ---------- open style: cover over the controller, battery and nice!view ----------
+   A shallow printed box with the same top (z = frame_top) and nice!view window as the full frame,
+   covering only the centre area between the inner key columns. Its skirt stands on the PCB inside
+   the walls and on the wall top elsewhere. It's held by two of the PCB's M2 screws (longer ones:
+   M2 x 8 through the cover, PCB and tray insert). */
+cover_wall   = 1.2;
+cover_half_w = is_mx ? 29 : 31;    // mono: half-width of the centre cover around cx
+cover_x      = variant == "left"  ? [nano_x - 13, cx]
+             : variant == "right" ? [cx, nano_x + 13]
+             :                      [cx - cover_half_w, cx + cover_half_w];
+cover_holes  = [for (h = holes) if (h[0] > cover_x[0] + 2 && h[0] < cover_x[1] - 2) h];
+module cover2d() difference() {
+    intersection() { env_inset(0); translate([cover_x[0], -500]) square([cover_x[1] - cover_x[0], 1000]); }
+    offset(r = 1.0) caps2d();
+}
+module cover() {
+    difference() {
+        union() {
+            // skirt on the PCB, inside the walls
+            translate([0, 0, pcb_top + 0.2]) linear_extrude(frame_top - pcb_top - 0.2)
+                intersection() { cover2d(); offset(delta = -0.2) cavity2d(); }
+            // over the wall tops
+            translate([0, 0, wall_h]) linear_extrude(frame_top - wall_h) cover2d();
+            // screw bosses down to the PCB
+            for (h = cover_holes) translate([h[0], h[1], pcb_top + 0.2]) cylinder(d = 5, h = frame_top - pcb_top - 0.2, $fn = 32);
+        }
+        // hollow: everything inside a 1.2 mm skin, up to 1.2 mm under the top
+        difference() {
+            translate([0, 0, pcb_top - 1]) linear_extrude(frame_top - frame_t - pcb_top + 1)
+                offset(r = -cover_wall) intersection() { cover2d(); offset(delta = -0.2) cavity2d(); };
+            for (h = cover_holes) translate([h[0], h[1], 0]) cylinder(d = 5, h = 50, $fn = 32);
+        }
+        // nice!view window and reset access, same as the frame
+        translate([0, 0, frame_top - 5]) linear_extrude(10) display2d();
+        translate([reset_xy[0], reset_xy[1], frame_top - 5]) cylinder(d = 3, h = 10, $fn = 24);
+        // screws: clearance hole + head recess
+        for (h = cover_holes) translate([h[0], h[1], 0]) {
+            cylinder(d = 2.3, h = 50, $fn = 20);
+            translate([0, 0, frame_top - 1.0]) cylinder(d = 4.2, h = 5, $fn = 24);
+        }
+        // keep the tray's openings clear: USB-C, power switch lever and pogo slot
+        translate([nano_x, 80, usb_z]) cube([12.5, 20, 6.5], center = true);
+        if (variant != "mono")   // room for the pogo connector body, under the cover top
+            translate([variant == "left" ? cx - 6.1 : cx - 0.01, link_y - 3.3, 0]) cube([6.11, 6.6, frame_top - frame_t]);
+    }
+}
+
+module tray_r()  intersection() { tray();  if (is_open) round_mask(wall_h, edge_r_tray); else round_mask(); }
 module frame_r() intersection() { frame(); round_mask(); }
+module cover_r() intersection() { cover(); round_mask(); }
 
 if (part == "tray") tray_r();
 else if (part == "frame") translate([0,0,-wall_top]) frame_r();
+else if (part == "cover") translate([0,0,-pcb_top - 0.2]) cover_r();
 else assembly();

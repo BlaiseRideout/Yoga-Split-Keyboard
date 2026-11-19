@@ -1,0 +1,6 @@
+file_format: "1"
+id: yoga_status_leds
+name: Yoga status LEDs
+type: shield
+url: https://github.com/caksoylar/zmk-rgbled-widget
+requires: [pro_micro]

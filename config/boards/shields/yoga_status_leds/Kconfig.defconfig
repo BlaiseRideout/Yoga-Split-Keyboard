@@ -1,0 +1,7 @@
+# Status LEDs in place of the nice!view: turn on caksoylar/zmk-rgbled-widget.
+if SHIELD_YOGA_STATUS_LEDS
+
+config RGBLED_WIDGET
+    default y
+
+endif

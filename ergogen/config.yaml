@@ -204,6 +204,32 @@ pcbs:
         what: tht2
         adjust: {shift: [104, 28], rotate: 90}
         params: {designator: SW, from: RST, to: GND, pitch: 2.54, value: "reset pads (short or 2-pin tact)", label: RST}
+      # Optional status LEDs instead of the nice!view (fit one or the other): 3 mm R/G/B LEDs on
+      # the display pins, resistors on the bottom like the diodes. Driven by zmk-rgbled-widget.
+      led_r:
+        what: led_3mm
+        adjust: {shift: [108.2, 29.2], rotate: 90}
+        params: {A: LED_R, color: red}
+      led_r_res:
+        what: tht2
+        adjust: {shift: [108.2, 17], rotate: 90}
+        params: {designator: R, from: CS, to: LED_R, pitch: 7.62, value: "680R axial DIN0204, on the bottom"}
+      led_g:
+        what: led_3mm
+        adjust: {shift: [112, 29.2], rotate: 90}
+        params: {A: LED_G, color: green}
+      led_g_res:
+        what: tht2
+        adjust: {shift: [112, 17], rotate: 90}
+        params: {designator: R, from: MOSI, to: LED_G, pitch: 7.62, value: "150R axial DIN0204, on the bottom"}
+      led_b:
+        what: led_3mm
+        adjust: {shift: [115.8, 29.2], rotate: 90}
+        params: {A: LED_B, color: blue}
+      led_b_res:
+        what: tht2
+        adjust: {shift: [115.8, 17], rotate: 90}
+        params: {designator: R, from: SCK, to: LED_B, pitch: 7.62, value: "150R axial DIN0204, on the bottom"}
       h1: {what: mounting_hole, adjust.shift: [-8, 66]}
       h2: {what: mounting_hole, adjust.shift: [-8, -28]}
       h3: {what: mounting_hole, adjust.shift: [40, -24]}
@@ -271,6 +297,32 @@ pcbs:
         what: tht2
         adjust: {shift: [158, 28], rotate: 90}
         params: {designator: SW, from: RST, to: GND, pitch: 2.54, value: "reset pads (short or 2-pin tact)", label: RST}
+      # Optional status LEDs instead of the nice!view (fit one or the other): 3 mm R/G/B LEDs on
+      # the display pins, resistors on the bottom like the diodes. Driven by zmk-rgbled-widget.
+      led_r:
+        what: led_3mm
+        adjust: {shift: [153.8, 29.2], rotate: 90}
+        params: {A: LED_R, color: red}
+      led_r_res:
+        what: tht2
+        adjust: {shift: [153.8, 17], rotate: 90}
+        params: {designator: R, from: CS, to: LED_R, pitch: 7.62, value: "680R axial DIN0204, on the bottom"}
+      led_g:
+        what: led_3mm
+        adjust: {shift: [150, 29.2], rotate: 90}
+        params: {A: LED_G, color: green}
+      led_g_res:
+        what: tht2
+        adjust: {shift: [150, 17], rotate: 90}
+        params: {designator: R, from: MOSI, to: LED_G, pitch: 7.62, value: "150R axial DIN0204, on the bottom"}
+      led_b:
+        what: led_3mm
+        adjust: {shift: [146.2, 29.2], rotate: 90}
+        params: {A: LED_B, color: blue}
+      led_b_res:
+        what: tht2
+        adjust: {shift: [146.2, 17], rotate: 90}
+        params: {designator: R, from: SCK, to: LED_B, pitch: 7.62, value: "150R axial DIN0204, on the bottom"}
       h1: {what: mounting_hole, adjust.shift: [270, 66]}
       h2: {what: mounting_hole, adjust.shift: [270, -28]}
       h3: {what: mounting_hole, adjust.shift: [222, -24]}
@@ -330,6 +382,32 @@ pcbs:
         what: tht2
         adjust: {shift: [118, 28], rotate: 90}
         params: {designator: SW, from: RST, to: GND, pitch: 2.54, value: "reset pads (short or 2-pin tact)", label: RST}
+      # Optional status LEDs instead of the nice!view (fit one or the other): 3 mm R/G/B LEDs on
+      # the display pins, resistors on the bottom like the diodes. Driven by zmk-rgbled-widget.
+      led_r:
+        what: led_3mm
+        adjust: {shift: [127.2, 29.2], rotate: 90}
+        params: {A: LED_R, color: red}
+      led_r_res:
+        what: tht2
+        adjust: {shift: [127.2, 17], rotate: 90}
+        params: {designator: R, from: CS, to: LED_R, pitch: 7.62, value: "680R axial DIN0204, on the bottom"}
+      led_g:
+        what: led_3mm
+        adjust: {shift: [131, 29.2], rotate: 90}
+        params: {A: LED_G, color: green}
+      led_g_res:
+        what: tht2
+        adjust: {shift: [131, 17], rotate: 90}
+        params: {designator: R, from: MOSI, to: LED_G, pitch: 7.62, value: "150R axial DIN0204, on the bottom"}
+      led_b:
+        what: led_3mm
+        adjust: {shift: [134.8, 29.2], rotate: 90}
+        params: {A: LED_B, color: blue}
+      led_b_res:
+        what: tht2
+        adjust: {shift: [134.8, 17], rotate: 90}
+        params: {designator: R, from: SCK, to: LED_B, pitch: 7.62, value: "150R axial DIN0204, on the bottom"}
       h1: {what: mounting_hole, adjust.shift: [-8, 66]}
       h2: {what: mounting_hole, adjust.shift: [-8, -28]}
       h3: {what: mounting_hole, adjust.shift: [40, -24]}

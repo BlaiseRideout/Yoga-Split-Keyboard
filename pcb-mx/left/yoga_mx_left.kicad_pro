@@ -437,6 +437,18 @@
       {
         "netclass": "Default",
         "pattern": "LINK_F"
+      },
+      {
+        "netclass": "Default",
+        "pattern": "LED_R"
+      },
+      {
+        "netclass": "Default",
+        "pattern": "LED_G"
+      },
+      {
+        "netclass": "Default",
+        "pattern": "LED_B"
       }
     ]
   },

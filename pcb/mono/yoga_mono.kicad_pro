@@ -537,6 +537,18 @@
       {
         "netclass": "Default",
         "pattern": "BAT_P"
+      },
+      {
+        "netclass": "Default",
+        "pattern": "LED_R"
+      },
+      {
+        "netclass": "Default",
+        "pattern": "LED_G"
+      },
+      {
+        "netclass": "Default",
+        "pattern": "LED_B"
       }
     ]
   },

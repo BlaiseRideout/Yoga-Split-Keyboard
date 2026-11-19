@@ -1,14 +1,14 @@
-# Cost comparison: build routes, split vs monolithic, 1 or 2 builds
+# Cost comparison: THT vs SMT, split vs monolithic, 1 or 2 builds
 
 All prices are in USD for delivery to **Kirkland, WA**, as of November 2026. Where a figure comes
 from a vendor page, it says so in *Sources*. Everything else is an estimate. JLCPCB shows the exact
 PCB, assembly, shipping and tariff charges at checkout. Check those before you order.
 
-## The two PCB routes
+## The two PCB builds: THT and SMT
 
-Both routes are in the repo and use the same layout, case and firmware.
+Both builds are in the repo and use the same layout, case and firmware.
 
-| | **A. All through-hole** (default: `pcb/`, `pcb-mx/`) | **B. Hotswap + JLC assembly** (`hotswap-smd/`) |
+| | **THT: all through-hole** (default: `pcb/`, `pcb-mx/`) | **SMT: hotswap, assembled by JLC** (`hotswap-smd/`) |
 |---|---|---|
 | Switches | Soldered to the PCB (5-pin Choc holes) | Kailh hotswap sockets, so switches pull out |
 | Diodes | 1N4148, DO-35 through-hole, one per key, body flat on the bottom | 1N4148W SOD-123, placed by JLC |
@@ -20,7 +20,7 @@ Both routes are in the repo and use the same layout, case and firmware.
 | Routing | Freerouting, 100%, 0 DRC errors on all six boards | Same |
 | Thickness | Same case and stack-up | Same |
 
-**Both routes give full n-key rollover in hardware.** Every key, including the thumb keys, has its
+**Both builds give full n-key rollover in hardware.** Every key, including the thumb keys, has its
 own diode, oriented anode-to-switch and cathode-to-row for ZMK's `col2row` scanning. No diodes are
 shared or left out, and no two keys share a matrix position. `tools/check_matrix.py` checks this from
 the netlist of every board. All 12 boards pass: 27 keys / 27 diodes / 27 positions per half, and 54
@@ -45,12 +45,12 @@ the same price as Choc caps.
 
 "First build" includes everything you can only buy in bulk: JLC's minimum of 5 PCBs per design,
 assembly setup, and packs of magnets, diodes and inserts. "Second build" is what a second keyboard
-adds. It reuses the spare PCBs (and, on route B, the second assembled board), so it's mostly
+adds. It reuses the spare PCBs (and, on the SMT build, the second assembled board), so it's mostly
 controllers, screens, switches and caps.
 
 ### Split (Choc spacing, nice!nano, two nice!views, Sunset switches, MBK caps, self-printed case)
 
-| Item | Route A, THT | Route B, hotswap | Note |
+| Item | THT | SMT (hotswap) | Note |
 |---|---|---|---|
 | 2 × nice!nano v2 | 50 | 50 | US vendor |
 | 2 × nice!view | 34 | 34 | US vendor |
@@ -58,7 +58,7 @@ controllers, screens, switches and caps.
 | 60 × Sunset tactile switches | 59 | 59 | Choc v2 Brown on the MX route: 36 |
 | 54 × Choc keycaps (MBK-style) | 40 | 40 | |
 | JLC PCBs: 2 designs × 5 pcs, 2-layer, 1.2 mm, lead-free HASL | 25 | 25 | Real quote, Nov 19: $12.70 per design |
-| JLC assembly: 2 of each design, setup, extended-part fees, parts | — | ~65 | Route A has no assembly at all |
+| JLC assembly: 2 of each design, setup, extended-part fees, parts | — | ~65 | THT has no assembly at all |
 | US tariff on the JLC order, ~35% DDP, collected at checkout | ~9 | ~32 | Rate per JLC's March 2026 notice |
 | JLC shipping, UPS Express Saver DDP to Kirkland | ~34 | ~34 | Quoted $26.08 for one design; both in one parcel ≈ $34. Global Standard Direct is $10–15 but takes 8–10 days |
 | THT parts: 100 × 1N4148, 2 slide switches, PTC + resistor | ~7 | — | Digikey/Mouser, domestic |
@@ -73,13 +73,13 @@ controllers, screens, switches and caps.
 
 ### Monolithic (same parts, one controller and screen, needs a ≥ 300 mm printer bed)
 
-| | Route A, THT | Route B, hotswap |
+| | THT | SMT (hotswap) |
 |---|---|---|
 | **First build** | **≈ $255** | **≈ $300** |
 | **Second build adds** | **≈ $170** | **≈ $170** |
 | **Two builds, each** | **≈ $213** | **≈ $235** |
 
-The mono has one 290 × 108 mm design ($20.90 for 5, quoted), one assembly order on route B (~$35 plus
+The mono has one 290 × 108 mm design ($20.90 for 5, quoted), one assembly order on the SMT build (~$35 plus
 tariff), and one nice!nano and one nice!view. Its case is a single 295 mm part, so it needs a large
 printer or a print service (about +$50).
 
@@ -88,15 +88,15 @@ printer or a print service (about +$50).
 | Item | Minimum you buy | One split build uses | Left over |
 |---|---|---|---|
 | PCBs | 5 per design | 1 left + 1 right | 4 + 4 (3 + 3 after a second build) |
-| JLC assembly (route B) | 2 boards per design | 1 + 1 | 1 + 1 assembled boards, which the second build uses |
-| 1N4148 (route A) | ~100 | 54 | 46 |
+| JLC assembly (SMT) | 2 boards per design | 1 + 1 | 1 + 1 assembled boards, which the second build uses |
+| 1N4148 (THT) | ~100 | 54 | 46 |
 | Switches | 10-packs | 54 (+6 spare) | 6 |
 | Docking magnets | 50-pack | ≤ 26 | 24+ |
 
 ## Where to order the PCBs (and assembly)
 
-Route A needs **bare boards only**, since nothing is surface-mount. That leaves the fab as the only
-thing to choose. Route B also needs SMD assembly.
+The THT build needs **bare boards only**, since nothing is surface-mount. That leaves the fab as the only
+thing to choose. The SMT build also needs SMD assembly.
 
 **Real quotes, November 19, 2026.** The Gerber zips were uploaded to each fab's instant quote,
 without an account. Board sizes as the fabs read them: each half 139.65 × 108 mm, mono 290.3 × 108 mm.
@@ -114,10 +114,10 @@ variants. Delivery is to Kirkland, WA.
 
 Aisler prices are net of VAT (the 19% German VAT on its page doesn't apply to a US delivery) and
 converted at the ECB rate of 1.0968 USD per EUR (November 18). JLC computes its tariff only at
-checkout after sign-in, so the duty column uses the 35% rate from its tariff FAQ. JLC route B
+checkout after sign-in, so the duty column uses the 35% rate from its tariff FAQ. JLC SMT
 assembly wasn't quoted here; the ~$65 estimate above stands.
 
-**Cheapest: JLCPCB, route A, ≈ $68 for the split delivered by UPS in 2–4 days**, or about $50 if
+**Cheapest: JLCPCB, THT, ≈ $68 for the split delivered by UPS in 2–4 days**, or about $50 if
 you can wait 8–10 days. It is also the only one of the three with 1.2 mm boards, which the case is
 drawn for. **Cheapest without China: Aisler, ≈ $112 for the split.** That is less than half of OSH
 Park's $234, though the halves arrive 3 apiece instead of 5. **OSH Park** costs the most but has
@@ -143,7 +143,7 @@ The EU rate is the 15% from the EU–US framework that took effect in July 2026.
 
 **Corne route, estimated:** PCB pair $35 + 2 nice!nano $50 + 2 nice!view $34 + 50 Sunset switches
 $49 + 42 caps $32 + 2 LiPo $10 + case parts and magnets ~$30 + US shipping ~$15 ≈ **$255**, versus
-≈ $317 for route A. It also avoids JLC and tariffs entirely.
+≈ $317 for THT. It also avoids JLC and tariffs entirely.
 
 What it gives up:
 - **The number row.** It's 3 rows and 42 keys, against 54 here.
@@ -152,20 +152,21 @@ What it gives up:
   the same, since it's Choc v1 on a 1.6 mm PCB.
 
 No mass-produced wireless 4-row Choc board was found that's both pre-soldered and confirmed to fit.
-For the 4-row layout with charge pass-through, route A stays the cheapest.
+For the 4-row layout with charge pass-through, THT stays the cheapest.
 
-## Ways to cut more (any route)
+## Ways to cut more (either build)
 
 | Change | Split saves | Mono saves | Trade-off |
 |---|---|---|---|
-| Route A instead of B | ~$80 first build | ~$50 | No hotswap. ~220 THT joints, about 2 hours |
+| THT instead of SMT | ~$80 first build | ~$50 | No hotswap. ~220 THT joints, about 2 hours |
 | nRF52840 "SuperMini" instead of nice!nano | ~$35 (2 × ~$6, plus tariff) | ~$17 | Same footprint and firmware target. Quality and battery-sense accuracy vary by seller |
 | One nice!view, left only (`yoga_split_right_noscreen` firmware) | $17 | — | The right half has no screen; the left still shows layer, battery and connection status |
+| Status LEDs instead of both nice!views (`*_leds` firmware): 3 × 3 mm LEDs + 3 resistors per half, ~$1 | ~$32 | ~$16 | Blinks battery and connection on events instead of an always-on screen. Through-hole parts |
 | Generic AliExpress Choc keycaps (~$0.30) | ~$24 | ~$24 | Thinner plastic, legends vary. Tariffs apply |
 | Choc v2 Brown on the MX route instead of Sunset | ~$23 | ~$23 | MX spacing and MX-stem low-profile caps |
 | Skip the viewing film, map the magnets with `kbdock-test.sh` | $8 | $8 | Needs the Linux setup from the dotfiles |
-| **Leanest split** (A + SuperMini + one screen + generic caps + no film) | **≈ $233** first build, **≈ $150** second | | |
-| **Leanest mono** (A + SuperMini + generic caps + no film) | | **≈ $206** first, ≈ $125 second | |
+| **Leanest split** (THT + SuperMini + one screen + generic caps + no film) | **≈ $233** first build, **≈ $150** second | | |
+| **Leanest mono** (THT + SuperMini + generic caps + no film) | | **≈ $206** first, ≈ $125 second | |
 
 ## Build complexity
 
@@ -181,9 +182,9 @@ For the 4-row layout with charge pass-through, route A stays the cheapest.
 
 ## Recommendation
 
-For one or two keyboards with your no-SMD-soldering rule, **route A (all through-hole), split**.
+For one or two keyboards with your no-SMD-soldering rule, **THT (all through-hole), split**.
 It needs no JLC assembly, so there's nothing to pay tariff on beyond the bare PCBs. Every joint is
-a through-hole joint, and the five PCBs per design already cover a second build. Go to route B only
+a through-hole joint, and the five PCBs per design already cover a second build. Go to SMT only
 if being able to swap switches is worth ~$40 per keyboard over two builds.
 
 ## Sources
