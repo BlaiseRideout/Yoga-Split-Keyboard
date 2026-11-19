@@ -18,19 +18,21 @@ include:
     snippet: studio-rpc-usb-uart
     cmake-args: -DCONFIG_ZMK_STUDIO=y
     artifact-name: yoga_mono
-  # status LEDs instead of screens (fit the three 3 mm LEDs, not the nice!view)
+  # status LEDs instead of screens (fit the three 3 mm LEDs, not the nice!view).
+  # The shield .conf files turn the display on, so these builds turn it off again.
   - board: nice_nano_v2
     shield: yoga_split_left yoga_status_leds
     snippet: studio-rpc-usb-uart
-    cmake-args: -DCONFIG_ZMK_STUDIO=y
+    cmake-args: -DCONFIG_ZMK_STUDIO=y -DCONFIG_ZMK_DISPLAY=n
     artifact-name: yoga_split_left_leds
   - board: nice_nano_v2
     shield: yoga_split_right yoga_status_leds
+    cmake-args: -DCONFIG_ZMK_DISPLAY=n
     artifact-name: yoga_split_right_leds
   - board: nice_nano_v2
     shield: yoga_mono yoga_status_leds
     snippet: studio-rpc-usb-uart
-    cmake-args: -DCONFIG_ZMK_STUDIO=y
+    cmake-args: -DCONFIG_ZMK_STUDIO=y -DCONFIG_ZMK_DISPLAY=n
     artifact-name: yoga_mono_leds
   - board: nice_nano_v2
     shield: settings_reset
