@@ -118,6 +118,29 @@ Two things to check at checkout, because they move often. The China tariff stack
 times in 2026: a Section 122 baseline expired in July, and PCB exclusions ended on November 10.
 And for exact US prices, upload the Gerber zips to the vendors' instant quotes; they need an account.
 
+## Alternative: a custom case around an off-the-shelf wireless PCB
+
+| Board | Layout | What you get | Price | Fits 295.3 × 113? | Notes |
+|---|---|---|---|---|---|
+| **Typeractive Corne (Choc)**, partially assembled | 3 × 6 + 3 per half (42 keys, no number row) | PCB pair with diodes, hotswap sockets, battery jacks, power switches and reset buttons pre-soldered. You solder the nice!nano and nice!view headers (THT) | $35 (US vendor, no tariff). **Sold out when checked** | Yes, easily (3 rows) | Choc v1 only. Proven ZMK board |
+| Keebmaker Sofle LP, prebuilt wireless | 6 × 4 + 5 per half (58 keys) | Fully built with their switches and caps | from $259 (built in the USA) | Unknown, needs PCB dimensions | Switch choice limited to their options |
+| Beekeeb HSHS52, pre-soldered wireless | 52 keys | Soldered PCB, socketed nice!nanos | $227 | Unknown | No switches, caps or case |
+| Kriscables Corne Choc PCB | 42 keys | Bare PCBs | €15.90 | Yes | All SMD left to you, so it breaks the no-SMD rule |
+| Keebart Sofle Choc Pro | 58 keys | Built | $249+ | 132 × 106 mm per half | RP2040, **wired only** |
+
+**Corne route, estimated:** PCB pair $35 + 2 nice!nano $50 + 2 nice!view $34 + 50 Sunset switches
+$49 + 42 caps $32 + 2 LiPo $10 + case parts and magnets ~$30 + US shipping ~$15 ≈ **$255**, versus
+≈ $317 for route A. It also avoids JLC and tariffs entirely.
+
+What it gives up:
+- **The number row.** It's 3 rows and 42 keys, against 54 here.
+- **The charge link,** unless a pogo pair is wired to the battery jacks by hand.
+- Nothing on docking, because the docking magnets live in the case either way. Thickness is about
+  the same, since it's Choc v1 on a 1.6 mm PCB.
+
+No mass-produced wireless 4-row Choc board was found that's both pre-soldered and confirmed to fit.
+For the 4-row layout with charge pass-through, route A stays the cheapest.
+
 ## Ways to cut more (any route)
 
 | Change | Split saves | Mono saves | Trade-off |
@@ -155,4 +178,5 @@ if being able to swap switches is worth ~$40 per keyboard over two builds.
 - JLCPCB, [U.S. tariff policy FAQ](https://jlcpcb.com/help/article/us-tariff-policy-faq) (updated Oct 29, 2026) and [logistics update](https://jlcpcb.com/news/logistics-update-us-china-tariff) (March 17, 2026 rates: PCB 35%, SMT 35%; DDP for individual US orders). The FAQ also lists rate components that changed during 2026, so confirm at checkout.
 - Switch prices: [splitkb Sunset](https://splitkb.com/products/sunset-kailh-low-profile-choc-switches), [kbd.news Sunset offers](https://kbd.news/switch/lowprokb-Choc-V1-Sunset-switch-65.html), [kbd.news Choc v2 Brown](https://kbd.news/switch/Kailh-Choc-V2-Brown-456.html), [Thock King Deep Sea](https://www.thockking.com/products/kailh-deep-sea-low-profile-choc-silent-tactile-switches), [CannonKeys KS-33 Chocolate](https://cannonkeys.com/products/gateron-ks-33-low-profile-2-0-chocolate-tactile-switch), [splitkb Ambients](https://splitkb.com/collections/all/products/ambients-kailh-low-profile-choc-switches).
 - US fabs and assembly: [OSH Park 2-layer service](https://docs.oshpark.com/services/two-layer/) ($5/in² for 3 copies, made in the US), [Maskset tariff math](https://www.maskset.net/blog/2025/05/15/tariff-math-for-two-layer-prototype-pcbs-oshpark-vs-imported-fabs/), [lcamtuf vendor comparison](https://blog.coredump.cx/p/comparing-hobby-pcb-vendors) (Jan 2026 update), [Hackaday on US prototyping](https://hackaday.com/2025/07/06/does-made-in-america-make-sense-for-pcb-prototyping/), [Octopart 2026 tariff reset](https://octopart.com/pulse/p/tariff-reset-pcb-workarounds), [Aisler assembly](https://aisler.net/en/products/assembly), [MacroFab](https://www.macrofab.com/platform), [KiCad forum on US low-quantity assembly](https://forum.kicad.info/t/usa-single-low-amount-assembly-anyone-got-any-pointers-for-me/23048), [Contextual Electronics forum](https://forum.contextualelectronics.com/t/recommendations-for-pcb-assembly-in-usa/5638).
+- Off-the-shelf boards: [Typeractive Corne](https://typeractive.xyz/products/corne-partially-assembled-pcb), [Keebmaker](https://keebmaker.com), [Beekeeb HSHS52](https://shop.beekeeb.com/products/pre-soldered-wireless-hshs52-choc-v2-split-keyboard), [Kriscables Corne Choc](https://kriscables.com/product/corne-choc-pcb/), [Keebart Sofle Choc Pro](https://www.etsy.com/listing/1754988054/sofle-choc-pro-split-keyboard-ergonomic).
 - Everything else (controllers, screens, JLC fab and assembly, shipping, small parts) is an estimate from typical late-2026 hobby pricing and wasn't checked against live listings.
