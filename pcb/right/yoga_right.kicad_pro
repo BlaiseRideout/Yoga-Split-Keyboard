@@ -429,6 +429,14 @@
       {
         "netclass": "Default",
         "pattern": "BAT_P"
+      },
+      {
+        "netclass": "Default",
+        "pattern": "LINK_B"
+      },
+      {
+        "netclass": "Default",
+        "pattern": "LINK_F"
       }
     ]
   },

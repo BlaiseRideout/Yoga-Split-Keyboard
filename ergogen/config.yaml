@@ -188,6 +188,18 @@ pcbs:
         what: battery_pads
         adjust: {shift: [116, 25.5]}
         params: {pos: BAT_P, neg: GND}
+      chg_link:
+        what: charge_link
+        adjust: {shift: [125.5, 28], rotate: 0}
+        params: {a: LINK_B, b: GND, kind: male}
+      chg_fuse:
+        what: smd_1206
+        adjust: {shift: [121, 20], rotate: 90}
+        params: {designator: F, side: B, from: BAT_P, to: LINK_F, value: "PTC 0.1A hold 1206"}
+      chg_res:
+        what: smd_1206
+        adjust: {shift: [121, 15], rotate: 90}
+        params: {designator: R, side: B, from: LINK_F, to: LINK_B, value: "10R 1206 0.25W"}
       reset:
         what: button
         adjust: {shift: [104, 28], rotate: 90}
@@ -243,6 +255,18 @@ pcbs:
         what: battery_pads
         adjust: {shift: [146, 25.5]}
         params: {pos: BAT_P, neg: GND}
+      chg_link:
+        what: charge_link
+        adjust: {shift: [136.5, 28], rotate: 180}
+        params: {a: GND, b: LINK_B, kind: female}
+      chg_fuse:
+        what: smd_1206
+        adjust: {shift: [141, 20], rotate: 90}
+        params: {designator: F, side: B, from: BAT_P, to: LINK_F, value: "PTC 0.1A hold 1206"}
+      chg_res:
+        what: smd_1206
+        adjust: {shift: [141, 15], rotate: 90}
+        params: {designator: R, side: B, from: LINK_F, to: LINK_B, value: "10R 1206 0.25W"}
       reset:
         what: button
         adjust: {shift: [158, 28], rotate: 90}

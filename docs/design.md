@@ -27,9 +27,32 @@ Choc spacing (18 × 17 mm) with Voyager-like column stagger (ring +6, middle +3,
 * Width: outer edges sit 7.9 mm inside the envelope. The **centre gap between the two inner columns
   is 64.5 mm**. Each half uses its 32 mm of that gap for a nice!nano with a nice!view stacked on
   top, a 20 × 30 mm LiPo, the reset button and the join wall.
-* At **19.05 mm (MX-style) spacing**, which you'd need for Choc v2 / Gateron KS-33 with MX keycaps,
-  the same layout is ~111 mm deep. That leaves under 1 mm per side for walls, so it doesn't fit.
-  A 3-row layout would fit at 19.05 mm spacing.
+* **19.05 mm (MX-style) spacing also fits** with a few changes. See the next section.
+
+## MX-spaced variant (`ergogen-mx/`, `pcb-mx/`, `case/*-mx`)
+
+![MX-spaced split case](img/case_mx_split.png)
+
+The same 6 × 4 + 3 layout at 19.05 × 19.05 mm, for Kailh Choc v2 or Gateron KS-33 low-profile
+switches with MX-stem keycaps. An earlier estimate here said this wouldn't fit. That estimate kept
+the Choc thumb arc, and a flatter arc fixes it:
+
+| | Choc (18 × 17) | MX (19.05) |
+|---|---|---|
+| Thumb arc | 10° per key | 6° per key, tucked 0.5 mm closer to the matrix |
+| Ring finger stagger | +6 mm | +5 mm |
+| Key block depth incl. thumbs | 99.2 mm | **104 mm** (≈ 4.5 mm front/back border inside the 113 mm envelope) |
+| Side border | 7.9 mm | **3 mm** (keycap edge ~1 mm from the inner wall face) |
+| Centre gap between inner columns | 64.5 mm | **62.8 mm** |
+| Stack-up to frame top / keycap tops | 10.0 / ~12.7 mm | 10.0 / ~13.3 mm (Choc v2 is ~0.6 mm taller) |
+
+The screens didn't have to shrink: each half's 31 mm share of the gap still holds the nice!nano,
+a nice!view on top, the 20 × 30 mm LiPo and the reset button. What it costs is thinner outer borders,
+a flatter thumb arc and a slightly taller board.
+
+The matrix, pins and nets are identical to the Choc boards, so the **same ZMK shields and firmware**
+run both. Only the physical layout ZMK Studio draws is the Choc one. The Choc hotswap socket
+(CPG135001S30) fits Choc v2 too.
 
 ## Stack-up (z from the laptop screen up)
 
@@ -118,9 +141,41 @@ Each half's inner wall is 5 mm thick. It carries:
 That gives the UHK / Dygma-style "click together" join. A mechanical alternative is a sliding
 dovetail key printed separately. It's not modelled here, but it would replace the dowel holes.
 
+## Charging both halves from one cable (split only)
+
+When the halves are joined, a 2-pin magnetic pogo connector in the join wall links their batteries,
+so plugging USB into **either** half charges **both**.
+
+```
+ left half                                         right half
+ LiPo+ ─ PTC 0.1 A ─ 10 Ω ─┐  pogo  ┌─ 10 Ω ─ PTC 0.1 A ─ LiPo+
+ GND ──────────────────────┴─(2 pins)─┴──────────────────── GND
+```
+
+* **Why the battery rail and not USB 5 V:** the nice!nano doesn't bring VBUS out to a header pin.
+  Its RAW pin is the battery rail, fed by its own charger. Passing 5 V across would need a second
+  USB-C port and charger on each PCB. Linking the battery rails needs only three cheap parts per half.
+* **How it charges:** the plugged-in nice!nano's charger feeds its own cell directly, and the other
+  cell through the 20 Ω total link resistance. The two cells stay within ~0.1 V of each other. The
+  nice!nano charges at about 100 mA, so two ~200 mAh cells take roughly 4–5 hours from flat. That's
+  slower than one, but it only has to happen once.
+* **Protection:** the 10 Ω resistors cap the equalising current when you join a full half to a flat
+  one (≤ ~0.1 A). Each PTC fuse trips if the exposed contacts get shorted, for example by a stray
+  magnet or a paperclip, and resets once the short is removed. Each cell's own protection board
+  stays in circuit as well.
+* **Power switches:** the link sits on the battery side of each power switch, so the cells
+  equalise even when both switches are off. To charge, the half you plug in must have its switch
+  **on**, the same as charging a single nice!nano today.
+* **Apart, on the desk:** each half charges from its own USB-C port as before.
+* **Parts:** a generic 2-pin right-angle magnetic pogo pair (spring pins on the left, flat targets on
+  the right), plus a 1206 PTC (0.1 A hold) and a 1206 10 Ω resistor on the bottom side of each half.
+  Pogo modules vary by vendor, so check the `chg_link` land pattern against the one you buy.
+  The case has a 6.6 mm wide slot in each join wall for it, open at the top so the PCB drops in.
+
 ## Electrical
 
 * MCU: nice!nano v2 (or any Pro Micro-footprint nRF52840). Battery → MSK-12C02 switch → RAW.
+  On the split boards, the battery also goes to the charge link (above).
 * Display: nice!view on the standard ZMK pins (CS = D1, MOSI = D2, SCK = D3), header order
   MOSI, SCK, VCC, GND, CS.
 * Matrix, split: rows D4–D8 (num, top, home, bottom, thumb), columns D21, D20, D19, D18, D15, D14
