@@ -57,19 +57,19 @@ controllers, screens, switches and caps.
 | 2 × LiPo 402030 | 10 | 10 | |
 | 60 × Sunset tactile switches | 59 | 59 | Choc v2 Brown on the MX route: 36 |
 | 54 × Choc keycaps (MBK-style) | 40 | 40 | |
-| JLC PCBs: 2 designs × 5 pcs, 2-layer, 1.2 mm | 30 | 30 | 2-layer is already the cheapest stack-up |
+| JLC PCBs: 2 designs × 5 pcs, 2-layer, 1.2 mm, lead-free HASL | 25 | 25 | Real quote, Nov 19: $12.70 per design |
 | JLC assembly: 2 of each design, setup, extended-part fees, parts | — | ~65 | Route A has no assembly at all |
-| US tariff on the JLC order, ~35% DDP, collected at checkout | ~11 | ~33 | Rate per JLC's March 2026 notice |
-| JLC shipping, DHL/UPS DDP to Kirkland | ~25 | ~25 | |
+| US tariff on the JLC order, ~35% DDP, collected at checkout | ~9 | ~32 | Rate per JLC's March 2026 notice |
+| JLC shipping, UPS Express Saver DDP to Kirkland | ~34 | ~34 | Quoted $26.08 for one design; both in one parcel ≈ $34. Global Standard Direct is $10–15 but takes 8–10 days |
 | THT parts: 100 × 1N4148, 2 slide switches, PTC + resistor | ~7 | — | Digikey/Mouser, domestic |
 | Charge-link pogo pair | 3 | 3 | |
 | Magnets (dock pack + join), dowels, inserts, screws | 20 | 20 | |
 | Magnetic viewing film | 8 | 8 | Optional: blaise can map the magnets with `kbdock-test.sh` instead |
 | Filament | 5 | 5 | Or a print service: MJF nylon from a US vendor, ~$80–150 delivered for the split and ~$70–140 for the mono. Resin, CNC and laser-cut options are in [case-fabrication.md](case-fabrication.md) |
 | US vendor shipping (controllers, switches, caps) | ~15 | ~15 | |
-| **First build** | **≈ $317** | **≈ $397** | |
+| **First build** | **≈ $319** | **≈ $400** | |
 | **Second build adds** | **≈ $230** | **≈ $230** | Spare PCBs, assembled boards and packs are reused |
-| **Two builds, each** | **≈ $274** | **≈ $314** | |
+| **Two builds, each** | **≈ $275** | **≈ $316** | |
 
 ### Monolithic (same parts, one controller and screen, needs a ≥ 300 mm printer bed)
 
@@ -79,7 +79,7 @@ controllers, screens, switches and caps.
 | **Second build adds** | **≈ $170** | **≈ $170** |
 | **Two builds, each** | **≈ $213** | **≈ $235** |
 
-The mono has one 290 × 108 mm design (~$25 for 5), one assembly order on route B (~$35 plus
+The mono has one 290 × 108 mm design ($20.90 for 5, quoted), one assembly order on route B (~$35 plus
 tariff), and one nice!nano and one nice!view. Its case is a single 295 mm part, so it needs a large
 printer or a print service (about +$50).
 
@@ -96,27 +96,40 @@ printer or a print service (about +$50).
 ## Where to order the PCBs (and assembly)
 
 Route A needs **bare boards only**, since nothing is surface-mount. That leaves the fab as the only
-thing to choose. Route B also needs SMD assembly. Prices are for one split set (left + right) or one
-mono board, delivered to Kirkland.
+thing to choose. Route B also needs SMD assembly.
 
-| Source | Made in | Route A: bare boards | Route B: assembly | US tariff | Notes |
-|---|---|---|---|---|---|
-| **JLCPCB** | China | **≈ $66 split / ≈ $59 mono** (5 of each design, ~35% duty and DHL included) | ≈ $65 + 35% | ~35%, prepaid (DDP) | Cheapest even with the tariff. Instant quote |
-| PCBWay | China | Similar to JLC, a little higher | Yes, from qty 1 | Same China rate | Alternative if JLC is out of stock |
-| **OSH Park** | Oregon, USA | **≈ $234 split / ≈ $243 mono** for 3 copies ($5/in², free US shipping). Purple, 1.6 mm, ENIG | No | None | Cheapest US option. Boards are 1.6 mm, not 1.2: re-export the case with `-D pcb_t=1.6` (the case grows 0.4 mm taller) |
-| Aisler | Germany | Quote needed (sets of 3) | Yes, from 1 board, THT and SMD | EU rate (lower than China) | Free worldwide shipping per its site. Upload the Gerbers for a price |
-| MacroFab | Houston, USA | Via their platform | Yes, no minimum order | None | Instant quote from files. Expect well above JLC: forum reports put US assembly at $50–200 per board for tiny runs |
-| CircuitHub / Screaming Circuits | MA / OR, USA | Via them | Yes | None | Same price bracket as MacroFab |
+**Real quotes, November 19, 2026.** The Gerber zips were uploaded to each fab's instant quote,
+without an account. Board sizes as the fabs read them: each half 139.65 × 108 mm, mono 290.3 × 108 mm.
+The MX-spaced zips have the same outlines and quoted identically at JLC, so these prices cover both
+variants. Delivery is to Kirkland, WA.
 
-**Cheapest reputable choice: JLCPCB, route A.** The tariff adds about $11 per order on bare boards,
-which is far less than the price gap to US fabs. **If you'd rather not order from China,
-OSH Park** is the cheapest US source, at about $170 more for the split. It doesn't do assembly,
-so that works only with route A. US assembly for route B (MacroFab, CircuitHub) would run several
-hundred dollars for two boards, so route B makes sense only at JLC.
+| Source | Made in | What you get | Split (left + right) | Mono | Shipping | US duty | Delivered, split / mono |
+|---|---|---|---|---|---|---|---|
+| **JLCPCB** | China | 5 of each design, 1.2 mm, green, lead-free HASL, 2-day build | $12.70 + $12.70 = **$25.40** | **$20.90** | UPS Express Saver DDP: $26.08 for one design (0.32 kg), $31.07 for the mono (0.53 kg), ≈ $34 for both halves in one parcel. Global Standard Direct: $10.09 / $14.36, 8–10 days | ~35% of the goods, prepaid at checkout: ≈ $9 / $7 | **≈ $68 / ≈ $59** (≈ $50 / ≈ $43 with Global Standard) |
+| **Aisler** | Germany | 3 of each design, 1.6 mm, green, lead-free HASL ("Beautiful Boards Budget"). 1.2 mm isn't offered, only 0.8 or 1.6 | €44.21 + €44.21 = **€88.42 ≈ $97** | **€76.79 ≈ $84** | Free worldwide, per Aisler. The checkout shows the carrier only after signing in | EU rate, 15%, likely billed by the carrier on delivery: ≈ $15 / $13 | **≈ $112 / ≈ $97** |
+| **OSH Park** | Oregon, USA | 3 of each design, 1.6 mm, purple, ENIG | $116.85 + $116.85 = **$233.70** | **$243.00** | Free in the US | None | **$234 / $243** |
+| PCBWay | China | Not quoted | Similar to JLC, a little higher | | | Same China rate | |
+| MacroFab | Houston, USA | Assembly, no minimum | Not quoted | | | None | Forum reports put US assembly at $50–200 per board for tiny runs |
+| CircuitHub / Screaming Circuits | MA / OR, USA | Assembly | Not quoted | | | None | Same bracket as MacroFab |
+
+Aisler prices are net of VAT (the 19% German VAT on its page doesn't apply to a US delivery) and
+converted at the ECB rate of 1.0968 USD per EUR (November 18). JLC computes its tariff only at
+checkout after sign-in, so the duty column uses the 35% rate from its tariff FAQ. JLC route B
+assembly wasn't quoted here; the ~$65 estimate above stands.
+
+**Cheapest: JLCPCB, route A, ≈ $68 for the split delivered by UPS in 2–4 days**, or about $50 if
+you can wait 8–10 days. It is also the only one of the three with 1.2 mm boards, which the case is
+drawn for. **Cheapest without China: Aisler, ≈ $112 for the split.** That is less than half of OSH
+Park's $234, though the halves arrive 3 apiece instead of 5. **OSH Park** costs the most but has
+no duty and no customs step at all.
+
+Aisler and OSH Park both make 1.6 mm boards, not 1.2: re-export the case with `-D pcb_t=1.6`
+(the case grows 0.4 mm taller). Aisler's 0.8 mm option would also work if the thinner board is
+stiff enough once the switches are soldered.
 
 Two things to check at checkout, because they move often. The China tariff stack changed several
 times in 2026: a Section 122 baseline expired in July, and PCB exclusions ended on November 10.
-And for exact US prices, upload the Gerber zips to the vendors' instant quotes; they need an account.
+The EU rate is the 15% from the EU–US framework that took effect in July 2026.
 
 ## Alternative: a custom case around an off-the-shelf wireless PCB
 
@@ -176,6 +189,7 @@ if being able to swap switches is worth ~$40 per keyboard over two builds.
 ## Sources
 
 - JLCPCB, [U.S. tariff policy FAQ](https://jlcpcb.com/help/article/us-tariff-policy-faq) (updated Oct 29, 2026) and [logistics update](https://jlcpcb.com/news/logistics-update-us-china-tariff) (March 17, 2026 rates: PCB 35%, SMT 35%; DDP for individual US orders). The FAQ also lists rate components that changed during 2026, so confirm at checkout.
+- Fab quotes (Nov 19, 2026): [JLCPCB instant quote](https://cart.jlcpcb.com/quote), [OSH Park](https://oshpark.com/), [Aisler](https://aisler.net/). EU rate: [Thomson Reuters, EU–US tariff framework takes effect](https://www.thomsonreuters.com/en-us/help/onesource-global-trade/regulatory-insights/2026/july-16th/the-eu-us-tariff-framework-takes-effect.html). EUR/USD: ECB reference rate, Nov 18, 2026.
 - Switch prices: [splitkb Sunset](https://splitkb.com/products/sunset-kailh-low-profile-choc-switches), [kbd.news Sunset offers](https://kbd.news/switch/lowprokb-Choc-V1-Sunset-switch-65.html), [kbd.news Choc v2 Brown](https://kbd.news/switch/Kailh-Choc-V2-Brown-456.html), [Thock King Deep Sea](https://www.thockking.com/products/kailh-deep-sea-low-profile-choc-silent-tactile-switches), [CannonKeys KS-33 Chocolate](https://cannonkeys.com/products/gateron-ks-33-low-profile-2-0-chocolate-tactile-switch), [splitkb Ambients](https://splitkb.com/collections/all/products/ambients-kailh-low-profile-choc-switches).
 - US fabs and assembly: [OSH Park 2-layer service](https://docs.oshpark.com/services/two-layer/) ($5/in² for 3 copies, made in the US), [Maskset tariff math](https://www.maskset.net/blog/2025/05/15/tariff-math-for-two-layer-prototype-pcbs-oshpark-vs-imported-fabs/), [lcamtuf vendor comparison](https://blog.coredump.cx/p/comparing-hobby-pcb-vendors) (Jan 2026 update), [Hackaday on US prototyping](https://hackaday.com/2025/07/06/does-made-in-america-make-sense-for-pcb-prototyping/), [Octopart 2026 tariff reset](https://octopart.com/pulse/p/tariff-reset-pcb-workarounds), [Aisler assembly](https://aisler.net/en/products/assembly), [MacroFab](https://www.macrofab.com/platform), [KiCad forum on US low-quantity assembly](https://forum.kicad.info/t/usa-single-low-amount-assembly-anyone-got-any-pointers-for-me/23048), [Contextual Electronics forum](https://forum.contextualelectronics.com/t/recommendations-for-pcb-assembly-in-usa/5638).
 - Off-the-shelf boards: [Typeractive Corne](https://typeractive.xyz/products/corne-partially-assembled-pcb), [Keebmaker](https://keebmaker.com), [Beekeeb HSHS52](https://shop.beekeeb.com/products/pre-soldered-wireless-hshs52-choc-v2-split-keyboard), [Kriscables Corne Choc](https://kriscables.com/product/corne-choc-pcb/), [Keebart Sofle Choc Pro](https://www.etsy.com/listing/1754988054/sofle-choc-pro-split-keyboard-ergonomic).
