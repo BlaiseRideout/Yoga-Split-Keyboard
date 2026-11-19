@@ -6,8 +6,8 @@ module.exports = {
   body: p => `
   (module LED_D3.0mm (layer F.Cu) (tedit 6500000)
     ${p.at}
-    (fp_text reference "${p.ref}" (at 0 -2.6 ${p.r}) (layer F.SilkS) ${p.ref_hide} (effects (font (size 0.6 0.6) (thickness 0.1))))
-    (fp_text value "3mm LED ${p.color}" (at 0 2.6 ${p.r}) (layer F.Fab) (effects (font (size 0.6 0.6) (thickness 0.1))))
+    (fp_text reference "${p.ref}" (at 0 -2.8 ${p.r}) (layer F.SilkS) ${p.ref_hide} (effects (font (size 0.8 0.8) (thickness 0.12))))
+    (fp_text value "3mm LED ${p.color}" (at 0 2.6 ${p.r}) (layer F.Fab) (effects (font (size 0.8 0.8) (thickness 0.12))))
     (fp_circle (center 0 0) (end 1.5 0) (layer F.Fab) (width 0.1))
     (fp_arc (start 0 0) (end -1.32 -1.32) (angle 270) (layer F.SilkS) (width 0.12))
     (fp_line (start -1.32 -1.32) (end -1.32 1.32) (layer F.SilkS) (width 0.12))

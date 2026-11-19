@@ -507,11 +507,11 @@
         "pattern": "MR3"
       },
       {
-        "netclass": "Default",
+        "netclass": "Power",
         "pattern": "RAW"
       },
       {
-        "netclass": "Default",
+        "netclass": "Power",
         "pattern": "GND"
       },
       {
@@ -519,7 +519,7 @@
         "pattern": "RST"
       },
       {
-        "netclass": "Default",
+        "netclass": "Power",
         "pattern": "VCC"
       },
       {
@@ -535,7 +535,7 @@
         "pattern": "SCK"
       },
       {
-        "netclass": "Default",
+        "netclass": "Power",
         "pattern": "BAT_P"
       },
       {

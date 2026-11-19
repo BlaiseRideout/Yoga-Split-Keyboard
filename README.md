@@ -40,7 +40,7 @@ A ZMK-powered, low-profile, wireless columnar keyboard that drops onto the lower
 | `case/case.scad`, `case/outlines/`, `case/stl/` | Parametric OpenSCAD case, its DXF inputs, and exported STLs (tray and frame for left, right and mono). `-D 'spacing="mx"'` builds the MX variant from `case/outlines-mx/` into `case/stl-mx/` |
 | `case/stl*/frame_*_leds.stl` | Top frames with three status-LED holes instead of the nice!view window (`-D 'display="leds"'`) |
 | `config/`, `build.yaml` | ZMK user config: shields `yoga_split_left/right` and `yoga_mono`, plus blaise's Cannonkeys Link keymap ported to 54 keys (home row mods, NUM/NAV/FUN/MOUSE/BOARD layers; `tools/port_link_keymap.py`) and build matrix. Builds against the same `caps-word-v0.3` ZMK fork as the Link. `.github/workflows/build-zmk.yml` builds the firmware on push |
-| `docs/` | [Design notes and assumptions](docs/design.md), [cost comparison](docs/cost-comparison.md), renders |
+| `docs/` | [Design notes and assumptions](docs/design.md), [cost comparison](docs/cost-comparison.md), [PCB review](docs/pcb-review.md), renders |
 | `tools/` | Helper scripts: board prep / DSN export, ZMK generation from ergogen points, fab CSVs |
 
 ## Status
@@ -49,7 +49,7 @@ A ZMK-powered, low-profile, wireless columnar keyboard that drops onto the lower
 |---|---|
 | Fit study and layout | Done |
 | PCB schematic / netlist and placement (left, right, mono; Choc and MX) | Done |
-| PCB routing | Done with Freerouting 2.1. All six boards are 100% routed with 0 DRC errors (only cosmetic silkscreen warnings). Worth a look in KiCad before ordering: there's no ground pour, and track widths are 0.25 mm signal / 0.4 mm power |
+| PCB routing | Done with Freerouting 2.1. All six boards are 100% routed with 0 DRC errors (only cosmetic silkscreen warnings). GND pours on both layers with stitching vias, 0.25 mm signal / 0.4 mm power tracks. See the [PCB review](docs/pcb-review.md) |
 | Gerbers | Done (`pcb/gerbers/`, `pcb-mx/gerbers/`), untested at a fab |
 | Case | Done, but untested on a printer |
 | Docking magnet positions | **Assumed.** The laptop's EC detects the keyboard magnetically (two positions, no Bluetooth check), so the magnets have to match the stock ones. Map them with viewing film or the dotfiles' `kbdock-test.sh` (see [docs/design.md](docs/design.md#docking)) |
@@ -68,6 +68,7 @@ openscad -D 'variant="left"' -D 'part="tray"' -o case/stl/tray_left.stl case/cas
 python3 tools/prep_dsn.py build/ergogen/pcbs/left.kicad_pcb pcb/left/yoga_left.kicad_pcb left.dsn
 java -jar freerouting-2.1.0.jar --gui.enabled=false -de left.dsn -do left.ses -mp 200
 python3 tools/import_ses.py pcb/left/yoga_left.kicad_pcb left.ses left-drc.txt   # adds tracks, runs DRC
+python3 tools/add_ground.py pcb/left/yoga_left.kicad_pcb left-drc.txt        # GND pours, stitching vias, DRC
 tools/export_gerbers.sh pcb/left/yoga_left.kicad_pcb pcb/gerbers/yoga_left-gerbers.zip
 python3 tools/check_matrix.py pcb/*/*.kicad_pcb                 # one diode per key, col2row (NKRO)
 # SMT build only: python3 tools/gen_fab.py hotswap-smd/pcb/left/yoga_left.kicad_pcb hotswap-smd/pcb/fab/yoga_left
