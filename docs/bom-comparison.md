@@ -18,14 +18,14 @@ variants, not as quotes.
 | LiPo pouch cell, 402030 (~200 mAh) per controller | 2 | 1 (or a 403040 for ~500 mAh) | ~$5 | 10 | 5–7 |
 | PCB fab, JLCPCB, 5 pcs, 1.2 mm FR4 | 2 designs, ~140 × 108 mm | 1 design, 290 × 108 mm | — | ~30 | ~25 |
 | PCB assembly (diodes + sockets, bottom side, 2 boards) | 2 orders | 1 order | — | ~45 | ~30 |
-| Case print (PLA/PETG ~120 g, or JLC3DP resin) | 2 trays + 2 frames | 1 tray + 1 frame | — | 5 (self) / ~45 (service) | 5 (self, needs ≥300 mm bed) / ~55 (service) |
+| Case print (PLA/PETG ~120 g, or a service: see [case-fabrication.md](case-fabrication.md)) | 2 trays + 2 frames | 1 tray + 1 frame | — | 5 (self) / 60–95 (service, delivered) | 5 (self, needs ≥300 mm bed) / 75–125 (service, delivered) |
 | Docking magnets, 6 × 1.5 mm N52 (pack of 50) | ≤ 26 used | ≤ 26 used | — | 8 | 8 |
 | Joining magnets, 6 × 3 mm N52 | 6 | 0 | ~$0.40 | 3 | 0 |
 | Alignment dowels, 3 × 6 mm steel | 2 | 0 | — | 3 | 0 |
 | M2 heat-set inserts + M2 × 4 screws | 12 | 12 | — | 6 | 6 |
 | Magnetic viewing film (one-off, for mapping the stock keyboard) | 1 | 1 | ~$8 | 8 | 8 |
 | **Total, self-printed case** | | | | **≈ $289** | **≈ $216** |
-| **Total, service-printed case** | | | | **≈ $329** | **≈ $266** |
+| **Total, service-made case** (MJF nylon trays + FR4 frames, delivered to Tokyo) | | | | **≈ $345–380** | **≈ $285–335** |
 
 The split version costs about **$70 more**. Almost all of that is the second nice!nano and
 nice!view ($42) plus the second PCB design and assembly order (~$20). Cheap nRF52840 "SuperMini"
@@ -33,6 +33,9 @@ clones (~$6 each) bring both totals down by about $19 per controller.
 
 Hand-soldering the 54 diodes and sockets instead of paying for assembly saves $30–45. That's
 about 216 SMD joints, which takes 2–3 hours with a fine iron.
+
+For resin, CNC aluminum and laser-cut options, with lead times to Tokyo and the design changes each one
+needs, see [case-fabrication.md](case-fabrication.md).
 
 ## Build complexity
 
