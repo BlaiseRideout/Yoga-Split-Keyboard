@@ -65,7 +65,7 @@ controllers, screens, switches and caps.
 | Charge-link pogo pair | 3 | 3 | |
 | Magnets (dock pack + join), dowels, inserts, screws | 20 | 20 | |
 | Magnetic viewing film | 8 | 8 | Optional: blaise can map the magnets with `kbdock-test.sh` instead |
-| Filament | 5 | 5 | |
+| Filament | 5 | 5 | Or a print service: MJF nylon from a US vendor, ~$80–150 delivered for the split and ~$70–140 for the mono. Resin, CNC and laser-cut options are in [case-fabrication.md](case-fabrication.md) |
 | US vendor shipping (controllers, switches, caps) | ~15 | ~15 | |
 | **First build** | **≈ $317** | **≈ $397** | |
 | **Second build adds** | **≈ $230** | **≈ $230** | Spare PCBs, assembled boards and packs are reused |
