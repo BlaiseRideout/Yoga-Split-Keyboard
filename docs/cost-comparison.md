@@ -154,6 +154,26 @@ What it gives up:
 No mass-produced wireless 4-row Choc board was found that's both pre-soldered and confirmed to fit.
 For the 4-row layout with charge pass-through, THT stays the cheapest.
 
+## 3-row variant: 42 keys instead of 54
+
+The [3-row variant](design.md#3-row-variant-angled-key-blocks-ergogen-3row-pcb-3row) drops the number
+row (numbers are on the NUM layer of the ported keymap) and angles each key block 10° inward. Same
+controller, screen or LEDs, charge link, case and docking. Choc spacing only so far.
+
+| Per build | 4-row (54 keys) | 3-row (42 keys) | Saves |
+|---|---|---|---|
+| Sunset tactile switches, 10-packs | 60 = $59 | 50 = $49 | **$10** |
+| Choc keycaps (MBK-style) | 54 = $40 | 42 = $31 | **$9** |
+| Diodes (THT) | 100-pack, ~$2 | same pack | — |
+| JLC assembly parts (SMT: 12 fewer sockets and diodes per pair) | | | ~$4 (SMT only) |
+| Joints to solder (THT split) | ~220 | ~172 | 48 fewer, about 25 minutes |
+| **Split, first build** | THT ≈ $319 / SMT ≈ $400 | THT **≈ $300** / SMT **≈ $377** | **~$19–23** |
+| **Mono, first build** | THT ≈ $255 / SMT ≈ $300 | THT **≈ $236** / SMT **≈ $277** | **~$19–23** |
+
+PCB prices don't change: the boards are the same size, and JLC prices by area and quantity.
+The saving is real but small, about 6%. The bigger reasons to pick 3 rows are the angled blocks
+and a shorter reach, not cost.
+
 ## Ways to cut more (either build)
 
 | Change | Split saves | Mono saves | Trade-off |
@@ -165,6 +185,7 @@ For the 4-row layout with charge pass-through, THT stays the cheapest.
 | Generic AliExpress Choc keycaps (~$0.30) | ~$24 | ~$24 | Thinner plastic, legends vary. Tariffs apply |
 | Choc v2 Brown on the MX route instead of Sunset | ~$23 | ~$23 | MX spacing and MX-stem low-profile caps |
 | Skip the viewing film, map the magnets with `kbdock-test.sh` | $8 | $8 | Needs the Linux setup from the dotfiles |
+| 3-row variant (42 keys) | ~$19 | ~$19 | No number row; numbers on the NUM layer. See above |
 | **Leanest split** (THT + SuperMini + one screen + generic caps + no film) | **≈ $233** first build, **≈ $150** second | | |
 | **Leanest mono** (THT + SuperMini + generic caps + no film) | | **≈ $206** first, ≈ $125 second | |
 

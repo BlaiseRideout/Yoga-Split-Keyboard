@@ -58,6 +58,33 @@ The matrix, pins and nets are identical to the Choc boards, so the **same ZMK sh
 run both. Only the physical layout ZMK Studio draws is the Choc one. The Choc hotswap socket
 (CPG135001S30) fits Choc v2 too.
 
+## 3-row variant: angled key blocks (`ergogen-3row/`, `pcb-3row/`)
+
+![3-row split with angled key blocks](img/case_3row.png)
+
+3 × 6 keys plus 3 thumb keys per half (42 keys, the Corne layout), with each half's key block
+rotated **10° inward** so the column tops lean toward the centre, the way your hands sit when
+your elbows are relaxed. Choc spacing.
+
+* **Generated, not hand-edited:** `tools/make_3row.py [angle] [x] [y]` writes
+  `ergogen-3row/config.yaml` from the 4-row config. It drops the number row, renumbers the rows,
+  rotates the key block and keeps the mirror axis on the split line. Try another angle by
+  re-running it with a different number (the PCB, case outlines and firmware then need
+  regenerating).
+* **Unchanged:** the centre area (nice!nano, nice!view or status LEDs, battery, charge link, reset,
+  power switch), the mounting holes, the join faces and the docking magnet sites. The envelope is
+  the same 295.3 × 113 mm, so it docks the same way.
+* **Matrix:** split halves use 4 rows × 6 columns (rows on D4–D7). The mono uses 6 rows × 7
+  columns: left rows 0–2, right rows 3–5, and the six thumb keys in column 7. Still one diode per
+  key, so full NKRO.
+* **Firmware:** shields `yoga3_split_left`, `yoga3_split_right` and `yoga3_mono`. The keymaps come
+  from the 4-row ones minus the number row (`tools/port_3row_keymap.py`). Nothing is lost except
+  the base layer's number row, because the NUM layer already has the digits on the home row and the
+  symbols above them. The GAME layer loses its 1–5 keys.
+* **Space:** rotating the blocks leaves an empty triangle in front of the outer columns. The case
+  still covers the full footprint, so it docks and fills the folio the same way.
+* **Case:** `-D 'rows=3'` (`case/stl-3row/`), with the same tray features and frame options.
+
 ## Stack-up (z from the laptop screen up)
 
 | Layer | Thickness | Top at |

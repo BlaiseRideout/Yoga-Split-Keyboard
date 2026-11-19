@@ -1,0 +1,16 @@
+if SHIELD_YOGA3_SPLIT_LEFT
+
+config ZMK_KEYBOARD_NAME
+    default "Yoga Split 3R"
+
+config ZMK_SPLIT_ROLE_CENTRAL
+    default y
+
+endif
+
+if SHIELD_YOGA3_SPLIT_LEFT || SHIELD_YOGA3_SPLIT_RIGHT
+
+config ZMK_SPLIT
+    default y
+
+endif

@@ -11,7 +11,7 @@ import re, sys, os
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 ANGLE = float(sys.argv[1]) if len(sys.argv) > 1 else 10
 SX = float(sys.argv[2]) if len(sys.argv) > 2 else -3
-SY = float(sys.argv[3]) if len(sys.argv) > 3 else 14
+SY = float(sys.argv[3]) if len(sys.argv) > 3 else 17
 s = open(os.path.join(ROOT, 'ergogen/config.yaml')).read()
 
 s = s.replace('# Yoga Book 9i Gen 9 low-profile split keyboard',
@@ -52,6 +52,12 @@ for k, t in enumerate(['tucky', 'home', 'reachy']):
 
 # --- rotate the key block: matrix zone anchored at (SX, SY), rotated -ANGLE (clockwise on the left)
 s = s.replace('    matrix:\n      columns:', f'    matrix:\n      anchor: {{shift: [{SX}, {SY}], rotate: {-ANGLE}}}\n      columns:')
+
+# --- mirror axis stays at x = cx: matrix_inner_bottom (local (90, 3)) moves with the rotation
+import math
+a = math.radians(ANGLE)
+inner_x = SX + 90 * math.cos(a) + 3 * math.sin(a)
+s = s.replace('    distance: 82   # puts the mirror axis at x = cx', f'    distance: {2 * (131 - inner_x):.3f}   # puts the mirror axis at x = cx')
 
 # --- controller pins: rows R0-R3 only; mono MR0-5 x MC0-6
 s = s.replace('          P8: R4\n', '')

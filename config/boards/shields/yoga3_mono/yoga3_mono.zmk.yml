@@ -1,0 +1,7 @@
+file_format: "1"
+id: yoga3_mono
+name: Yoga Mono 3-row
+type: shield
+url: https://github.com/BlaiseRideout/yoga-split-keyboard
+requires: [pro_micro]
+features: [keys, display, studio]

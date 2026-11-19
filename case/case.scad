@@ -7,6 +7,7 @@
 //   openscad -D 'variant="mono"'  -D 'part="tray"'  -o tray_mono.stl  case.scad
 // variant: "left" | "right" | "mono"     part: "tray" | "frame" | "assembly"
 // spacing: "choc" (18 x 17 mm, ergogen/) | "mx" (19.05 mm, ergogen-mx/)
+// rows:    4 (default) | 3 (ergogen-3row/, case/stl-3row/; centre parts and holes as the Choc 4-row)
 // display: "view" (nice!view window) | "leds" (status-LED holes, *_leds.stl)
 
 variant = "left";
@@ -14,7 +15,8 @@ part = "assembly";
 spacing = "choc";
 display = "view";   // "view": nice!view window | "leds": three light holes for the 3 mm status LEDs
 is_mx = spacing == "mx";
-odir = is_mx ? "outlines-mx/" : "outlines/";
+rows = 4;            // 4: number row (default) | 3: 3 x 6 + 3, key blocks angled inward (Choc only)
+odir = is_mx ? "outlines-mx/" : rows == 3 ? "outlines-3row/" : "outlines/";
 
 /* ---------- stack-up (z = 0 is the bottom face that sits on the laptop's lower screen) ---------- */
 floor_t      = 1.0;   // case floor
