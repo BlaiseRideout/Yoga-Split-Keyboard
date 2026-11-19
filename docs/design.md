@@ -48,30 +48,64 @@ Ways to get thinner, roughly in order of payoff:
    needs a new footprint and isn't designed here.
 3. Mount the nice!nano face-down without sockets and use a 1 mm FR4 frame instead of print: −1 mm.
 
-## Docking (assumption: the magnet positions aren't published)
+## Docking
 
-Lenovo's user guides, both hardware maintenance manuals (13IRU8 and 13IMU9), and reviews all say
-the keyboard is "held in place by magnets". None of them gives magnet positions or says what the
-four hall sensors detect. No teardown of the keyboard was found. What we know is the behaviour:
-place the keyboard on the upper or lower half of the bottom screen, and Windows shows a touchpad
-or a widget bar.
+### What the laptop actually detects (from blaise's dotfiles)
 
-So the case has **11 candidate docking-magnet pockets per half** (22 total), each 6.2 mm in
-diameter and 1.6 mm deep, for 6 × 1.5 mm N52 discs. They sit along the back edge, the front edge
-and the outer edge, and they're opened from the inside so the bottom face stays smooth on the glass.
+blaise runs Linux on this Yoga Book and has written up how it detects the keyboard
+([dotfiles `docs/yoga-book/kbdock.md`, `hardware.md`, `yoga/kbdock-dkms/lenovo-yb9-kbdock.c`](https://github.com/BlaiseRideout/dotfiles)):
 
-**How to map the real positions (≈10 minutes):**
+* **Detection is done by the laptop's embedded controller, not over Bluetooth.** The EC keeps a 2-bit
+  field `BKBD` and raises WMI event `0xEB` (GUIDs `806BD2A2-…` and `E7F300FA-…`) when it changes.
+  The keyboard itself is a plain Bluetooth HID device (`17ef:616a`), and its USB-C port only charges.
+  Nothing in that chain checks the keyboard's identity, so a third-party keyboard that reproduces the
+  magnetic field gets the same docking behaviour on Windows and Linux.
+* **There are two docked positions, and the EC tells them apart:** `1` = near the hinge, `2` = at
+  the front edge, `0` = away. Sliding between the two reads `0` for about a second on the way. So
+  the keyboard's magnets have to trigger a different sensor (or set of sensors) in each position.
+* **Footprint check:** in the touchpad write-up, the keyboard's edge sits at **0.63 of the bottom
+  screen's height** when it's docked near the hinge. 0.63 × 179.1 mm ≈ 113 mm, which matches the
+  113 mm depth this design uses.
+* The hinge sensor's `keyboard` channel always reads 0, and one hall sensor is the lid sensor. That
+  leaves the others as the likely dock sensors. Their positions under the panel are still not published.
+
+### So the magnets matter, and their positions are still an assumption
+
+The case has **13 candidate docking-magnet pockets per half** (26 total), each 6.2 mm in diameter
+and 1.6 mm deep, for 6 × 1.5 mm N52 discs. They sit along the back edge, the front edge and the
+outer edge, plus two in the controller area near the centre line. They're opened from the inside,
+so the bottom face stays smooth on the glass.
+
+### Mapping the real positions
+
+**Option A: magnetic viewing film (≈10 minutes, no laptop needed).**
 1. Lay magnetic viewing film on the underside of the stock keyboard and trace the dark spots
    (pole boundaries) onto paper at 1:1.
 2. Hold a compass over each spot and note N/S.
 3. Overlay the tracing on `docs/img/case_bottom.png` (or print `case/outlines/envelope.dxf` 1:1)
    and fill the pockets that line up. If a spot falls between pockets, add its position to
    `dock_left` in `case/case.scad` and re-export.
-4. Match polarity, so the hall sensors see the same field the stock keyboard gives them.
 
-If the touchpad / widget-bar switch turns out to come from Lenovo's software detecting the stock
-keyboard's Bluetooth ID, not from the magnets, this keyboard still docks and holds. You'd then
-toggle the virtual touchpad with Lenovo's own gesture or hotkey.
+**Option B: let the laptop tell you (most reliable).** On Linux with the dotfiles' `lenovo-yb9-kbdock`
+module loaded, run `sudo ~/.dotfiles/yoga/kbdock-test.sh watch`. It prints every change of
+`keyboard_position`.
+1. With the stock keyboard away, slide a single 6 × 1.5 mm magnet (taped to a card) slowly over
+   the bottom screen. Try both faces. Mark every spot where the reading flips to 1 or 2. Those are
+   the dock sensors and the polarity they want.
+2. Check the result with the printed case: populate the matching pockets and confirm it reads `1`
+   near the hinge, `2` at the front edge, and `0` when lifted.
+
+### Software side
+
+* The dotfiles' dock handling (`yoga-posture`, the virtual touchpad, the on-screen keyboard) reads
+  the EC's `keyboard_position`. It doesn't care which keyboard is docked, so it works with this one
+  unchanged.
+* The dotfiles' keyd home-row-mod config matches only the stock keyboard (`[ids] 17ef:616a`), so it
+  won't touch this board. This board runs the same home row mods in firmware: `config/*.keymap` is
+  the Cannonkeys Link keymap ported by `tools/port_link_keymap.py`.
+
+Whichever way you map them, **match the polarity**. A hall switch that's set off by a south pole
+ignores a north pole.
 
 ## Split joining
 

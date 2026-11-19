@@ -19,7 +19,7 @@ variants, not as quotes.
 | PCB fab, JLCPCB, 5 pcs, 1.2 mm FR4 | 2 designs, ~140 × 108 mm | 1 design, 290 × 108 mm | — | ~30 | ~25 |
 | PCB assembly (diodes + sockets, bottom side, 2 boards) | 2 orders | 1 order | — | ~45 | ~30 |
 | Case print (PLA/PETG ~120 g, or JLC3DP resin) | 2 trays + 2 frames | 1 tray + 1 frame | — | 5 (self) / ~45 (service) | 5 (self, needs ≥300 mm bed) / ~55 (service) |
-| Docking magnets, 6 × 1.5 mm N52 (pack of 50) | ≤ 22 used | ≤ 22 used | — | 8 | 8 |
+| Docking magnets, 6 × 1.5 mm N52 (pack of 50) | ≤ 26 used | ≤ 26 used | — | 8 | 8 |
 | Joining magnets, 6 × 3 mm N52 | 6 | 0 | ~$0.40 | 3 | 0 |
 | Alignment dowels, 3 × 6 mm steel | 2 | 0 | — | 3 | 0 |
 | M2 heat-set inserts + M2 × 4 screws | 12 | 12 | — | 6 | 6 |

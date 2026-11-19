@@ -26,7 +26,7 @@ A ZMK-powered, low-profile, wireless columnar keyboard that drops onto the lower
 | `pcb/{left,right,mono}/` | KiCad boards (KiCad 7 format, opens in 7, 8 and 9) with footprints placed and netlisted. **Not routed yet**, see *Status* |
 | `pcb/fab/` | JLCPCB BOM and CPL for the machine-assembled parts (diodes, hotswap sockets, power switch, reset button) |
 | `case/case.scad`, `case/outlines/`, `case/stl/` | Parametric OpenSCAD case, its DXF inputs, and exported STLs (tray and frame for left, right and mono) |
-| `config/`, `build.yaml` | ZMK v0.3 user config: shields `yoga_split_left/right` and `yoga_mono`, keymap, and build matrix. `.github/workflows/build-zmk.yml` builds the firmware on push |
+| `config/`, `build.yaml` | ZMK user config: shields `yoga_split_left/right` and `yoga_mono`, plus blaise's Cannonkeys Link keymap ported to 54 keys (home row mods, NUM/NAV/FUN/MOUSE/BOARD layers; `tools/port_link_keymap.py`) and build matrix. Builds against the same `caps-word-v0.3` ZMK fork as the Link. `.github/workflows/build-zmk.yml` builds the firmware on push |
 | `docs/` | [Design notes and assumptions](docs/design.md), [BOM and complexity comparison](docs/bom-comparison.md), renders |
 | `tools/` | Helper scripts: board prep / DSN export, ZMK generation from ergogen points, fab CSVs |
 
@@ -39,7 +39,7 @@ A ZMK-powered, low-profile, wireless columnar keyboard that drops onto the lower
 | PCB routing | **To do.** Run Freerouting on the DSN from `tools/prep_dsn.py`, or route by hand. The 27-key halves are straightforward |
 | Gerbers | After routing |
 | Case | Done, but untested on a printer |
-| Docking magnet positions | **Assumed.** Map them on the stock keyboard with magnetic viewing film (see [docs/design.md](docs/design.md#docking-assumption-the-magnet-positions-arent-published)) |
+| Docking magnet positions | **Assumed.** The laptop's EC detects the keyboard magnetically (two positions, no Bluetooth check), so the magnets have to match the stock ones. Map them with viewing film or the dotfiles' `kbdock-test.sh` (see [docs/design.md](docs/design.md#docking)) |
 | ZMK firmware | Written, and built by the workflow in CI |
 
 ## Regenerating

@@ -46,7 +46,8 @@ holes_right = [for (h = holes_left) [mx(h[0]), h[1]]];
 // map them with magnetic viewing film and fill only the matching pockets (see docs/docking.md).
 dock_left   = [[-9,71],[20,71],[40,71],[75,71],[110,71],
                [-10.5,40],[-10.5,10],
-               [-6,-32.5],[20,-32.5],[46,-32.5],[110,-32.5]];
+               [-6,-32.5],[20,-32.5],[46,-32.5],[110,-32.5],
+               [119,2],[121,38]];   // centre area, under the battery / controller
 dock_right  = [for (p = dock_left) [mx(p[0]), p[1]]];
 
 nano_x      = variant == "left" ? 113 : variant == "right" ? 149 : 131;
