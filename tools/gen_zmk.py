@@ -62,7 +62,10 @@ def physical(label, tname):
         cxu, cyu = (p['x'] - x0) / U, (y1 - p['y']) / U
         x, y = cxu - 0.5, cyu - 0.5
         r = -p['r']
-        keys.append(f'<&key_physical_attrs 100 100 {round(x*100):>5} {round(y*100):>5} {round(r*100):>5} {round(cxu*100):>5} {round(cyu*100):>5}>')
+        def n(v):  # devicetree cells: negative numbers must be parenthesised
+            v = round(v * 100)
+            return f'{v:>7}' if v >= 0 else f'{f"({v})":>7}'
+        keys.append(f'<&key_physical_attrs 100 100 {n(x)} {n(y)} {n(r)} {n(cxu)} {n(cyu)}>')
     body = '\n            , '.join(keys)
     return f'''    {label}: {label} {{
         compatible = "zmk,physical-layout";
