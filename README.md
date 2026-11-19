@@ -25,7 +25,7 @@ A ZMK-powered, low-profile, wireless columnar keyboard that drops onto the lower
 * **Two PCB routes:** all through-hole (default, no SMD soldering and no JLC assembly) or
   hotswap with JLC assembly (`hotswap-smd/`). Both are fully diode-per-key for n-key rollover.
 * **Cost:** see [docs/cost-comparison.md](docs/cost-comparison.md). A first split build is about
-  $317 (through-hole) or $397 (hotswap), delivered to the US including tariffs. The leanest split is about $233.
+  $319 (through-hole) or $400 (hotswap), delivered to the US including tariffs. The leanest split is about $233.
 
 ## Repository layout
 
