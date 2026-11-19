@@ -18,6 +18,8 @@ A ZMK-powered, low-profile, wireless columnar keyboard that drops onto the lower
 * **MX-spaced variant:** the same layout at 19.05 mm for Choc v2 / KS-33 switches with MX-stem
   keycaps also fits ([details](docs/design.md#mx-spaced-variant-ergogen-mx-pcb-mx-case-mx)). It uses
   the same firmware.
+* **Wired or wireless:** USB-C on the left half (or the mono) works as a wired keyboard, with
+  Bluetooth otherwise. `&out OUT_TOG` switches by hand ([details](docs/design.md#wired-usb-mode)).
 * **One cable charges both halves** while they're joined, through a magnetic pogo link in the join
   wall ([how](docs/design.md#charging-both-halves-from-one-cable-split-only)).
 * **Two PCB routes:** all through-hole (default, no SMD soldering and no JLC assembly) or

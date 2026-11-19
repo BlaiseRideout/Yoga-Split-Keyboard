@@ -173,6 +173,21 @@ so plugging USB into **either** half charges **both**.
   Pogo modules vary by vendor, so check the `chg_link` land pattern against the one you buy.
   The case has a 6.6 mm wide slot in each join wall for it, open at the top so the PCB drops in.
 
+## Wired (USB) mode
+
+* **Works out of the box.** ZMK enables USB HID on the central (the left half, or the mono), and the
+  nice!nano's USB-C carries keyboard data as well as charge. When a USB host is connected, ZMK sends
+  over USB; otherwise it uses Bluetooth. `&out OUT_TOG` on the BOARD layer (the key next to
+  `BT_SEL 4`) switches between them by hand, for example to stay on Bluetooth while charging from a
+  laptop port. NKRO works over USB too.
+* **Port access:** the case has a 12.5 × 6.5 mm USB-C opening in the **back edge** of each half
+  (and of the mono), right behind the controller. So a cable fits while the board is docked: near
+  the hinge, it runs back toward the hinge; at the front edge, it runs over the lower screen.
+* **Split caveat:** in stock ZMK only the left half talks USB. The right half still reaches the left
+  over Bluetooth, even when the left is wired. So a wired split still needs the right half charged.
+  Joined, the charge link keeps both halves topped up from the one cable. The mono has no such caveat.
+* Plug the cable into the **left** half for wired typing. Plugging it into the right half only charges.
+
 ## Electrical
 
 * MCU: nice!nano v2 (or any Pro Micro-footprint nRF52840). Battery → MSK-12C02 switch → RAW.
