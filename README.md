@@ -38,7 +38,7 @@ A ZMK-powered, low-profile, wireless columnar keyboard that drops onto the lower
 | `ergogen-mx/`, `pcb-mx/` | The MX-spaced (19.05 mm) variant: config, boards, Gerbers. `ergogen-mx/footprints` links to `ergogen/footprints` |
 | `hotswap-smd/` | SMT build: hotswap sockets and SMD parts placed by JLC. Its ergogen configs, KiCad boards, Gerbers, and JLC BOM/CPL (`fab/`), for Choc and MX |
 | `case/case.scad`, `case/outlines/`, `case/stl/` | Parametric OpenSCAD case, its DXF inputs, and exported STLs (tray and frame for left, right and mono). `-D 'spacing="mx"'` builds the MX variant from `case/outlines-mx/` into `case/stl-mx/` |
-| `case/stl-open/`, `case/stl-mx-open/` | The frameless style (`-D 'style="open"'`): a low tray with the PCB screwed in, plus a small cover over the controller. See [case styles](docs/design.md#case-styles-full-frame-or-tray--cover). `*_leds.stl` frames and covers have status-LED holes instead of the nice!view window |
+| `case/stl*/frame_*_leds.stl` | Top frames with three status-LED holes instead of the nice!view window (`-D 'display="leds"'`) |
 | `config/`, `build.yaml` | ZMK user config: shields `yoga_split_left/right` and `yoga_mono`, plus blaise's Cannonkeys Link keymap ported to 54 keys (home row mods, NUM/NAV/FUN/MOUSE/BOARD layers; `tools/port_link_keymap.py`) and build matrix. Builds against the same `caps-word-v0.3` ZMK fork as the Link. `.github/workflows/build-zmk.yml` builds the firmware on push |
 | `docs/` | [Design notes and assumptions](docs/design.md), [cost comparison](docs/cost-comparison.md), renders |
 | `tools/` | Helper scripts: board prep / DSN export, ZMK generation from ergogen points, fab CSVs |

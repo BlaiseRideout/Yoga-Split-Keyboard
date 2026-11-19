@@ -136,6 +136,8 @@ ignores a north pole.
 
 ## Split joining
 
+![Join faces of the two halves](img/case_join.png)
+
 Each half's inner wall is 5 mm thick. It carries:
 * 3 × **6 × 3 mm N52** magnets, axis across the split, at y = −25, 18 and 62 mm. Glue them in
   with **opposite poles facing out** on the two halves.
@@ -192,29 +194,9 @@ so plugging USB into **either** half charges **both**.
   Joined, the charge link keeps both halves topped up from the one cable. The mono has no such caveat.
 * Plug the cable into the **left** half for wired typing. Plugging it into the right half only charges.
 
-## Case styles: full frame or tray + cover
-
-![Tray and cover, split](img/case_open.png)
-
-`case/case.scad` has two styles. Both use the same PCB and the same tray floor, magnets and screw
-positions.
-
-* **`style = "frame"`** (default, `case/stl/`, `case/stl-mx/`): the tray walls rise to the frame, and a
-  full top frame drops in over everything except the keycaps. 10.0 mm to the frame top.
-* **`style = "open"`** (`case/stl-open/`, `case/stl-mx-open/`): a low tray whose wall stops 2.6 mm
-  above the PCB, with the PCB screwed straight into it, and a small **cover** over the centre only:
-  controller, battery, nice!view (with the same window), reset hole and charge link. The switches and
-  the rest of the PCB stay exposed. The cover stands on the PCB and wall top and is held by the two
-  PCB screws under it (use M2 × 8 there, M2 × 4 elsewhere). The tray's top edge is rounded R1, the
-  cover's R2.
-  * Less to print and a lighter look. The overall height doesn't change, because the keycaps
-    (~12.7 mm) set it, not the frame.
-  * The PCB edge and the switch bottoms are visible, so a black PCB looks best.
-  * The join faces, magnets, dowels and pogo slot are unchanged, so the halves still snap together.
-
 ## Status LEDs instead of screens
 
-![Status LEDs in the cover](img/case_open_leds.png)
+![Status LEDs in the top frame](img/case_leds.png)
 
 Each half can take **three 3 mm LEDs (red, green, blue) instead of the nice!view**. The THT boards
 (`pcb/`, `pcb-mx/`) have pads for both. The SMT boards in `hotswap-smd/` don't have the LED
@@ -225,9 +207,9 @@ pads yet. **Fit one or the other on a half, never both,** because the LEDs share
   for green and blue (axial DIN0204, mounted on the bottom like the diodes). The nRF52840's pins
   only source a few mA, so buy high-brightness diffused LEDs. Raise the values if they're too bright.
 * **Fitting:** the LEDs sit between the nice!view header and the battery pads. Seat them flat on the
-  PCB. At 5.3 mm tall, their domes sit in 3.3 mm holes in the frame or cover, 0.3 mm under the top.
-  Print the frame or cover with `display = "leds"` (the `*_leds.stl` files) for the three holes
-  instead of the window.
+  PCB. At 5.3 mm tall, their domes sit in 3.3 mm holes in the top frame, 0.3 mm under the top.
+  Print the frame with `display = "leds"` (the `*_leds.stl` files) for the three holes instead of
+  the window.
 * **Firmware:** [zmk-rgbled-widget](https://github.com/caksoylar/zmk-rgbled-widget) (added to
   `config/west.yml`, `v0.3` branch to match ZMK). Add the `yoga_status_leds` shield, as the
   `*_leds` builds in `build.yaml` do. It blinks:
