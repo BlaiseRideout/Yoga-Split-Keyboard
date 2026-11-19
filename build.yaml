@@ -1,4 +1,4 @@
-# GitHub Actions build matrix (see .github/workflows/build-zmk.yml)
+# ZMK build matrix (see .github/workflows/build-zmk.yml)
 ---
 include:
   - board: nice_nano_v2

@@ -26,7 +26,7 @@ A ZMK-powered, low-profile, wireless columnar keyboard that drops onto the lower
 | `pcb/{left,right,mono}/` | KiCad boards (KiCad 7 format, opens in 7, 8 and 9) with footprints placed and netlisted. **Not routed yet**, see *Status* |
 | `pcb/fab/` | JLCPCB BOM and CPL for the machine-assembled parts (diodes, hotswap sockets, power switch, reset button) |
 | `case/case.scad`, `case/outlines/`, `case/stl/` | Parametric OpenSCAD case, its DXF inputs, and exported STLs (tray and frame for left, right and mono) |
-| `zmk-config/` | ZMK v0.3 shields `yoga_split_left/right` and `yoga_mono`, keymap, and build matrix. `.github/workflows/build-zmk.yml` builds the firmware on push |
+| `config/`, `build.yaml` | ZMK v0.3 user config: shields `yoga_split_left/right` and `yoga_mono`, keymap, and build matrix. `.github/workflows/build-zmk.yml` builds the firmware on push |
 | `docs/` | [Design notes and assumptions](docs/design.md), [BOM and complexity comparison](docs/bom-comparison.md), renders |
 | `tools/` | Helper scripts: board prep / DSN export, ZMK generation from ergogen points, fab CSVs |
 

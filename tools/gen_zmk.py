@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
 """Generate the ZMK shields (split + monolithic) from ergogen's points.yaml.
 
-usage: python3 tools/gen_zmk.py            (reads tools/points.yaml, writes zmk-config/)
+usage: python3 tools/gen_zmk.py            (reads tools/points.yaml, writes config/boards/shields/)
 Refresh points.yaml with:  ergogen ergogen -o build/ergogen -d   then copy build/ergogen/points/points.yaml
 """
 import os, math, yaml
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
-SH = os.path.join(ROOT, 'zmk-config', 'config', 'boards', 'shields')
+SH = os.path.join(ROOT, 'config', 'boards', 'shields')
 pts = yaml.safe_load(open(os.path.join(HERE, 'points.yaml')))
 
 U = 18.0  # mm per key unit for the physical layout (Choc spacing)
