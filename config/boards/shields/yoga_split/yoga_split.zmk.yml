@@ -1,0 +1,8 @@
+file_format: "1"
+id: yoga_split
+name: Yoga Split
+type: shield
+url: https://github.com/BlaiseRideout/yoga-split-keyboard
+requires: [pro_micro]
+features: [keys, display, studio]
+siblings: [yoga_split_left, yoga_split_right]

@@ -1,0 +1,13 @@
+# ZMK v0.3 plus zmkfirmware/zmk#1742 (caps word shift-list), the same fork blaise's
+# Cannonkeys Link config builds against, so the ported keymap's &caps_word settings work.
+manifest:
+  remotes:
+    - name: blaise
+      url-base: https://github.com/BlaiseRideout
+  projects:
+    - name: zmk
+      remote: blaise
+      revision: caps-word-v0.3
+      import: app/west.yml
+  self:
+    path: config

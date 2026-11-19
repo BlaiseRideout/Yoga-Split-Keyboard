@@ -1,0 +1,6 @@
+if SHIELD_YOGA_MONO
+
+config ZMK_KEYBOARD_NAME
+    default "Yoga Mono"
+
+endif

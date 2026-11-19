@@ -1,0 +1,11 @@
+name: Build ZMK firmware
+on:
+  push:
+    paths: ["config/**", "build.yaml", ".github/workflows/build-zmk.yml"]
+  pull_request:
+    paths: ["config/**", "build.yaml", ".github/workflows/build-zmk.yml"]
+  workflow_dispatch:
+jobs:
+  build:
+    # ZMK's reusable workflow expects the user config in ./config and the matrix in ./build.yaml
+    uses: zmkfirmware/zmk/.github/workflows/build-user-config.yml@v0.3
