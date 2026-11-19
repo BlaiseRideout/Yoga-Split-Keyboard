@@ -83,6 +83,30 @@ dock        = variant == "left" ? dock_left : variant == "right" ? dock_right
             : concat(dock_left, dock_right);
 
 module envelope() import(env_file);
+
+/* ---------- rounded edges ----------
+   The plan-view corners are already R6 (ergogen envelope). These round the top and bottom outer
+   edges too: the whole case is intersected with a stepped "pillow" whose outline shrinks toward the
+   bottom face and the frame top. The split faces stay flat so the halves still mate flush. */
+edge_r_bottom = 1.0;   // bottom outer edge (sits on the screen)
+edge_r_top    = 2.0;   // top outer edge of the frame
+edge_steps    = 6;     // slices per fillet (0.2-0.35 mm steps, below typical layer height x2)
+module env_inset(d) {
+    if (variant == "mono") offset(r = -d) import(str(odir, "envelope.dxf"));
+    else intersection() {
+        offset(r = -d) import(str(odir, "envelope.dxf"));
+        translate([variant == "left" ? cx - 500 : cx, -500]) square([500, 1000]);
+    }
+}
+function fillet_inset(r, h) = r - sqrt(max(0, r*r - (r - h)*(r - h)));   // h = distance from the face
+module round_mask() {
+    n = edge_steps; rb = edge_r_bottom; rt = edge_r_top;
+    for (i = [0 : n - 1]) translate([0, 0, i * rb / n])
+        linear_extrude(rb / n + 0.001) env_inset(fillet_inset(rb, (i + 0.5) * rb / n));
+    translate([0, 0, rb]) linear_extrude(frame_top - rb - rt + 0.001) env_inset(0);
+    for (i = [0 : n - 1]) translate([0, 0, frame_top - rt + i * rt / n])
+        linear_extrude(rt / n + 0.001) env_inset(fillet_inset(rt, rt - (i + 0.5) * rt / n));
+}
 module pcb2d()    import(pcb_file);
 module caps2d()   offset(delta = 0.5) import(str(odir, "caps.dxf"));
 
@@ -149,11 +173,14 @@ module frame() {
 rim_h = 1.0;
 
 module assembly() {
-    color("#555") tray();
-    color("#bbb", 0.6) frame();
+    color("#555") tray_r();
+    color("#bbb", 0.6) frame_r();
     color("green", 0.5) translate([0,0,pcb_z]) linear_extrude(pcb_t) pcb2d();
 }
 
-if (part == "tray") tray();
-else if (part == "frame") translate([0,0,-wall_top]) frame();
+module tray_r()  intersection() { tray();  round_mask(); }
+module frame_r() intersection() { frame(); round_mask(); }
+
+if (part == "tray") tray_r();
+else if (part == "frame") translate([0,0,-wall_top]) frame_r();
 else assembly();

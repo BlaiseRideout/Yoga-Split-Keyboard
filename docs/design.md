@@ -11,6 +11,10 @@
 | Hall sensors | "Hall sensor: 4" in the system sensor table; what they detect is not stated | User guide p. 9, PSREF |
 
 This design matches the **295.3 × 113 mm footprint** exactly (6 mm corner radius, which is assumed).
+The outer edges are rounded as well: 1 mm on the bottom edge and 2 mm on the top edge of the frame.
+The split faces stay flat, so the halves still mate flush (`edge_r_bottom`, `edge_r_top` in `case/case.scad`).
+
+![rounded edge](img/case_edge.png)
 It does **not** match the 7.8 mm thickness. Choc switches with hotswap sockets and a 3D-printed case
 come out at about **10 mm to the frame top and ~13 mm to the keycap tops**. See *Stack-up* below.
 
