@@ -36,7 +36,7 @@ thin one 7.8 mm, the stock keyboard's own thickness including its keys.
 | Keycaps | any Choc caps; 1.5u inner thumb | PG1316S caps (scarce); 1u inner thumb |
 | Controller | nice!nano v2 + nice!view or LEDs | nRF52840 module on the PCB, status LEDs |
 | Charging both halves | battery rails linked over the pogo pins | USB 5 V shared over the pogo pins, a charger per cell |
-| Assembly | through-hole, by hand (or SMT hotswap) | everything machine-placed; flash a bootloader once over SWD |
+| Assembly | through-hole, by hand (or SMT hotswap) | everything machine-placed except the through-hole pogo pair (two joints per half); flash a bootloader once over SWD |
 | First split build | about $300 delivered | about $380 delivered |
 
 ## Stack-up
@@ -108,7 +108,8 @@ gets it back.
   second, 0.5 mm bump over that corner. Two candidate docking-magnet sites moved out of that corner.
 * **Join:** the face is 6.1 mm tall, so four 4 × 2 mm magnets and two 2 × 10 mm dowel
   pins (5 mm in each half, at the ends of the join) replace the 6 mm magnets and 3 mm pins. The
-  same 2-pin pogo connector sits in the join, but it carries USB 5 V rather than the battery (next point).
+  same 2-pin magnetic pogo pair sits in the join (through-hole, 2.54 mm: the one part you solder yourself;
+  LCSC has no right-angle pogo pair low enough for this join), but it carries USB 5 V rather than the battery (next point).
 * **Charging both halves:** with the controller on the PCB, the link shares USB 5 V instead of tying
   the two cells together (the nice!nano can't, because it doesn't bring 5 V out to a pin). Each half's
   USB 5 V goes through a B5819W Schottky to its charger's input, and that input goes over the pogo link

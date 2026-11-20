@@ -100,7 +100,7 @@ def centre(side, keys_where, col_net, row_net):
         r = 0 if side == 'left' else 180
         kind = 'male' if side == 'left' else 'female'
         ab = 'a: LINK_B, b: GND' if side == 'left' else 'a: GND, b: LINK_B'
-        t.append(fp('chg_link', 'charge_link', X(125.5), 28, r, f'{{{ab}, kind: {kind}}}'))
+        t.append(fp('chg_link', 'charge_link', X(125.5), 28, r, f'{{{ab}, kind: {kind}, tht: true}}'))
         # the link carries USB 5 V (CHG_IN, below), not the cell: each half's own charger charges its own cell
         t.append(fp('chg_fuse', 'smd_1206', X(121.5), 22, 90, '{designator: F, side: F, from: CHG_IN, to: LINK_B, value: "PTC 0.2A hold 1206"}'))
         t.append('      # ESD clamp on the exposed charge-link contact (SMF5.0A, SOD-123FL, 5 V standoff)')

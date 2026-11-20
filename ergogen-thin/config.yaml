@@ -188,7 +188,7 @@ pcbs:
       chg_link:
         what: charge_link
         adjust: {shift: [125.5, 28], rotate: 0}
-        params: {a: LINK_B, b: GND, kind: male}
+        params: {a: LINK_B, b: GND, kind: male, tht: true}
       chg_fuse:
         what: smd_1206
         adjust: {shift: [121.5, 22], rotate: 90}
@@ -342,7 +342,7 @@ pcbs:
       chg_link:
         what: charge_link
         adjust: {shift: [136.5, 28], rotate: 180}
-        params: {a: GND, b: LINK_B, kind: female}
+        params: {a: GND, b: LINK_B, kind: female, tht: true}
       chg_fuse:
         what: smd_1206
         adjust: {shift: [140.5, 22], rotate: 90}
