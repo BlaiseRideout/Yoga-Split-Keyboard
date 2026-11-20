@@ -168,10 +168,32 @@ ignores a north pole.
 ![Join faces of the two halves](img/case_join.png)
 
 Each half's inner wall is 5 mm thick. It carries:
-* 3 × **6 × 3 mm N52** magnets, axis across the split, at y = −25, 18 and 62 mm. Glue them in
-  with **opposite poles facing out** on the two halves.
-* 2 × **3 × 6 mm steel dowel pins**, glued into one half, which locate in matching holes in the
-  other half and stop shear when you type.
+* 3 × **6 × 3 mm N52** magnets, axis across the split, at y = −8, 18 and 48 mm (MX: −5, 20, 50).
+  Glue them in with **opposite poles facing out** on the two halves.
+* 2 × **3 × 12 mm steel dowel pins** (MX: 3 × 10 mm), one at each end of the join (y = −24 and
+  66 mm; MX −20 and 70). Each pin is glued 6 mm into the left half and slides 6 mm into the right
+  half, so it takes the shear and twist when you type and carry the board.
+
+How the pins are set up, and why:
+* **Spread to the ends.** The two pins are 90 mm apart, nearly the whole join. Twisting the halves
+  against each other (picking the board up by one end, or typing hard on a corner) is resisted with
+  that much leverage, about twice what pins near the middle would give.
+* **6 mm deep on each side**, two pin diameters. That's the usual rule of thumb for a pin that
+  doesn't rock loose in plastic. The wall is only 5 mm, so a small printed boss behind each pin
+  closes in the last millimetre of the pocket. The bosses sit above the PCB edge, beside the
+  nice!nano, and the frame's locating rim is cut back over them.
+* **Above the PCB.** The pin axis is 1.9 mm above the PCB's top face (z = 6.3 mm), so the pocket can
+  run past the wall without hitting the board. The magnets stay at PCB level.
+* **Lead-in chamfer.** Each pocket has a 0.5 mm chamfer at its mouth so the pin finds the hole when
+  you bring the halves together.
+* **Fit.** Pockets are printed at 3.1 mm. Run a 3 mm drill through each one by hand before gluing.
+  On the left, glue the pin in with epoxy or CA, using the right half to hold it square while the
+  glue sets (wax the right half's pocket first). On the right the pin should slide in without play.
+* **MX:** the nice!nano sits 1.6 mm from the join wall on the MX boards, so the pockets there are
+  5.6 mm deep and the pins are 3 × 10 mm.
+
+Dowel pins (ISO 8734 / DIN 6325, hardened) cost about $8 for a pack of 50 from McMaster-Carr or
+Amazon, so the longer pins add about $2 to a build.
 
 That gives the UHK / Dygma-style "click together" join. A mechanical alternative is a sliding
 dovetail key printed separately. It's not modelled here, but it would replace the dowel holes.

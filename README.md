@@ -101,5 +101,6 @@ python3 tools/check_matrix.py pcb/*/*.kicad_pcb                 # one diode per 
    M2 × 4 low-head screws.
 5. Fit the magnetic pogo connector on the split edge of each half: spring pins on the left, flat
    targets on the right. Before closing the case, check both pins line up and that GND matches GND.
-6. Glue the docking magnets into the pockets you mapped, and the joining magnets and dowels into
-   the split faces.
+6. Glue the docking magnets into the pockets you mapped, and the joining magnets into the split
+   faces. Ream the dowel pockets with a 3 mm drill, then glue the 3 × 12 mm dowel pins into the left
+   half only ([details](docs/design.md#split-joining)).
