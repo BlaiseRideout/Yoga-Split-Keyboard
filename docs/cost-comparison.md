@@ -154,9 +154,9 @@ What it gives up:
 No mass-produced wireless 4-row Choc board was found that's both pre-soldered and confirmed to fit.
 For the 4-row layout with charge pass-through, THT stays the cheapest.
 
-## 3-row variant: 42 keys instead of 54
+## 3-row layout (the default): 42 keys instead of 54
 
-The [3-row variant](design.md#3-row-variant-angled-key-blocks-ergogen-3row-pcb-3row) drops the number
+The tables above price the 4-row. The [3-row layout](design.md#3-row-variant-angled-key-blocks-ergogen-3row-pcb-3row) drops the number
 row (numbers are on the NUM layer of the ported keymap) and angles each key block 10° inward. Same
 controller, screen or LEDs, charge link, case and docking. Choc spacing only so far.
 
@@ -203,7 +203,9 @@ and a shorter reach, not cost.
 
 ## Recommendation
 
-For one or two keyboards with your no-SMD-soldering rule, **THT (all through-hole), split**.
+For one or two keyboards with your no-SMD-soldering rule, **the 3-row layout (the default), THT
+(all through-hole), split: ≈ $300 for the first build.** The 3-row saves ~$20 and 48 solder
+joints over the 4-row and angles the key blocks inward.
 It needs no JLC assembly, so there's nothing to pay tariff on beyond the bare PCBs. Every joint is
 a through-hole joint, and the five PCBs per design already cover a second build. Go to SMT only
 if being able to swap switches is worth ~$40 per keyboard over two builds.

@@ -60,6 +60,8 @@ run both. Only the physical layout ZMK Studio draws is the Choc one. The Choc ho
 
 ## 3-row variant: angled key blocks (`ergogen-3row/`, `pcb-3row/`)
 
+**This is the default layout** (blaise's choice, Nov 2026). The 4-row sections above remain as an option.
+
 ![3-row split with angled key blocks](img/case_3row.png)
 
 3 × 6 keys plus 3 thumb keys per half (42 keys, the Corne layout), with each half's key block
