@@ -5,40 +5,38 @@
 //   openscad -D 'variant="left"' -D 'part="frame"' -o stl-thin/frame_left.stl case_thin.scad
 // variant: "left" | "right" | "mono"     part: "tray" | "frame" | "assembly"
 //
-// Stack-up (z = 0 on the laptop's lower screen):
-//   0.0 - 1.4  floor (6 x 1 mm docking magnets in 1.0 mm pockets, 0.4 mm skin); 0.6 under the cell
-//   0.6 - 5.6  503040 cell (5 x 30 x 40 mm) in a notch in the PCB's front corner, under a raised deck
-//   1.4 - 2.2  PCB, ordered at 0.8 mm. Nothing on its bottom side: it rests on the floor
-//   2.2 - 6.4  PG1316S switch + cap (4.2 mm)
-//   4.8 - 5.6  top frame over the keys: caps stand 0.8 mm proud of it
-//   5.8 - 6.6  raised decks over the controller and LEDs (nice!nano 3.2 mm) and over the cell
-// Overall 6.6 mm at the decks and 6.4 mm at the key tops, against 7.8 mm for the stock keyboard.
+// Stack-up (z = 0 on the laptop's lower screen). The top is one flat plate, and the keycaps stand
+// 1.7 mm proud of it so the thumb keys can be pressed with the side of the thumb.
+//   0.0 - 1.0  floor; 0.4 mm skin under the nice!nano's pocket, 0.6 mm under the cell's
+//   0.4 - 3.6  nice!nano, soldered flat to the PCB's UNDERSIDE, components facing down
+//   0.6 - 5.6  503040 cell (5 x 30 x 40 mm) through a notch in the PCB's front corner
+//   3.6 - 4.4  PCB (0.8 mm), on standoffs; screws from the top
+//   4.4 - 8.6  PG1316S switch + cap (4.2 mm)
+//   6.1 - 6.9  flat top plate. Top-side parts must stay under 1.5 mm (diodes, LEDs, side switch)
+// Case 6.9 mm; 8.6 mm to the key tops (stock keyboard: 7.8 mm).
 
 variant = "left";
 part = "assembly";
 odir = "outlines-thin/";
 
-floor_t   = 1.4;
+floor_t   = 1.0;
 pcb_t     = 0.8;
-pcb_z     = floor_t;
-pcb_top   = pcb_z + pcb_t;          // 2.2
-low_z     = 4.8;                    // underside of the frame over the keys (= tray wall top)
-low_t     = 0.8;                    // frame over the keys: 4.8 - 5.6
-deck_z    = 5.8;                    // underside of the raised decks (cell top 5.6 + 0.2)
-deck_t    = 0.8;                    // raised decks: 5.8 - 6.6
-top_z     = deck_z + deck_t;        // 6.4 overall
-lip       = 1.2;                    // the deck's edge wall where it meets the low frame
+pcb_z     = 3.6;                    // nice!nano (3.2 mm) + 0.4 mm skin underneath
+pcb_top   = pcb_z + pcb_t;          // 4.4
+plate_t   = 0.8;
+top_z     = 6.9;                    // flat top
+wall_top  = top_z - plate_t;        // 6.1: tray walls, plate underside
 wall      = 2.0;
 pcb_gap   = 0.5;
 cx        = 131;
 cy        = 18.6;
 
 // hardware
-dock_mag_d = 6.2;  dock_mag_h = 1.05;  dock_skin = 0.4;   // 6 x 1 mm N52 discs
-join_mag_d = 4.2;  join_mag_h = 2.1;  join_mag_z = 2.8;   // 4 x 2 mm N52 discs, 4 per face
-dowel_d    = 2.1;  dowel_h    = 5.2;  dowel_z    = 3.0;   // 2 x 10 mm steel pins, inside the 5.5 mm join wall
-post_d     = 4.6;  insert_d   = 3.2;                      // frame posts with M2 x 2.5 heat-set inserts
-screw_d    = 2.3;  csk_d      = 4.2;                      // M2 countersunk screws from below
+insert_d   = 3.2;  boss_d = 5.6;                          // M2 heat-set inserts in floor standoffs
+dock_mag_d = 6.2;  dock_mag_h = 1.6;  dock_skin = 0.4;    // 6 x 1.5 mm N52 discs, as the standard case
+join_mag_d = 4.2;  join_mag_h = 2.1;  join_mag_z = 3.0;   // 4 x 2 mm N52 discs, 4 per face
+dowel_d    = 2.1;  dowel_h    = 5.2;  dowel_z    = 2.4;   // 2 x 10 mm steel pins, inside the 5.5 mm join wall
+nano_skin  = 0.4;  cell_floor = 0.6;
 
 function mx(x) = 2 * cx - x;
 holes_left  = [[-8,66],[-8,-28],[40,-24],[47.5,69],[101.3,68],[122.5,-30]];
@@ -46,7 +44,7 @@ holes_right = [for (h = holes_left) [mx(h[0]), h[1]]];
 dock_left   = [[-9,71],[20,71],[40,71],[75,71],[110,71],
                [-10.5,40],[-10.5,10],
                [-10.5,-20],[46,-32.5],[110,-32.5],   // the front-left corner holds the cell
-               [119,2],[121,38]];
+               [119,2],[96,38]];                     // the controller pocket moved one site
 dock_right  = [for (p = dock_left) [mx(p[0]), p[1]]];
 join_mag_y  = [-12, 8, 42, 56];
 dowel_y     = [-24, 66];
@@ -55,7 +53,7 @@ link_y      = 28;
 side_x   = function(x) variant == "right" ? mx(x) : variant == "mono" ? x + 18 : x;
 nano_x   = side_x(113);
 switch_x = variant == "mono" ? 111 : side_x(93);
-reset_xy = [side_x(118.3) - (variant == "right" ? 0 : 0), 33];
+reset_xy = [side_x(118.3), 33];
 led_xy   = [for (y = [3, 6.5, 10]) [side_x(119.5), y]];
 
 holes = variant == "left" ? holes_left : variant == "right" ? holes_right : concat(holes_left, holes_right);
@@ -65,35 +63,15 @@ pcb_file = str(odir, variant == "left" ? "pcb_left.dxf" : variant == "right" ? "
 
 module envelope() import(env_file);
 module pcb2d()    import(pcb_file);
+module caps2d()   offset(delta = 0.5) import(str(odir, "caps.dxf"));
 // battery notch in the PCB (see ergogen-thin pcb_mono): the cell drops through it onto the floor
-cell_floor = 0.6;
 module cell2d() {
     if (variant != "right") translate([-4.5, -35.5]) square([41, 32.5]);
     if (variant != "left")  translate([mx(36.5), -35.5]) square([41, 32.5]);
 }
 module cavity2d() offset(delta = pcb_gap) union() { pcb2d(); cell2d(); }
-module caps2d()   offset(delta = 0.5) import(str(odir, "caps.dxf"));
-
-// the raised deck: controller, battery, charge parts and LEDs. Keys stay open through it.
-module centre_deck2d() difference() {
-    intersection() {
-        envelope();
-        if (variant == "left")  translate([103, -1.5]) square([cx - 103 + 1, 100]);
-        if (variant == "right") translate([cx - 1, -1.5]) square([mx(103) - cx + 1, 100]);
-        if (variant == "mono")  translate([121, -1.5]) square([20, 100]);
-    }
-    caps2d();
-}
-// the decks: over the centre parts, and over the cell in the front corner
-module deck2d() difference() {
-    union() {
-        centre_deck2d();
-        intersection() { envelope(); offset(delta = lip + 0.8) cell2d(); }
-    }
-    caps2d();
-}
-// inside of the deck, where parts rise above the low frame's underside
-module deck_inner2d() intersection() { offset(delta = -lip) deck2d(); cavity2d(); }
+// the nice!nano under the PCB (18 x 33 mm, USB end at the back edge)
+module nano2d() translate([nano_x - 9.5, 35]) square([19, 40]);
 
 /* rounded outer edges, as on the standard case */
 edge_r_bottom = 1.0; edge_r_top = 1.2; edge_steps = 6;
@@ -117,22 +95,18 @@ module round_mask() {
 module tray() difference() {
     union() {
         linear_extrude(floor_t) envelope();
-        linear_extrude(low_z) difference() { envelope(); cavity2d(); }
-        // under the deck the walls carry on up to the deck
-        linear_extrude(deck_z) difference() { intersection() { envelope(); deck2d(); } cavity2d(); }
+        linear_extrude(wall_top) difference() { envelope(); cavity2d(); }
+        for (p = dock) translate([p[0], p[1], 0]) cylinder(d = dock_mag_d + 2.4, h = dock_skin + dock_mag_h, $fn = 32);
+        for (h = holes) translate([h[0], h[1], 0]) cylinder(d = boss_d, h = pcb_z, $fn = 32);
     }
-    // countersunk screw holes: M2 screws from below, through the PCB, into inserts in the frame posts
-    for (h = holes) translate([h[0], h[1], 0]) {
-        translate([0, 0, -0.01]) cylinder(d = screw_d, h = floor_t + 0.02, $fn = 24);
-        translate([0, 0, -0.01]) cylinder(d1 = csk_d, d2 = screw_d, h = (csk_d - screw_d) / 2, $fn = 24);
-    }
-    // the cell's pocket: floor thinned to 0.6 mm under it
-    translate([0, 0, cell_floor]) linear_extrude(floor_t) offset(delta = 0.3) cell2d();
-    // docking magnets: blind pockets opened from the inside, under the PCB
+    for (h = holes) translate([h[0], h[1], floor_t - 0.4]) cylinder(d = insert_d, h = 10, $fn = 24);
     for (p = dock) translate([p[0], p[1], dock_skin]) cylinder(d = dock_mag_d, h = dock_mag_h + 0.01, $fn = 32);
-    // USB-C opening (nice!nano soldered flat on the PCB, mid-mount port)
-    translate([nano_x, 80, pcb_top + 1.6]) cube([10, 20, 3.8], center = true);
-    // side slide switch lever
+    // pockets: nice!nano under the PCB, and the cell through the PCB notch
+    translate([0, 0, nano_skin]) linear_extrude(floor_t) offset(delta = 0.3) nano2d();
+    translate([0, 0, cell_floor]) linear_extrude(floor_t) offset(delta = 0.3) cell2d();
+    // USB-C opening: the port sits under the PCB now
+    translate([nano_x, 80, nano_skin + 1.75]) cube([10, 20, 3.5], center = true);
+    // side slide switch lever (top side of the PCB)
     translate([switch_x, 80, pcb_top + 0.75]) cube([6, 20, 2.0], center = true);
     if (variant != "mono") join_features();
 }
@@ -145,28 +119,24 @@ module join_features() {
         translate([0, 0, -0.01]) cylinder(d = dowel_d, h = dowel_h, $fn = 24);
         translate([0, 0, -0.01]) cylinder(d1 = dowel_d + 0.8, d2 = dowel_d, h = 0.4, $fn = 24);
     }
-    // pogo connector slot, open at the top
-    translate([s < 0 ? cx - 6.1 : cx - 0.01, link_y - 3.3, pcb_top - 0.2]) cube([6.11, 6.6, deck_z]);
+    // pogo connector slot, open at the top; the plate above is pocketed to 0.3 mm (see frame)
+    translate([s < 0 ? cx - 6.1 : cx - 0.01, link_y - 3.3, pcb_top - 0.2]) cube([6.11, 6.6, top_z]);
 }
 
 module frame() difference() {
     union() {
-        // low frame over the keys
-        translate([0, 0, low_z]) linear_extrude(low_t) difference() { envelope(); caps2d(); deck_inner2d(); }
-        // raised deck
-        translate([0, 0, deck_z]) linear_extrude(deck_t) deck2d();
-        // the deck's edge wall, from the low frame up to the deck
-        translate([0, 0, low_z]) linear_extrude(deck_z - low_z) difference() { deck2d(); deck_inner2d(); }
-        // posts down to the PCB for the screws' inserts
-        for (h = holes) translate([h[0], h[1], pcb_top + 0.1]) cylinder(d = post_d, h = low_z - pcb_top, $fn = 32);
-        // locating rim inside the walls, over the keys only
-        translate([0, 0, low_z - 0.8]) linear_extrude(0.8) difference() {
-            offset(delta = -0.15) cavity2d(); offset(delta = -1.15) cavity2d(); caps2d(); deck2d();
+        translate([0, 0, wall_top]) linear_extrude(plate_t) difference() { envelope(); caps2d(); }
+        // locating rim inside the walls
+        translate([0, 0, wall_top - 0.8]) linear_extrude(0.8) difference() {
+            offset(delta = -0.15) cavity2d(); offset(delta = -1.15) cavity2d(); caps2d();
+            if (variant != "mono") translate([variant == "left" ? cx - 9 : cx, link_y - 4.5]) square([9, 9]);
         }
     }
-    for (h = holes) translate([h[0], h[1], pcb_top]) cylinder(d = insert_d, h = 3.0, $fn = 24);
-    for (p = led_xy) translate([p[0], p[1], deck_z - 1]) cylinder(d = 2.2, h = 5, $fn = 24);   // LED light holes
-    translate([reset_xy[0], reset_xy[1], deck_z - 1]) cylinder(d = 2.5, h = 5, $fn = 24);   // reset access
+    for (p = led_xy) translate([p[0], p[1], wall_top - 1]) cylinder(d = 2.2, h = 5, $fn = 24);   // LED light holes
+    translate([reset_xy[0], reset_xy[1], wall_top - 1]) cylinder(d = 2.5, h = 5, $fn = 24);   // reset access
+    // room for the pogo connector's body under the plate (2.2 mm above the PCB)
+    if (variant != "mono") translate([variant == "left" ? cx - 7 : cx - 0.01, link_y - 3.5, wall_top - 1])
+        cube([7.01, 7, 1 + top_z - wall_top - 0.3]);
 }
 
 module tray_r()  intersection() { tray();  round_mask(); }
