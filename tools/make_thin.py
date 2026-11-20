@@ -9,7 +9,7 @@ Starts from ergogen-3row/config.yaml (run tools/make_3row.py first) and changes:
 * everything else SMD on the top side too: side slide switch, 1206 fuse and resistor, SOD-123FL TVS,
   0805 status LEDs and resistors (no nice!view: it's too tall), reset pads;
 * battery: a 4 x 30 x 40 mm cell (403040) in a notch in the PCB's front corner, on a thinned floor;
-* PCB ordered at 0.8 mm; the nice!nano mounts on its underside (see case/case_thin.scad).
+* PCB ordered at 0.8 mm.
 usage: python3 tools/make_thin.py
 """
 import os, re
