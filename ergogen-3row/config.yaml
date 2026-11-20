@@ -90,7 +90,7 @@ outlines:
       size: [17.5, 16.5]
     - what: rectangle
       where: /^(mirror_)?thumb_reachy/
-      size: [17.5, 25.0]
+      size: [17.5, 25]
   # full outer envelope of the keyboard (matches stock keyboard)
   envelope:
     - what: rectangle
@@ -139,7 +139,7 @@ outlines:
       size: [18.5, 17.5]
     - what: rectangle
       where: /^(mirror_)?thumb_reachy/
-      size: [18.5, 26.0]
+      size: [18.5, 26]
   preview_mono:
     - envelope
     - -caps
@@ -205,6 +205,10 @@ pcbs:
         what: tht2
         adjust: {shift: [121.0, 9], rotate: 90}
         params: {designator: R, from: LINK_F, to: LINK_B, pitch: 7.62, value: "10R 0.4W axial DIN0204"}
+      chg_tvs:   # ESD/surge clamp on the exposed charge-link contact (P4KE10A, DO-41, 8.55 V standoff)
+        what: tht2
+        adjust: {shift: [123.8, 8], rotate: 90}
+        params: {designator: D, from: LINK_B, to: GND, pitch: 10.16, drill: 1.0, value: "P4KE10A TVS, DO-41, band to LINK"}
       reset:
         what: tht2
         adjust: {shift: [104, 28], rotate: 90}
@@ -302,6 +306,10 @@ pcbs:
         what: tht2
         adjust: {shift: [141.0, 9], rotate: 90}
         params: {designator: R, from: LINK_F, to: LINK_B, pitch: 7.62, value: "10R 0.4W axial DIN0204"}
+      chg_tvs:   # ESD/surge clamp on the exposed charge-link contact (P4KE10A, DO-41, 8.55 V standoff)
+        what: tht2
+        adjust: {shift: [138.2, 8], rotate: 90}
+        params: {designator: D, from: LINK_B, to: GND, pitch: 10.16, drill: 1.0, value: "P4KE10A TVS, DO-41, band to LINK"}
       reset:
         what: tht2
         adjust: {shift: [158, 28], rotate: 90}

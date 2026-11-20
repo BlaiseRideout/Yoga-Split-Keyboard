@@ -58,6 +58,22 @@ The matrix, pins and nets are identical to the Choc boards, so the **same ZMK sh
 run both. Only the physical layout ZMK Studio draws is the Choc one. The Choc hotswap socket
 (CPG135001S30) fits Choc v2 too.
 
+## Thumb keys
+
+Three thumb keys per half. The innermost one takes a **vertical 1.5u cap**, like the Corne's, on
+every layout (4-row and 3-row, Choc and MX, THT and SMT):
+
+* **Position:** its switch sits a quarter unit (4.25 mm Choc, 4.76 mm MX) further up along the key's
+  own axis, so the cap grows toward the key block. Its outer corner stays where the 1u key's was,
+  so it clears the board edge, the controller area and the neighbouring thumb key.
+* **Choc v1 (the Choc boards):** the switch is turned 90° under the cap, because a Choc v1 stem only
+  takes a cap one way round. The Corne Chocolate does the same.
+* **MX spacing (Choc v2, MX stem):** the cross stem takes a cap either way, so the switch isn't turned.
+* **Case and firmware:** the frame opening is 1.5u to match, and the ZMK physical layout marks the key
+  1.5u tall, so keymap editors draw it correctly. The keymap positions don't change.
+* **Caps:** two 1.5u caps per keyboard in place of two 1u caps (MBK and Corne-style sets include them).
+* **Source:** `tools/tall_thumb.py` applied it to each ergogen config; the 3-row config inherits it.
+
 ## 3-row variant: angled key blocks (`ergogen-3row/`, `pcb-3row/`)
 
 **This is the default layout** (blaise's choice, Nov 2026). The 4-row sections above remain as an option.
@@ -68,12 +84,7 @@ run both. Only the physical layout ZMK Studio draws is the Choc one. The Choc ho
 rotated **10° inward** so the column tops lean toward the centre, the way your hands sit when
 your elbows are relaxed. Choc spacing.
 
-* **1.5u inner thumb key, like the Corne:** the innermost thumb key on each half takes a vertical
-  1.5u cap (17.5 × 25 mm). Its switch sits 4.25 mm further up along the key's axis, so the cap
-  grows toward the key block, and the switch is turned 90° under it, because a Choc v1 stem only
-  takes a cap one way round. The frame opening is 1.5u to match. You need two 1.5u Choc caps (MBK
-  and Corne-style sets include them) in place of two 1u caps. The firmware's physical layout shows
-  the tall key, so keymap editors draw it correctly.
+* **1.5u inner thumb key,** like the Corne, as on every layout ([details](#thumb-keys)).
 * **Generated, not hand-edited:** `tools/make_3row.py [angle] [x] [y]` writes
   `ergogen-3row/config.yaml` from the 4-row config. It drops the number row, renumbers the rows,
   rotates the key block and keeps the mirror axis on the split line. Try another angle by
@@ -210,9 +221,10 @@ When the halves are joined, a 2-pin magnetic pogo connector in the join wall lin
 so plugging USB into **either** half charges **both**.
 
 ```
- left half                                         right half
- LiPo+ ─ PTC 0.1 A ─ 10 Ω ─┐  pogo  ┌─ 10 Ω ─ PTC 0.1 A ─ LiPo+
- GND ──────────────────────┴─(2 pins)─┴──────────────────── GND
+ left half                                                  right half
+ LiPo+ ─ PTC 0.1 A ─ 10 Ω ─┬──────┐  pogo  ┌──────┬─ 10 Ω ─ PTC 0.1 A ─ LiPo+
+                          TVS     │        │     TVS
+ GND ─────────────────────┴───────┴(2 pins)┴──────┴──────────────────── GND
 ```
 
 * **Why the battery rail and not USB 5 V:** the nice!nano doesn't bring VBUS out to a header pin.
@@ -226,12 +238,24 @@ so plugging USB into **either** half charges **both**.
   one (≤ ~0.1 A). Each PTC fuse trips if the exposed contacts get shorted, for example by a stray
   magnet or a paperclip, and resets once the short is removed. Each cell's own protection board
   stays in circuit as well.
+* **ESD:** the pogo contacts are exposed whenever the halves are apart, so each half has a
+  **P4KE10A TVS diode** (through-hole, DO-41) from the contact to GND, right beside the 10 Ω
+  resistor. It clamps a static discharge before it reaches the cell or the nice!nano. Its standoff is
+  8.55 V, about twice the cell's 4.2 V, so it doesn't conduct in normal use: its leakage is at most
+  10 µA even at 8.55 V and far below that at 4.2 V. The THT and SMT boards both use this part, because
+  a low-profile SMD TVS would be the only SMD part on the THT build. Fit it flat on the top side, band
+  toward the pogo contact (the round pad, net LINK_B).
+* **A note from the nice!nano docs:** splitkb's FAQ warns against joining two halves' batteries
+  directly, because of unbalanced charging and shorts while unplugging. The link handles both: the
+  10 Ω resistors limit the balancing current to about 0.1 A and the PTCs trip on a short. Still, it
+  isn't something Nice Keyboards designed for, so if a cell ever runs warm while linked, run the
+  halves apart.
 * **Power switches:** the link sits on the battery side of each power switch, so the cells
   equalise even when both switches are off. To charge, the half you plug in must have its switch
   **on**, the same as charging a single nice!nano today.
 * **Apart, on the desk:** each half charges from its own USB-C port as before.
 * **Parts:** a generic 2-pin right-angle magnetic pogo pair (spring pins on the left, flat targets on
-  the right), plus per half a PTC (0.1 A hold) and a 10 Ω resistor. On the THT build these are a radial
+  the right), plus per half a PTC (0.1 A hold), a 10 Ω resistor and a P4KE10A TVS diode. On the THT build these are a radial
   Bourns MF-R010, bent flat, and an axial DIN0204. On the SMT build they're 1206 SMD parts placed by JLC.
   Pogo modules vary by vendor, so check the `chg_link` land pattern against the one you buy.
   The case has a 6.6 mm wide slot in each join wall for it, open at the top so the PCB drops in.

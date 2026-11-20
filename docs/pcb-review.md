@@ -10,11 +10,13 @@ and Gerbers in this repo.
 
 | Issue | Found | Fix |
 |---|---|---|
-| **Power traces at signal width** | The 0.4 mm "Power" net class never took effect: ergogen pins every net to the default class, and KiCad 7's Python API can't change the pattern. GND, RAW, BAT_P, VCC and the charge link were routed at 0.25 mm. | `tools/prep_dsn.py` now puts those nets in the Power class in the Freerouting input and the project file. The THT boards were re-routed: power is 0.4 mm. The SMT boards keep 0.25 mm, which is still fine (see *Current*). |
+| **Power traces at signal width** | The 0.4 mm "Power" net class never took effect: ergogen pins every net to the default class, and KiCad 7's Python API can't change the pattern. GND, RAW, BAT_P, VCC and the charge link were routed at 0.25 mm. | `tools/prep_dsn.py` now puts those nets in the Power class in the Freerouting input and the project file. All boards were re-routed: power is 0.4 mm. |
 | **No ground plane** | Both layers had only tracks. Signals had no nearby return path, and nothing shielded the matrix lines. | New `tools/add_ground.py`: a GND pour on both layers (0.3 mm clearance, thermal reliefs) and GND stitching vias on a 6 mm grid wherever both pours are solid (about 180–220 per half, 350–430 on a mono). Isolated islands are removed. Applied to all twelve boards. |
 | **Copper near the controller's antenna** | Nothing kept copper away from the nice!nano. Nice Keyboards' docs don't say which end its antenna is. | A no-pour area over the whole controller plus 2 mm, on both layers, so the antenna end is clear whichever end it is. The few tracks under the controller are unavoidable (they go to its pins) and are normal for Pro Micro boards. |
 | **Dangling track stubs** | Freerouting left short dead-end stubs: 2–3 on some THT boards, 4–13 on the SMT boards. They're harmless, but they're small antennas and DRC warnings. | Removed by `add_ground.py`. |
 | **Starved thermal reliefs** | Once poured, one or two GND pads per board (a battery pad, an LED cathode, the display GND or a pogo pin) only got one thermal spoke, because tracks were in the way. | Those pads connect solid to the pour. They're small, so they still solder easily. Every other GND pad keeps its thermal relief. |
+| **No ESD protection on the exposed charge contacts** | The pogo contacts on the join face are bare whenever the halves are apart. | A P4KE10A TVS diode (THT, DO-41) from the contact to GND on every split half, THT and SMT (Nov 2026). See [design.md](design.md#charging-both-halves-from-one-cable-split-only). |
+| **SMT boards' power traces** | The SMT boards had only been poured, not re-routed, so power stayed at 0.25 mm. | Re-routed with the rest when the 1.5u thumb and TVS were added: power is 0.4 mm on all boards now. |
 | **Silkscreen overlap** | The nice!view pin labels overlapped the new status-LED outlines. | Labels moved to the other side of the header. LED labels raised to 0.8 mm text. |
 
 ## Checked and fine
@@ -37,12 +39,31 @@ and Gerbers in this repo.
 * **Key matrix:** `tools/check_matrix.py` passes on all twelve: one diode per key, col2row, no shared
   positions. That's full n-key rollover.
 
+## Support parts for the nice!nano
+
+Checked against Nice Keyboards' nice!nano docs, splitkb's nice!nano FAQ and pinout, splitkb's
+Halcyon battery board, and common open-source nice!nano boards (Corne, Sofle, Lily58 and Sweep
+wireless builds). Those boards add only a power switch, a reset button and battery terminals,
+because the nice!nano carries the rest.
+
+| Part | On the nice!nano | On this board |
+|---|---|---|
+| LiPo charger | Yes, about 100 mA (a jumper raises it to about 500 mA for big cells) | — |
+| 3.3 V regulator and decoupling | Yes. Its VCC pin supplies 3.3 V, switched off by a MOSFET from firmware | Nothing on VCC except the nice!view, which ZMK powers down |
+| USB connector and its ESD protection | Yes | — |
+| Power switch between battery and B+ | No, the docs recommend one | Yes (THT slide switch, SMT side switch) |
+| Reset button | Pads only | Yes, pads or a tact switch |
+| Battery connector | Pads only. The docs prefer a PCB connector with a switch over soldering to the nano | Battery pads on the PCB, behind the switch |
+| RAW pin | Battery input. The FAQ warns against boards that join RAW to VCC | RAW goes only to the power switch. VCC and RAW are separate |
+| ESD on extra exposed contacts | — | TVS on the charge link (new) |
+| Reverse-polarity protection | No | No. Splitkb's Halcyon battery board has it. Here, use cells with a protection board and check polarity once when soldering |
+
+Nothing else is needed: no bulk capacitor, pull-ups or crystal (all on the nice!nano), and the key
+matrix needs only its diodes. The status LEDs run from GPIOs, not VCC, so they don't draw power
+when off.
+
 ## Known limits (not changed)
 
-* **ESD on the pogo contacts:** the charge link's two contacts are exposed on the join face when the
-  halves are apart. The battery side goes through the PTC and 10 Ω resistor, which limit a discharge,
-  and the contacts sit recessed in the case. A TVS diode would be better, but it would be the only
-  SMD part on the THT boards. Leaving it out is a reasonable trade for a keyboard.
 * **Battery polarity:** there's no reverse-polarity protection, and the nice!nano has none either.
   The silkscreen marks `+`, and the pouch cell's leads are soldered once. Buy cells with a built-in
   protection board (most 402030 cells have one).

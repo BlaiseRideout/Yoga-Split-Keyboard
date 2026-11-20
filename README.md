@@ -90,9 +90,10 @@ python3 tools/check_matrix.py pcb/*/*.kicad_pcb                 # one diode per 
    **bottom**, the banded end on the square pad. Solder them from the top and trim the leads flush,
    because the gap under the PCB is 2.2 mm. Then fit the switches from the top and solder them from
    the bottom, trimming their pins too. Bend the PTC flat before you solder it. The controller,
-   display, battery, power switch and pogo connector go on the **top**.
+   display, battery, power switch, pogo connector and the P4KE10A TVS diode (lying flat, band on
+   the round pad) go on the **top**. The 1.5u inner thumb switch sits turned 90° on purpose.
    SMT (`hotswap-smd/`): JLC places the sockets and diodes on the bottom, and the switches
-   push in from the top.
+   push in from the top. Solder the TVS diode by hand, as on the THT build.
 3. Mount the nice!nano with its components facing the PCB, matching the silkscreen labels. Solder
    it directly, without tall sockets, so the nice!view on top sits flush with the top frame.
    For status LEDs instead of a nice!view, fit the three 3 mm LEDs flat on the PCB (flat side and

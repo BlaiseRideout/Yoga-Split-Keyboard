@@ -84,7 +84,7 @@ points:
         home:
           key: {mono_row: MR2, mono_col: MC7, mirror: {mono_row: MR5, mono_col: MC7}, splay: -6, origin: [-9.5, -9], column_net: C4, col_i: 4}
         reachy:
-          key: {mono_row: MR2, mono_col: MC8, mirror: {mono_row: MR5, mono_col: MC8}, splay: -6, origin: [-9.5, -9], column_net: C5, col_i: 5}
+          key: {mono_row: MR2, mono_col: MC8, mirror: {mono_row: MR5, mono_col: MC8}, splay: -6, origin: [-9.5, -9], shift: [0, 4.7625], height: 27.525, column_net: C5, col_i: 5}
       rows:
         one: {row_net: R4, row_i: 4}
   mirror:
@@ -93,8 +93,11 @@ points:
 outlines:
   keycaps:   # 18 x 18 MX-size low-profile keycaps (for previews)
     - what: rectangle
-      where: true
+      where: /^(?!(mirror_)?thumb_reachy)/
       size: [18, 18]
+    - what: rectangle
+      where: /^(mirror_)?thumb_reachy/
+      size: [18, 27.525]
   # full outer envelope of the keyboard (matches stock keyboard)
   envelope:
     - what: rectangle
@@ -139,8 +142,11 @@ outlines:
   # keycap clearance cutouts for the case top frame
   caps:
     - what: rectangle
-      where: true
+      where: /^(?!(mirror_)?thumb_reachy)/
       size: [19, 19]
+    - what: rectangle
+      where: /^(mirror_)?thumb_reachy/
+      size: [19, 28.525]
   preview_mono:
     - envelope
     - -caps
@@ -154,8 +160,12 @@ pcbs:
     footprints:
       choc:
         what: choc
-        where: /^(matrix|thumb)_/
+        where: /^(matrix|thumb)_(?!reachy)/
         params: {hotswap: false, keycaps: true, from: "{{colrow}}", to: "{{column_net}}"}
+      choc_tall:
+        what: choc
+        where: /^thumb_reachy/
+        params: {hotswap: false, keycaps: false, from: "{{colrow}}", to: "{{column_net}}"}
       diode:
         what: diode_tht
         where: /^(matrix|thumb)_/
@@ -202,6 +212,10 @@ pcbs:
         what: tht2
         adjust: {shift: [121.15, 10.5], rotate: 90}
         params: {designator: R, from: LINK_F, to: LINK_B, pitch: 7.62, value: "10R 0.4W axial DIN0204"}
+      chg_tvs:   # ESD/surge clamp on the exposed charge-link contact (P4KE10A, DO-41, 8.55 V standoff)
+        what: tht2
+        adjust: {shift: [123.95, 9.5], rotate: 90}
+        params: {designator: D, from: LINK_B, to: GND, pitch: 10.16, drill: 1.0, value: "P4KE10A TVS, DO-41, band to LINK"}
       reset:
         what: tht2
         adjust: {shift: [107, 27], rotate: 90}
@@ -247,8 +261,12 @@ pcbs:
     footprints:
       choc:
         what: choc
-        where: /^mirror_/
+        where: /^mirror_(?!thumb_reachy)/
         params: {hotswap: false, keycaps: true, from: "{{colrow}}", to: "{{column_net}}"}
+      choc_tall:
+        what: choc
+        where: /^mirror_thumb_reachy/
+        params: {hotswap: false, keycaps: false, from: "{{colrow}}", to: "{{column_net}}"}
       diode:
         what: diode_tht
         where: /^mirror_/
@@ -295,6 +313,10 @@ pcbs:
         what: tht2
         adjust: {shift: [141.15, 10.5], rotate: 90}
         params: {designator: R, from: LINK_F, to: LINK_B, pitch: 7.62, value: "10R 0.4W axial DIN0204"}
+      chg_tvs:   # ESD/surge clamp on the exposed charge-link contact (P4KE10A, DO-41, 8.55 V standoff)
+        what: tht2
+        adjust: {shift: [138.35, 9.5], rotate: 90}
+        params: {designator: D, from: LINK_B, to: GND, pitch: 10.16, drill: 1.0, value: "P4KE10A TVS, DO-41, band to LINK"}
       reset:
         what: tht2
         adjust: {shift: [155.3, 27], rotate: 90}
@@ -340,8 +362,16 @@ pcbs:
     footprints:
       choc:
         what: choc
-        where: /^(matrix|thumb|mirror)_/
+        where: /^(?!(mirror_)?thumb_reachy)(matrix|thumb|mirror)_/
         params: {hotswap: false, keycaps: true, from: "{{colrow}}", to: "{{mono_col}}"}
+      choc_tall:
+        what: choc
+        where: /^thumb_reachy/
+        params: {hotswap: false, keycaps: false, from: "{{colrow}}", to: "{{mono_col}}"}
+      choc_tall1:
+        what: choc
+        where: /^mirror_thumb_reachy/
+        params: {hotswap: false, keycaps: false, from: "{{colrow}}", to: "{{mono_col}}"}
       diode:
         what: diode_tht
         where: /^(matrix|thumb|mirror)_/

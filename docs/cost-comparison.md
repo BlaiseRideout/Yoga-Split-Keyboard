@@ -13,7 +13,7 @@ Both builds are in the repo and use the same layout, case and firmware.
 | Switches | Soldered to the PCB (5-pin Choc holes) | Kailh hotswap sockets, so switches pull out |
 | Diodes | 1N4148, DO-35 through-hole, one per key, body flat on the bottom | 1N4148W SOD-123, placed by JLC |
 | Power switch, reset | C&K OS102011MA1QN1 right-angle THT slide; reset is 2 THT pads (short with tweezers, or fit a 2-pin tact switch; the keymap's `&bootloader` key covers normal use) | MSK-12C02 and SKQG, placed by JLC |
-| Charge link (split) | THT pogo pair, radial PTC (Bourns MF-R010, bend flat), axial 10 Ω | SMD pogo, 1206 PTC and 10 Ω, placed by JLC |
+| Charge link (split) | THT pogo pair, radial PTC (Bourns MF-R010, bend flat), axial 10 Ω, P4KE10A TVS | SMD pogo, 1206 PTC and 10 Ω, placed by JLC; P4KE10A TVS (THT, hand-fitted) |
 | Battery | Leads go through two holes | Leads go on two SMD pads |
 | **SMD parts you solder** | **None** (0 SMD pads on the boards) | **None** (JLC places them all) |
 | THT joints you solder, split | ~220: 54 switches × 2, 54 diodes × 2, plus switch, fuse, resistor, pogo, battery and controller | ~60: controller, nice!view header, battery, pogo |
@@ -56,12 +56,12 @@ controllers, screens, switches and caps.
 | 2 × nice!view | 34 | 34 | US vendor |
 | 2 × LiPo 402030 | 10 | 10 | |
 | 60 × Sunset tactile switches | 59 | 59 | Choc v2 Brown on the MX route: 36 |
-| 54 × Choc keycaps (MBK-style) | 40 | 40 | |
+| 54 Choc keycaps (MBK-style), 2 of them 1.5u | 41 | 41 | |
 | JLC PCBs: 2 designs × 5 pcs, 2-layer, 1.2 mm, lead-free HASL | 25 | 25 | Real quote, Nov 19: $12.70 per design |
 | JLC assembly: 2 of each design, setup, extended-part fees, parts | — | ~65 | THT has no assembly at all |
 | US tariff on the JLC order, ~35% DDP, collected at checkout | ~9 | ~32 | Rate per JLC's March 2026 notice |
 | JLC shipping, UPS Express Saver DDP to Kirkland | ~34 | ~34 | Quoted $26.08 for one design; both in one parcel ≈ $34. Global Standard Direct is $10–15 but takes 8–10 days |
-| THT parts: 100 × 1N4148, 2 slide switches, PTC + resistor | ~7 | — | Digikey/Mouser, domestic |
+| THT parts: 100 × 1N4148, 2 slide switches, PTC + resistor, 2 TVS | ~8 | — | Digikey/Mouser, domestic |
 | Charge-link pogo pair | 3 | 3 | |
 | Magnets (dock pack + join), dowels, inserts, screws | 20 | 20 | |
 | Magnetic viewing film | 8 | 8 | Optional: blaise can map the magnets with `kbdock-test.sh` instead |
@@ -163,7 +163,7 @@ controller, screen or LEDs, charge link, case and docking. Choc spacing only so 
 | Per build | 4-row (54 keys) | 3-row (42 keys) | Saves |
 |---|---|---|---|
 | Sunset tactile switches, 10-packs | 60 = $59 | 50 = $49 | **$10** |
-| Choc keycaps (MBK-style) | 54 = $40 | 40 × 1u + 2 × 1.5u ≈ $32 | **$8** |
+| Choc keycaps (MBK-style), 2 of them 1.5u | 54 ≈ $41 | 42 ≈ $32 | **$9** |
 | Diodes (THT) | 100-pack, ~$2 | same pack | — |
 | JLC assembly parts (SMT: 12 fewer sockets and diodes per pair) | | | ~$4 (SMT only) |
 | Joints to solder (THT split) | ~220 | ~172 | 48 fewer, about 25 minutes |

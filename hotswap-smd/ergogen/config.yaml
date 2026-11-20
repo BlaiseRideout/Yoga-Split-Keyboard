@@ -82,7 +82,7 @@ points:
         home:
           key: {mono_row: MR2, mono_col: MC7, mirror: {mono_row: MR5, mono_col: MC7}, splay: -10, origin: [-9, -8.5], column_net: C4, col_i: 4}
         reachy:
-          key: {mono_row: MR2, mono_col: MC8, mirror: {mono_row: MR5, mono_col: MC8}, splay: -10, origin: [-9, -8.5], column_net: C5, col_i: 5}
+          key: {mono_row: MR2, mono_col: MC8, mirror: {mono_row: MR5, mono_col: MC8}, splay: -10, origin: [-9, -8.5], shift: [0, 4.25], height: 25, column_net: C5, col_i: 5}
       rows:
         one: {row_net: R4, row_i: 4}
   mirror:
@@ -91,8 +91,11 @@ points:
 outlines:
   keycaps:   # 17.5 x 16.5 Choc keycap footprints (for previews)
     - what: rectangle
-      where: true
+      where: /^(?!(mirror_)?thumb_reachy)/
       size: [17.5, 16.5]
+    - what: rectangle
+      where: /^(mirror_)?thumb_reachy/
+      size: [17.5, 25]
   # full outer envelope of the keyboard (matches stock keyboard)
   envelope:
     - what: rectangle
@@ -137,8 +140,11 @@ outlines:
   # keycap clearance cutouts for the case top frame
   caps:
     - what: rectangle
-      where: true
+      where: /^(?!(mirror_)?thumb_reachy)/
       size: [18.5, 17.5]
+    - what: rectangle
+      where: /^(mirror_)?thumb_reachy/
+      size: [18.5, 26]
   preview_mono:
     - envelope
     - -caps
@@ -152,8 +158,13 @@ pcbs:
     footprints:
       choc:
         what: choc
-        where: /^(matrix|thumb)_/
+        where: /^(matrix|thumb)_(?!reachy)/
         params: {hotswap: true, keycaps: true, from: "{{colrow}}", to: "{{column_net}}"}
+      choc_tall:
+        what: choc
+        where: /^thumb_reachy/
+        adjust: {rotate: 90}
+        params: {hotswap: true, keycaps: false, from: "{{colrow}}", to: "{{column_net}}"}
       diode:
         what: diode_sod123
         where: /^(matrix|thumb)_/
@@ -200,6 +211,10 @@ pcbs:
         what: smd_1206
         adjust: {shift: [121, 15], rotate: 90}
         params: {designator: R, side: B, from: LINK_F, to: LINK_B, value: "10R 1206 0.25W"}
+      chg_tvs:   # ESD/surge clamp on the exposed charge-link contact (P4KE10A, DO-41, 8.55 V standoff)
+        what: tht2
+        adjust: {shift: [123.8, 8], rotate: 90}
+        params: {designator: D, from: LINK_B, to: GND, pitch: 10.16, drill: 1.0, value: "P4KE10A TVS, DO-41, band to LINK"}
       reset:
         what: button
         adjust: {shift: [104, 28], rotate: 90}
@@ -219,8 +234,13 @@ pcbs:
     footprints:
       choc:
         what: choc
-        where: /^mirror_/
+        where: /^mirror_(?!thumb_reachy)/
         params: {hotswap: true, keycaps: true, from: "{{colrow}}", to: "{{column_net}}"}
+      choc_tall:
+        what: choc
+        where: /^mirror_thumb_reachy/
+        adjust: {rotate: -90}
+        params: {hotswap: true, keycaps: false, from: "{{colrow}}", to: "{{column_net}}"}
       diode:
         what: diode_sod123
         where: /^mirror_/
@@ -267,6 +287,10 @@ pcbs:
         what: smd_1206
         adjust: {shift: [141, 15], rotate: 90}
         params: {designator: R, side: B, from: LINK_F, to: LINK_B, value: "10R 1206 0.25W"}
+      chg_tvs:   # ESD/surge clamp on the exposed charge-link contact (P4KE10A, DO-41, 8.55 V standoff)
+        what: tht2
+        adjust: {shift: [138.2, 8], rotate: 90}
+        params: {designator: D, from: LINK_B, to: GND, pitch: 10.16, drill: 1.0, value: "P4KE10A TVS, DO-41, band to LINK"}
       reset:
         what: button
         adjust: {shift: [158, 28], rotate: 90}
@@ -286,8 +310,18 @@ pcbs:
     footprints:
       choc:
         what: choc
-        where: /^(matrix|thumb|mirror)_/
+        where: /^(?!(mirror_)?thumb_reachy)(matrix|thumb|mirror)_/
         params: {hotswap: true, keycaps: true, from: "{{colrow}}", to: "{{mono_col}}"}
+      choc_tall:
+        what: choc
+        where: /^thumb_reachy/
+        adjust: {rotate: 90}
+        params: {hotswap: true, keycaps: false, from: "{{colrow}}", to: "{{mono_col}}"}
+      choc_tall1:
+        what: choc
+        where: /^mirror_thumb_reachy/
+        adjust: {rotate: -90}
+        params: {hotswap: true, keycaps: false, from: "{{colrow}}", to: "{{mono_col}}"}
       diode:
         what: diode_sod123
         where: /^(matrix|thumb|mirror)_/
