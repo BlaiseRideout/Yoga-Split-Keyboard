@@ -82,7 +82,7 @@ points:
         home:
           key: {mono_row: MR2, mono_col: MC7, mirror: {mono_row: MR5, mono_col: MC7}, splay: -10, origin: [-9, -8.5], column_net: C4, col_i: 4}
         reachy:
-          key: {mono_row: MR2, mono_col: MC8, mirror: {mono_row: MR5, mono_col: MC8}, splay: -10, origin: [-9, -8.5], column_net: C5, col_i: 5}
+          key: {mono_row: MR2, mono_col: MC8, mirror: {mono_row: MR5, mono_col: MC8}, splay: -10, origin: [-9, -8.5], shift: [0, 4.25], height: 25, column_net: C5, col_i: 5}
       rows:
         one: {row_net: R4, row_i: 4}
   mirror:
@@ -91,8 +91,11 @@ points:
 outlines:
   keycaps:   # 17.5 x 16.5 Choc keycap footprints (for previews)
     - what: rectangle
-      where: true
+      where: /^(?!(mirror_)?thumb_reachy)/
       size: [17.5, 16.5]
+    - what: rectangle
+      where: /^(mirror_)?thumb_reachy/
+      size: [17.5, 25]
   # full outer envelope of the keyboard (matches stock keyboard)
   envelope:
     - what: rectangle
@@ -137,8 +140,11 @@ outlines:
   # keycap clearance cutouts for the case top frame
   caps:
     - what: rectangle
-      where: true
+      where: /^(?!(mirror_)?thumb_reachy)/
       size: [18.5, 17.5]
+    - what: rectangle
+      where: /^(mirror_)?thumb_reachy/
+      size: [18.5, 26]
   preview_mono:
     - envelope
     - -caps
@@ -152,8 +158,13 @@ pcbs:
     footprints:
       choc:
         what: choc
-        where: /^(matrix|thumb)_/
+        where: /^(matrix|thumb)_(?!reachy)/
         params: {hotswap: false, keycaps: true, from: "{{colrow}}", to: "{{column_net}}"}
+      choc_tall:
+        what: choc
+        where: /^thumb_reachy/
+        adjust: {rotate: 90}
+        params: {hotswap: false, keycaps: false, from: "{{colrow}}", to: "{{column_net}}"}
       diode:
         what: diode_tht
         where: /^(matrix|thumb)_/
@@ -200,10 +211,40 @@ pcbs:
         what: tht2
         adjust: {shift: [121.0, 9], rotate: 90}
         params: {designator: R, from: LINK_F, to: LINK_B, pitch: 7.62, value: "10R 0.4W axial DIN0204"}
+      chg_tvs:   # ESD/surge clamp on the exposed charge-link contact (P4KE10A, DO-41, 8.55 V standoff)
+        what: tht2
+        adjust: {shift: [123.8, 8], rotate: 90}
+        params: {designator: D, from: LINK_B, to: GND, pitch: 10.16, drill: 1.0, value: "P4KE10A TVS, DO-41, band to LINK"}
       reset:
         what: tht2
         adjust: {shift: [104, 28], rotate: 90}
         params: {designator: SW, from: RST, to: GND, pitch: 2.54, value: "reset pads (short or 2-pin tact)", label: RST}
+      # Optional status LEDs instead of the nice!view (fit one or the other): 3 mm R/G/B LEDs on
+      # the display pins, resistors on the bottom like the diodes. Driven by zmk-rgbled-widget.
+      led_r:
+        what: led_3mm
+        adjust: {shift: [108.2, 29.2], rotate: 90}
+        params: {A: LED_R, color: red}
+      led_r_res:
+        what: tht2
+        adjust: {shift: [108.2, 17], rotate: 90}
+        params: {designator: R, from: CS, to: LED_R, pitch: 7.62, value: "680R axial DIN0204, on the bottom"}
+      led_g:
+        what: led_3mm
+        adjust: {shift: [112, 29.2], rotate: 90}
+        params: {A: LED_G, color: green}
+      led_g_res:
+        what: tht2
+        adjust: {shift: [112, 17], rotate: 90}
+        params: {designator: R, from: MOSI, to: LED_G, pitch: 7.62, value: "150R axial DIN0204, on the bottom"}
+      led_b:
+        what: led_3mm
+        adjust: {shift: [115.8, 29.2], rotate: 90}
+        params: {A: LED_B, color: blue}
+      led_b_res:
+        what: tht2
+        adjust: {shift: [115.8, 17], rotate: 90}
+        params: {designator: R, from: SCK, to: LED_B, pitch: 7.62, value: "150R axial DIN0204, on the bottom"}
       h1: {what: mounting_hole, adjust.shift: [-8, 66]}
       h2: {what: mounting_hole, adjust.shift: [-8, -28]}
       h3: {what: mounting_hole, adjust.shift: [40, -24]}
@@ -219,8 +260,13 @@ pcbs:
     footprints:
       choc:
         what: choc
-        where: /^mirror_/
+        where: /^mirror_(?!thumb_reachy)/
         params: {hotswap: false, keycaps: true, from: "{{colrow}}", to: "{{column_net}}"}
+      choc_tall:
+        what: choc
+        where: /^mirror_thumb_reachy/
+        adjust: {rotate: -90}
+        params: {hotswap: false, keycaps: false, from: "{{colrow}}", to: "{{column_net}}"}
       diode:
         what: diode_tht
         where: /^mirror_/
@@ -267,10 +313,40 @@ pcbs:
         what: tht2
         adjust: {shift: [141.0, 9], rotate: 90}
         params: {designator: R, from: LINK_F, to: LINK_B, pitch: 7.62, value: "10R 0.4W axial DIN0204"}
+      chg_tvs:   # ESD/surge clamp on the exposed charge-link contact (P4KE10A, DO-41, 8.55 V standoff)
+        what: tht2
+        adjust: {shift: [138.2, 8], rotate: 90}
+        params: {designator: D, from: LINK_B, to: GND, pitch: 10.16, drill: 1.0, value: "P4KE10A TVS, DO-41, band to LINK"}
       reset:
         what: tht2
         adjust: {shift: [158, 28], rotate: 90}
         params: {designator: SW, from: RST, to: GND, pitch: 2.54, value: "reset pads (short or 2-pin tact)", label: RST}
+      # Optional status LEDs instead of the nice!view (fit one or the other): 3 mm R/G/B LEDs on
+      # the display pins, resistors on the bottom like the diodes. Driven by zmk-rgbled-widget.
+      led_r:
+        what: led_3mm
+        adjust: {shift: [153.8, 29.2], rotate: 90}
+        params: {A: LED_R, color: red}
+      led_r_res:
+        what: tht2
+        adjust: {shift: [153.8, 17], rotate: 90}
+        params: {designator: R, from: CS, to: LED_R, pitch: 7.62, value: "680R axial DIN0204, on the bottom"}
+      led_g:
+        what: led_3mm
+        adjust: {shift: [150, 29.2], rotate: 90}
+        params: {A: LED_G, color: green}
+      led_g_res:
+        what: tht2
+        adjust: {shift: [150, 17], rotate: 90}
+        params: {designator: R, from: MOSI, to: LED_G, pitch: 7.62, value: "150R axial DIN0204, on the bottom"}
+      led_b:
+        what: led_3mm
+        adjust: {shift: [146.2, 29.2], rotate: 90}
+        params: {A: LED_B, color: blue}
+      led_b_res:
+        what: tht2
+        adjust: {shift: [146.2, 17], rotate: 90}
+        params: {designator: R, from: SCK, to: LED_B, pitch: 7.62, value: "150R axial DIN0204, on the bottom"}
       h1: {what: mounting_hole, adjust.shift: [270, 66]}
       h2: {what: mounting_hole, adjust.shift: [270, -28]}
       h3: {what: mounting_hole, adjust.shift: [222, -24]}
@@ -286,8 +362,18 @@ pcbs:
     footprints:
       choc:
         what: choc
-        where: /^(matrix|thumb|mirror)_/
+        where: /^(?!(mirror_)?thumb_reachy)(matrix|thumb|mirror)_/
         params: {hotswap: false, keycaps: true, from: "{{colrow}}", to: "{{mono_col}}"}
+      choc_tall:
+        what: choc
+        where: /^thumb_reachy/
+        adjust: {rotate: 90}
+        params: {hotswap: false, keycaps: false, from: "{{colrow}}", to: "{{mono_col}}"}
+      choc_tall1:
+        what: choc
+        where: /^mirror_thumb_reachy/
+        adjust: {rotate: -90}
+        params: {hotswap: false, keycaps: false, from: "{{colrow}}", to: "{{mono_col}}"}
       diode:
         what: diode_tht
         where: /^(matrix|thumb|mirror)_/
@@ -330,6 +416,32 @@ pcbs:
         what: tht2
         adjust: {shift: [118, 28], rotate: 90}
         params: {designator: SW, from: RST, to: GND, pitch: 2.54, value: "reset pads (short or 2-pin tact)", label: RST}
+      # Optional status LEDs instead of the nice!view (fit one or the other): 3 mm R/G/B LEDs on
+      # the display pins, resistors on the bottom like the diodes. Driven by zmk-rgbled-widget.
+      led_r:
+        what: led_3mm
+        adjust: {shift: [127.2, 29.2], rotate: 90}
+        params: {A: LED_R, color: red}
+      led_r_res:
+        what: tht2
+        adjust: {shift: [127.2, 17], rotate: 90}
+        params: {designator: R, from: CS, to: LED_R, pitch: 7.62, value: "680R axial DIN0204, on the bottom"}
+      led_g:
+        what: led_3mm
+        adjust: {shift: [131, 29.2], rotate: 90}
+        params: {A: LED_G, color: green}
+      led_g_res:
+        what: tht2
+        adjust: {shift: [131, 17], rotate: 90}
+        params: {designator: R, from: MOSI, to: LED_G, pitch: 7.62, value: "150R axial DIN0204, on the bottom"}
+      led_b:
+        what: led_3mm
+        adjust: {shift: [134.8, 29.2], rotate: 90}
+        params: {A: LED_B, color: blue}
+      led_b_res:
+        what: tht2
+        adjust: {shift: [134.8, 17], rotate: 90}
+        params: {designator: R, from: SCK, to: LED_B, pitch: 7.62, value: "150R axial DIN0204, on the bottom"}
       h1: {what: mounting_hole, adjust.shift: [-8, 66]}
       h2: {what: mounting_hole, adjust.shift: [-8, -28]}
       h3: {what: mounting_hole, adjust.shift: [40, -24]}

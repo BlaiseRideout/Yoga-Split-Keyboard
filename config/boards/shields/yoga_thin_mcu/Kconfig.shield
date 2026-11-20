@@ -1,0 +1,2 @@
+config SHIELD_YOGA_THIN_MCU
+    def_bool $(shields_list_contains,yoga_thin_mcu)

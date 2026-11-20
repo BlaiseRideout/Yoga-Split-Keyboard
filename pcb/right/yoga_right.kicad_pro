@@ -383,11 +383,11 @@
         "pattern": "R4"
       },
       {
-        "netclass": "Default",
+        "netclass": "Power",
         "pattern": "RAW"
       },
       {
-        "netclass": "Default",
+        "netclass": "Power",
         "pattern": "GND"
       },
       {
@@ -395,7 +395,7 @@
         "pattern": "RST"
       },
       {
-        "netclass": "Default",
+        "netclass": "Power",
         "pattern": "VCC"
       },
       {
@@ -427,16 +427,28 @@
         "pattern": "P9"
       },
       {
-        "netclass": "Default",
+        "netclass": "Power",
         "pattern": "BAT_P"
       },
       {
-        "netclass": "Default",
+        "netclass": "Power",
         "pattern": "LINK_B"
       },
       {
-        "netclass": "Default",
+        "netclass": "Power",
         "pattern": "LINK_F"
+      },
+      {
+        "netclass": "Default",
+        "pattern": "LED_R"
+      },
+      {
+        "netclass": "Default",
+        "pattern": "LED_G"
+      },
+      {
+        "netclass": "Default",
+        "pattern": "LED_B"
       }
     ]
   },

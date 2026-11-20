@@ -58,19 +58,69 @@ The matrix, pins and nets are identical to the Choc boards, so the **same ZMK sh
 run both. Only the physical layout ZMK Studio draws is the Choc one. The Choc hotswap socket
 (CPG135001S30) fits Choc v2 too.
 
+## Thumb keys
+
+Three thumb keys per half. The innermost one takes a **vertical 1.5u cap**, like the Corne's, on
+every layout (4-row and 3-row, Choc and MX, THT and SMT):
+
+* **Position:** its switch sits a quarter unit (4.25 mm Choc, 4.76 mm MX) further up along the key's
+  own axis, so the cap grows toward the key block. Its outer corner stays where the 1u key's was,
+  so it clears the board edge, the controller area and the neighbouring thumb key.
+* **Choc v1 (the Choc boards):** the switch is turned 90° under the cap, because a Choc v1 stem only
+  takes a cap one way round. The Corne Chocolate does the same.
+* **MX spacing (Choc v2, MX stem):** the cross stem takes a cap either way, so the switch isn't turned.
+* **Case and firmware:** the frame opening is 1.5u to match, and the ZMK physical layout marks the key
+  1.5u tall, so keymap editors draw it correctly. The keymap positions don't change.
+* **Caps:** two 1.5u caps per keyboard in place of two 1u caps (MBK and Corne-style sets include them).
+* **Source:** `tools/tall_thumb.py` applied it to each ergogen config; the 3-row config inherits it.
+
+## Thin build (PG1316S)
+
+A 6.4 mm version of the 3-row split with Kailh PG1316S switches: see [thin.md](thin.md).
+
+## 3-row variant: angled key blocks (`ergogen-3row/`, `pcb-3row/`)
+
+**This is the default layout** (blaise's choice, Nov 2026). The 4-row sections above remain as an option.
+
+![3-row split with angled key blocks](img/case_3row.png)
+
+3 × 6 keys plus 3 thumb keys per half (42 keys, the Corne layout), with each half's key block
+rotated **10° inward** so the column tops lean toward the centre, the way your hands sit when
+your elbows are relaxed. Choc spacing.
+
+* **1.5u inner thumb key,** like the Corne, as on every layout ([details](#thumb-keys)).
+* **Generated, not hand-edited:** `tools/make_3row.py [angle] [x] [y]` writes
+  `ergogen-3row/config.yaml` from the 4-row config. It drops the number row, renumbers the rows,
+  rotates the key block and keeps the mirror axis on the split line. Try another angle by
+  re-running it with a different number (the PCB, case outlines and firmware then need
+  regenerating).
+* **Unchanged:** the centre area (nice!nano, nice!view or status LEDs, battery, charge link, reset,
+  power switch), the mounting holes, the join faces and the docking magnet sites. The envelope is
+  the same 295.3 × 113 mm, so it docks the same way.
+* **Matrix:** split halves use 4 rows × 6 columns (rows on D4–D7). The mono uses 6 rows × 7
+  columns: left rows 0–2, right rows 3–5, and the six thumb keys in column 7. Still one diode per
+  key, so full NKRO.
+* **Firmware:** shields `yoga3_split_left`, `yoga3_split_right` and `yoga3_mono`. The keymaps come
+  from the 4-row ones minus the number row (`tools/port_3row_keymap.py`). Nothing is lost except
+  the base layer's number row, because the NUM layer already has the digits on the home row and the
+  symbols above them. The GAME layer loses its 1–5 keys.
+* **Space:** rotating the blocks leaves an empty triangle in front of the outer columns. The case
+  still covers the full footprint, so it docks and fills the folio the same way.
+* **Case:** `-D 'rows=3'` (`case/stl-3row/`), with the same tray features and frame options.
+
 ## Stack-up (z from the laptop screen up)
 
 | Layer | Thickness | Top at |
 |---|---|---|
 | Case floor (docking magnets sit in blind pockets with a 0.4 mm skin) | 1.0 | 1.0 |
-| Air gap for the THT diode bodies (1.9 mm), or the hotswap sockets (1.85 mm) on route B | 2.2 | 3.2 |
+| Air gap for the THT diode bodies (1.9 mm), or the hotswap sockets (1.85 mm) on the SMT build | 2.2 | 3.2 |
 | PCB (order at 1.2 mm) | 1.2 | 4.4 |
 | Controller, battery and nice!view under the top frame | 4.4 | 8.8 |
 | Top frame | 1.2 | **10.0** |
 | Choc v1 switch + low-profile keycap above the PCB | ~8.3 | **~12.7** |
 
 Ways to get thinner, roughly in order of payoff:
-1. Route B with SMD diodes and the switches soldered in instead of the sockets: −1.2 mm (gap shrinks to ~1 mm).
+1. The SMT build with SMD diodes and the switches soldered in instead of the sockets: −1.2 mm (gap shrinks to ~1 mm).
 2. Kailh PG1316S ultra-low-profile switches (solder-only, own keycaps): roughly −3 mm. This
    needs a new footprint and isn't designed here.
 3. Mount the nice!nano face-down without sockets and use a 1 mm FR4 frame instead of print: −1 mm.
@@ -136,11 +186,35 @@ ignores a north pole.
 
 ## Split joining
 
+![Join faces of the two halves](img/case_join.png)
+
 Each half's inner wall is 5 mm thick. It carries:
-* 3 × **6 × 3 mm N52** magnets, axis across the split, at y = −25, 18 and 62 mm. Glue them in
-  with **opposite poles facing out** on the two halves.
-* 2 × **3 × 6 mm steel dowel pins**, glued into one half, which locate in matching holes in the
-  other half and stop shear when you type.
+* 3 × **6 × 3 mm N52** magnets, axis across the split, at y = −8, 18 and 48 mm (MX: −5, 20, 50).
+  Glue them in with **opposite poles facing out** on the two halves.
+* 2 × **3 × 12 mm steel dowel pins** (MX: 3 × 10 mm), one at each end of the join (y = −24 and
+  66 mm; MX −20 and 70). Each pin is glued 6 mm into the left half and slides 6 mm into the right
+  half, so it takes the shear and twist when you type and carry the board.
+
+How the pins are set up, and why:
+* **Spread to the ends.** The two pins are 90 mm apart, nearly the whole join. Twisting the halves
+  against each other (picking the board up by one end, or typing hard on a corner) is resisted with
+  that much leverage, about twice what pins near the middle would give.
+* **6 mm deep on each side**, two pin diameters. That's the usual rule of thumb for a pin that
+  doesn't rock loose in plastic. The wall is only 5 mm, so a small printed boss behind each pin
+  closes in the last millimetre of the pocket. The bosses sit above the PCB edge, beside the
+  nice!nano, and the frame's locating rim is cut back over them.
+* **Above the PCB.** The pin axis is 1.9 mm above the PCB's top face (z = 6.3 mm), so the pocket can
+  run past the wall without hitting the board. The magnets stay at PCB level.
+* **Lead-in chamfer.** Each pocket has a 0.5 mm chamfer at its mouth so the pin finds the hole when
+  you bring the halves together.
+* **Fit.** Pockets are printed at 3.1 mm. Run a 3 mm drill through each one by hand before gluing.
+  On the left, glue the pin in with epoxy or CA, using the right half to hold it square while the
+  glue sets (wax the right half's pocket first). On the right the pin should slide in without play.
+* **MX:** the nice!nano sits 1.6 mm from the join wall on the MX boards, so the pockets there are
+  5.6 mm deep and the pins are 3 × 10 mm.
+
+Dowel pins (ISO 8734 / DIN 6325, hardened) cost about $8 for a pack of 50 from McMaster-Carr or
+Amazon, so the longer pins add about $2 to a build.
 
 That gives the UHK / Dygma-style "click together" join. A mechanical alternative is a sliding
 dovetail key printed separately. It's not modelled here, but it would replace the dowel holes.
@@ -151,9 +225,10 @@ When the halves are joined, a 2-pin magnetic pogo connector in the join wall lin
 so plugging USB into **either** half charges **both**.
 
 ```
- left half                                         right half
- LiPo+ ─ PTC 0.1 A ─ 10 Ω ─┐  pogo  ┌─ 10 Ω ─ PTC 0.1 A ─ LiPo+
- GND ──────────────────────┴─(2 pins)─┴──────────────────── GND
+ left half                                                  right half
+ LiPo+ ─ PTC 0.1 A ─ 10 Ω ─┬──────┐  pogo  ┌──────┬─ 10 Ω ─ PTC 0.1 A ─ LiPo+
+                          TVS     │        │     TVS
+ GND ─────────────────────┴───────┴(2 pins)┴──────┴──────────────────── GND
 ```
 
 * **Why the battery rail and not USB 5 V:** the nice!nano doesn't bring VBUS out to a header pin.
@@ -167,13 +242,25 @@ so plugging USB into **either** half charges **both**.
   one (≤ ~0.1 A). Each PTC fuse trips if the exposed contacts get shorted, for example by a stray
   magnet or a paperclip, and resets once the short is removed. Each cell's own protection board
   stays in circuit as well.
+* **ESD:** the pogo contacts are exposed whenever the halves are apart, so each half has a
+  **P4KE10A TVS diode** (through-hole, DO-41) from the contact to GND, right beside the 10 Ω
+  resistor. It clamps a static discharge before it reaches the cell or the nice!nano. Its standoff is
+  8.55 V, about twice the cell's 4.2 V, so it doesn't conduct in normal use: its leakage is at most
+  10 µA even at 8.55 V and far below that at 4.2 V. The THT and SMT boards both use this part, because
+  a low-profile SMD TVS would be the only SMD part on the THT build. Fit it flat on the top side, band
+  toward the pogo contact (the round pad, net LINK_B).
+* **A note from the nice!nano docs:** splitkb's FAQ warns against joining two halves' batteries
+  directly, because of unbalanced charging and shorts while unplugging. The link handles both: the
+  10 Ω resistors limit the balancing current to about 0.1 A and the PTCs trip on a short. Still, it
+  isn't something Nice Keyboards designed for, so if a cell ever runs warm while linked, run the
+  halves apart.
 * **Power switches:** the link sits on the battery side of each power switch, so the cells
   equalise even when both switches are off. To charge, the half you plug in must have its switch
   **on**, the same as charging a single nice!nano today.
 * **Apart, on the desk:** each half charges from its own USB-C port as before.
 * **Parts:** a generic 2-pin right-angle magnetic pogo pair (spring pins on the left, flat targets on
-  the right), plus per half a PTC (0.1 A hold) and a 10 Ω resistor. On route A these are a radial
-  Bourns MF-R010, bent flat, and an axial DIN0204. On route B they're 1206 SMD parts placed by JLC.
+  the right), plus per half a PTC (0.1 A hold), a 10 Ω resistor and a P4KE10A TVS diode. On the THT build these are a radial
+  Bourns MF-R010, bent flat, and an axial DIN0204. On the SMT build they're 1206 SMD parts placed by JLC.
   Pogo modules vary by vendor, so check the `chg_link` land pattern against the one you buy.
   The case has a 6.6 mm wide slot in each join wall for it, open at the top so the PCB drops in.
 
@@ -192,12 +279,43 @@ so plugging USB into **either** half charges **both**.
   Joined, the charge link keeps both halves topped up from the one cable. The mono has no such caveat.
 * Plug the cable into the **left** half for wired typing. Plugging it into the right half only charges.
 
+## Status LEDs instead of screens
+
+![Status LEDs in the top frame](img/case_leds.png)
+
+Each half can take **three 3 mm LEDs (red, green, blue) instead of the nice!view**. The THT boards
+(`pcb/`, `pcb-mx/`) have pads for both. The SMT boards in `hotswap-smd/` don't have the LED
+pads yet. **Fit one or the other on a half, never both,** because the LEDs share the display's pins.
+
+* **Wiring:** the LEDs' cathodes go to GND, and each anode goes through a resistor to one display
+  pin: red from CS (D1), green from MOSI (D2), blue from SCK (D3). Resistors: 680 Ω for red, 150 Ω
+  for green and blue (axial DIN0204, mounted on the bottom like the diodes). The nRF52840's pins
+  only source a few mA, so buy high-brightness diffused LEDs. Raise the values if they're too bright.
+* **Fitting:** the LEDs sit between the nice!view header and the battery pads. Seat them flat on the
+  PCB. At 5.3 mm tall, their domes sit in 3.3 mm holes in the top frame, 0.3 mm under the top.
+  Print the frame with `display = "leds"` (the `*_leds.stl` files) for the three holes instead of
+  the window.
+* **Firmware:** [zmk-rgbled-widget](https://github.com/caksoylar/zmk-rgbled-widget) (added to
+  `config/west.yml`, `v0.3` branch to match ZMK). Add the `yoga_status_leds` shield, as the
+  `*_leds` builds in `build.yaml` do. It blinks:
+  * **Battery** at power-on: green (above 80%), yellow, red (below 20%), and red again when
+    critical.
+  * **Connection** at power-on and on each profile change: blue when connected, yellow when
+    advertising, red when disconnected. On the right half, blue or red for the link to the left.
+  * Optional: the active layer (cyan blinks, or a colour per layer) on the left half or the mono.
+    Set `CONFIG_RGBLED_WIDGET_SHOW_LAYER_CHANGE` or `..._SHOW_LAYER_COLORS` in the `.conf`.
+* **What you lose:** the always-on readout. The LEDs blink on events and stay dark otherwise, which
+  saves power but means you don't see the layer or battery at a glance. A screen on the left and
+  LEDs on the right also works: build `yoga_split_left` with `nice_view` and `yoga_split_right_leds`.
+* **Cost:** about $1 of parts per half instead of a $17 nice!view.
+
 ## Electrical
 
 * MCU: nice!nano v2 (or any Pro Micro-footprint nRF52840). Battery → MSK-12C02 switch → RAW.
   On the split boards, the battery also goes to the charge link (above).
 * Display: nice!view on the standard ZMK pins (CS = D1, MOSI = D2, SCK = D3), header order
-  MOSI, SCK, VCC, GND, CS.
+  MOSI, SCK, VCC, GND, CS. Or, instead of the screen, three status LEDs on the same three pins
+  (see above).
 * **N-key rollover:** one diode per key, thumbs included, anode to the switch and cathode to the
   row (`col2row`), with no shared diodes and no shared matrix positions. `tools/check_matrix.py`
   checks every board, and the firmware sends NKRO HID reports.

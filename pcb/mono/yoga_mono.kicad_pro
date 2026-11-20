@@ -372,10 +372,6 @@
       },
       {
         "netclass": "Default",
-        "pattern": "reachy_one"
-      },
-      {
-        "netclass": "Default",
         "pattern": "mirror_outer_bottom"
       },
       {
@@ -480,6 +476,10 @@
       },
       {
         "netclass": "Default",
+        "pattern": "reachy_one"
+      },
+      {
+        "netclass": "Default",
         "pattern": "mirror_reachy_one"
       },
       {
@@ -507,11 +507,11 @@
         "pattern": "MR3"
       },
       {
-        "netclass": "Default",
+        "netclass": "Power",
         "pattern": "RAW"
       },
       {
-        "netclass": "Default",
+        "netclass": "Power",
         "pattern": "GND"
       },
       {
@@ -519,7 +519,7 @@
         "pattern": "RST"
       },
       {
-        "netclass": "Default",
+        "netclass": "Power",
         "pattern": "VCC"
       },
       {
@@ -535,8 +535,20 @@
         "pattern": "SCK"
       },
       {
-        "netclass": "Default",
+        "netclass": "Power",
         "pattern": "BAT_P"
+      },
+      {
+        "netclass": "Default",
+        "pattern": "LED_R"
+      },
+      {
+        "netclass": "Default",
+        "pattern": "LED_G"
+      },
+      {
+        "netclass": "Default",
+        "pattern": "LED_B"
       }
     ]
   },

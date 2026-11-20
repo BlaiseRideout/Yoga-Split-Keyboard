@@ -1,0 +1,29 @@
+/*
+ * Optional status LEDs that replace the nice!view (fit one or the other on each half).
+ * Three 3 mm LEDs, cathodes to GND, anodes through resistors to the nice!view's pins:
+ *   red   <- CS   (pro_micro D1, P0.06)
+ *   green <- MOSI (pro_micro D2, P0.17)
+ *   blue  <- SCK  (pro_micro D3, P0.20)
+ * Use with: shield: yoga_split_left yoga_status_leds  (never together with nice_view).
+ */
+/ {
+    aliases {
+        led-red = &status_led_r;
+        led-green = &status_led_g;
+        led-blue = &status_led_b;
+    };
+
+    status_leds {
+        compatible = "gpio-leds";
+        status = "okay";
+        status_led_r: status_led_r {
+            gpios = <&pro_micro 1 GPIO_ACTIVE_HIGH>;
+        };
+        status_led_g: status_led_g {
+            gpios = <&pro_micro 2 GPIO_ACTIVE_HIGH>;
+        };
+        status_led_b: status_led_b {
+            gpios = <&pro_micro 3 GPIO_ACTIVE_HIGH>;
+        };
+    };
+};

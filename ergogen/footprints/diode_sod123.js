@@ -1,7 +1,7 @@
 // 1N4148W SOD-123 SMD diode, bottom side by default (JLCPCB-assemblable, LCSC C81598).
 // from = switch side (anode), to = row net (cathode, pad 1)
 module.exports = {
-  params: { designator: 'D', side: 'B', from: undefined, to: undefined },
+  params: { designator: 'D', side: 'B', from: undefined, to: undefined, value: '1N4148W' },
   body: p => {
     const s = p.side
     const mir = s === 'B' ? ' (justify mirror)' : ''
@@ -10,7 +10,7 @@ module.exports = {
     ${p.at}
     (attr smd)
     (fp_text reference "${p.ref}" (at 0 -1.8 ${p.r}) (layer ${s}.SilkS) ${p.ref_hide} (effects (font (size 0.8 0.8) (thickness 0.12))${mir}))
-    (fp_text value 1N4148W (at 0 1.8 ${p.r}) (layer ${s}.Fab) (effects (font (size 0.8 0.8) (thickness 0.12))${mir}))
+    (fp_text value "${p.value}" (at 0 1.8 ${p.r}) (layer ${s}.Fab) (effects (font (size 0.8 0.8) (thickness 0.12))${mir}))
     (fp_line (start -2.35 -1) (end -2.35 1) (layer ${s}.SilkS) (width 0.12))
     (fp_line (start -2.35 -1) (end 1.65 -1) (layer ${s}.SilkS) (width 0.12))
     (fp_line (start -2.35 1) (end 1.65 1) (layer ${s}.SilkS) (width 0.12))

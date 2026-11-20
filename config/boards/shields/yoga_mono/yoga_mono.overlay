@@ -80,8 +80,8 @@
             , <&key_physical_attrs 100 100    1456     333       0    1506     383>
             , <&key_physical_attrs 100 100     378     408       0     428     458>
             , <&key_physical_attrs 100 100     485     418    1000     535     468>
-            , <&key_physical_attrs 100 100     589     446    2000     639     496>
-            , <&key_physical_attrs 100 100     866     446 (-2000)     916     496>
+            , <&key_physical_attrs 100 150     597     398    2000     647     473>
+            , <&key_physical_attrs 100 150     858     398 (-2000)     908     473>
             , <&key_physical_attrs 100 100     970     418 (-1000)    1020     468>
             , <&key_physical_attrs 100 100    1078     408       0    1128     458>
             ;

@@ -1,0 +1,16 @@
+(version 1)
+# 0.5 mm copper to board edge everywhere (the board setup minimum is 0 on these boards, so that) ...
+(rule "edge"
+  (constraint edge_clearance (min 0.5mm)))
+# small 0805/SOT-23 GND pads in the crowded controller area may get one thermal spoke instead of two
+(rule "thermal spokes"
+  (constraint min_resolved_spokes 1)
+  (condition "A.NetName == 'GND'"))
+# ... the mid-mount USB-C's pads and shell tabs run up to its notch and the back edge, as the footprint intends.
+(rule "usb-c notch"
+  (constraint edge_clearance (min 0.05mm))
+  (condition "A.Type == 'Pad' && (A.Pad_Number == 'A*' || A.Pad_Number == 'B*' || A.Pad_Number == 'S*')"))
+# ... and the tracks leaving those pads may come 0.15 mm from the notch (the board's clearance)
+(rule "usb-c tracks"
+  (constraint edge_clearance (min 0.15mm))
+  (condition "A.Type != 'Pad' && A.insideArea('usb_area')"))

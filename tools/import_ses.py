@@ -36,7 +36,8 @@ for ps in find(find(routes, 'library_out')[0], 'padstack') if find(routes, 'libr
 
 layers = {'F.Cu': pcbnew.F_Cu, 'B.Cu': pcbnew.B_Cu}
 for t in list(b.GetTracks()):
-    b.Remove(t)
+    if not t.IsLocked():   # locked tracks are pre-routed by prep_dsn.py (they come back as fixed wires too)
+        b.Remove(t)
 nw = nv = 0
 for net in find(find(routes, 'network_out')[0], 'net'):
     ni = b.FindNet(net[1])
@@ -57,7 +58,10 @@ for net in find(find(routes, 'network_out')[0], 'net'):
 
 pcbnew.SaveBoard(board, b)
 b = pcbnew.LoadBoard(board)
-pcbnew.WriteDRCReport(b, rpt, pcbnew.EDA_UNITS_MILLIMETRES, True)
+import os
+if os.path.exists(rpt): os.remove(rpt)
+if not pcbnew.WriteDRCReport(b, rpt, pcbnew.EDA_UNITS_MILLIMETRES, True):
+    sys.exit('DRC failed to run')
 txt = open(rpt).read()
 errs = [x for x in txt.split('\n[')[1:] if 'Severity: error' in x and not x.startswith(('lib_footprint', 'unconnected_items'))]
 unrouted = [l for l in txt.splitlines() if l.startswith('** Found') and 'unconnected' in l]

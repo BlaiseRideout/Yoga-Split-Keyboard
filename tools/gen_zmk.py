@@ -60,12 +60,13 @@ def physical(label, tname):
     for n in order:
         p = pts[n]
         cxu, cyu = (p['x'] - x0) / U, (y1 - p['y']) / U
-        x, y = cxu - 0.5, cyu - 0.5
+        hu = 1.5 if p['meta'].get('height', 16.5) > 20 else 1.0   # the vertical 1.5u inner thumb
+        x, y = cxu - 0.5, cyu - hu / 2
         r = -p['r']
         def n(v):  # devicetree cells: negative numbers must be parenthesised
             v = round(v * 100)
             return f'{v:>7}' if v >= 0 else f'{f"({v})":>7}'
-        keys.append(f'<&key_physical_attrs 100 100 {n(x)} {n(y)} {n(r)} {n(cxu)} {n(cyu)}>')
+        keys.append(f'<&key_physical_attrs 100 {n(hu).strip()} {n(x)} {n(y)} {n(r)} {n(cxu)} {n(cyu)}>')
     body = '\n            , '.join(keys)
     return f'''    {label}: {label} {{
         compatible = "zmk,physical-layout";

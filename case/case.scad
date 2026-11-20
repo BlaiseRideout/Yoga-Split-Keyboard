@@ -7,12 +7,16 @@
 //   openscad -D 'variant="mono"'  -D 'part="tray"'  -o tray_mono.stl  case.scad
 // variant: "left" | "right" | "mono"     part: "tray" | "frame" | "assembly"
 // spacing: "choc" (18 x 17 mm, ergogen/) | "mx" (19.05 mm, ergogen-mx/)
+// rows:    4 (default) | 3 (ergogen-3row/, case/stl-3row/; centre parts and holes as the Choc 4-row)
+// display: "view" (nice!view window) | "leds" (status-LED holes, *_leds.stl)
 
 variant = "left";
 part = "assembly";
 spacing = "choc";
+display = "view";   // "view": nice!view window | "leds": three light holes for the 3 mm status LEDs
 is_mx = spacing == "mx";
-odir = is_mx ? "outlines-mx/" : "outlines/";
+rows = 4;            // 4: number row (default) | 3: 3 x 6 + 3, key blocks angled inward (Choc only)
+odir = is_mx ? "outlines-mx/" : rows == 3 ? "outlines-3row/" : "outlines/";
 
 /* ---------- stack-up (z = 0 is the bottom face that sits on the laptop's lower screen) ---------- */
 floor_t      = 1.0;   // case floor
@@ -37,8 +41,11 @@ dock_mag_h   = 1.6;
 dock_skin    = 0.4;   // plastic left under each docking magnet
 join_mag_d   = 6.2;   // joining magnets: 6 x 3 mm N52 discs, axis across the split face
 join_mag_h   = 3.1;
-dowel_d      = 3.1;   // 3 x 6 mm steel dowel pins for alignment (glue into one half)
-dowel_h      = 3.2;
+dowel_d      = 3.1;   // steel dowel pins, glued into the left half, slip fit in the right:
+                      // 3 x 12 mm on Choc, 3 x 10 mm on MX (the nice!nano sits 1.6 mm from the join wall there)
+dowel_h      = is_mx ? 5.6 : 6.2;   // pocket depth per half
+dowel_z      = pcb_top + 1.9;   // pin axis above the PCB, so the pockets can run past the wall
+dowel_boss   = 1.0;   // plastic around the pocket where it runs into the cavity
 
 /* ---------- per-variant data (kept in sync with ergogen/config.yaml and ergogen-mx/config.yaml) ---------- */
 function mx(x) = 2*cx - x;  // mirror across split line
@@ -67,10 +74,22 @@ switch_x    = is_mx ? (variant == "left" ? 100 : variant == "right" ? 162.3 : 11
 reset_xy    = is_mx ? (variant == "left" ? [107,27] : variant == "right" ? [155.3,27] : [118,30])
                     : (variant == "left" ? [104,28] : variant == "right" ? [158,28] : [118,28]);
 view_y      = is_mx ? 51.6 : 49.6;   // nice!view centre (display window)
+// optional status LEDs (3 mm, R/G/B) in place of the nice!view, see ergogen led_r/led_g/led_b
+led_x       = is_mx ? (variant == "left" ? [110, 113.8, 117.6] : variant == "right" ? [152.3, 148.5, 144.7]
+                                                                 : [127.35, 131.15, 134.95])
+                    : (variant == "left" ? [108.2, 112, 115.8] : variant == "right" ? [153.8, 150, 146.2]
+                                                                 : [127.2, 131, 134.8]);
+led_y       = is_mx ? 31.3 : 29.2;
+// display opening in the frame: nice!view window, or three light holes the LED domes sit in
+module display2d() {
+    if (display == "leds") for (x = led_x) translate([x, led_y]) circle(d = 3.3, $fn = 32);
+    else translate([nano_x - 7.3, view_y - 18.3]) square([14.6, 36.6]);
+}
 usb_z       = pcb_top + 3.0;
 
-join_mag_y  = is_mx ? [-25, 22, 68] : [-25, 18, 62];
-dowel_y     = is_mx ? [-5, 45] : [-8, 42];
+// pins at the two ends of the join (most leverage against twisting), magnets between them
+join_mag_y  = is_mx ? [-5, 20, 50] : [-8, 18, 48];
+dowel_y     = is_mx ? [-20, 70] : [-24, 66];
 link_y      = is_mx ? 29.5 : 28;   // charge-link pogo connector (centre), see ergogen chg_link
 
 env_file    = str(odir, variant == "left" ? "envelope_left.dxf"
@@ -124,6 +143,8 @@ module tray() {
             for (p = dock) translate([p[0], p[1], 0]) cylinder(d = dock_mag_d + 2.4, h = dock_skin + dock_mag_h, $fn = 32);
             // PCB standoffs with heat-set inserts
             for (h = holes) translate([h[0], h[1], 0]) cylinder(d = boss_d, h = pcb_z, $fn = 32);
+            // dowel pockets run past the join wall: a small boss above the PCB edge closes them in
+            if (variant != "mono") for (y = dowel_y) dowel_boss(y);
         }
         // insert holes
         for (h = holes) translate([h[0], h[1], floor_t - 0.4]) cylinder(d = insert_d, h = 10, $fn = 24);
@@ -138,14 +159,25 @@ module tray() {
     }
 }
 
+module dowel_boss(y) {
+    s = variant == "left" ? -1 : 1;
+    r = dowel_d / 2 + dowel_boss;
+    z0 = pcb_top + 0.2;                          // clears the PCB
+    z1 = wall_top;                               // the frame's locating rim is cut back over the boss
+    x0 = s < 0 ? cx - dowel_h - dowel_boss : cx; // from the face to just past the pocket end
+    translate([x0, y - r, z0]) cube([dowel_h + dowel_boss, 2 * r, z1 - z0]);
+}
+
 // magnets + dowels on the split face (x = cx)
 module join_features() {
     s = variant == "left" ? -1 : 1;  // direction into the half
     zc = wall_top / 2;
     for (y = join_mag_y)
         translate([cx, y, zc]) rotate([0, s * 90, 0]) translate([0,0,-0.01]) cylinder(d = join_mag_d, h = join_mag_h, $fn = 32);
-    for (y = dowel_y)
-        translate([cx, y, zc]) rotate([0, s * 90, 0]) translate([0,0,-0.01]) cylinder(d = dowel_d, h = dowel_h, $fn = 24);
+    for (y = dowel_y) translate([cx, y, dowel_z]) rotate([0, s * 90, 0]) {
+        translate([0,0,-0.01]) cylinder(d = dowel_d, h = dowel_h, $fn = 24);
+        translate([0,0,-0.01]) cylinder(d1 = dowel_d + 1.0, d2 = dowel_d, h = 0.5, $fn = 24);   // lead-in chamfer
+    }
     // slot for the 2-pin magnetic pogo connector that carries battery charge across the join.
     // Open at the top so the PCB drops in with the connector fitted; its face sits flush with x = cx.
     translate([s < 0 ? cx - 6.1 : cx - 0.01, link_y - 3.3, pcb_top - 0.2]) cube([6.11, 6.6, wall_top]);
@@ -158,7 +190,7 @@ module frame() {
         envelope();
         caps2d();
         // nice!view: the whole 14 x 36 mm module sits in this opening, flush with the frame top
-        translate([nano_x - 7.3, view_y - 18.3]) square([14.6, 36.6]);
+        display2d();
         // reset button access
         translate(reset_xy) circle(d = 3, $fn = 24);
     }
@@ -167,7 +199,9 @@ module frame() {
         offset(delta = -0.15) cavity2d();
         offset(delta = -1.15) cavity2d();
         caps2d();
-        translate([nano_x - 7.3, view_y - 18.3]) square([14.6, 36.6]);
+        display2d();
+        if (variant != "mono") for (y = dowel_y)
+            translate([cx - 9, y - dowel_d / 2 - dowel_boss - 0.5]) square([18, dowel_d + 2 * dowel_boss + 1]);
     }
 }
 rim_h = 1.0;
