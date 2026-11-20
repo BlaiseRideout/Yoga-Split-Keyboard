@@ -6,12 +6,13 @@
 // variant: "left" | "right" | "mono"     part: "tray" | "frame" | "assembly"
 //
 // Stack-up (z = 0 on the laptop's lower screen):
-//   0.0 - 1.4  floor (6 x 1 mm docking magnets in 1.0 mm pockets, 0.4 mm skin)
+//   0.0 - 1.4  floor (6 x 1 mm docking magnets in 1.0 mm pockets, 0.4 mm skin); 0.6 under the cell
+//   0.6 - 5.6  503040 cell (5 x 30 x 40 mm) in a notch in the PCB's front corner, under a raised deck
 //   1.4 - 2.2  PCB, ordered at 0.8 mm. Nothing on its bottom side: it rests on the floor
 //   2.2 - 6.4  PG1316S switch + cap (4.2 mm)
 //   4.8 - 5.6  top frame over the keys: caps stand 0.8 mm proud of it
-//   5.6 - 6.4  raised deck over the controller, battery and LEDs (nice!nano 3.2 mm, cell 3.0 mm)
-// Overall 6.4 mm, against 7.8 mm for the stock keyboard.
+//   5.8 - 6.6  raised decks over the controller and LEDs (nice!nano 3.2 mm) and over the cell
+// Overall 6.6 mm at the decks and 6.4 mm at the key tops, against 7.8 mm for the stock keyboard.
 
 variant = "left";
 part = "assembly";
@@ -23,8 +24,8 @@ pcb_z     = floor_t;
 pcb_top   = pcb_z + pcb_t;          // 2.2
 low_z     = 4.8;                    // underside of the frame over the keys (= tray wall top)
 low_t     = 0.8;                    // frame over the keys: 4.8 - 5.6
-deck_z    = low_z + low_t;          // 5.6: underside of the raised deck
-deck_t    = 0.8;                    // raised deck: 5.6 - 6.4
+deck_z    = 5.8;                    // underside of the raised decks (cell top 5.6 + 0.2)
+deck_t    = 0.8;                    // raised decks: 5.8 - 6.6
 top_z     = deck_z + deck_t;        // 6.4 overall
 lip       = 1.2;                    // the deck's edge wall where it meets the low frame
 wall      = 2.0;
@@ -44,7 +45,7 @@ holes_left  = [[-8,66],[-8,-28],[40,-24],[47.5,69],[101.3,68],[122.5,-30]];
 holes_right = [for (h = holes_left) [mx(h[0]), h[1]]];
 dock_left   = [[-9,71],[20,71],[40,71],[75,71],[110,71],
                [-10.5,40],[-10.5,10],
-               [-6,-32.5],[20,-32.5],[46,-32.5],[110,-32.5],
+               [-10.5,-20],[46,-32.5],[110,-32.5],   // the front-left corner holds the cell
                [119,2],[121,38]];
 dock_right  = [for (p = dock_left) [mx(p[0]), p[1]]];
 join_mag_y  = [-12, 8, 42, 56];
@@ -64,16 +65,30 @@ pcb_file = str(odir, variant == "left" ? "pcb_left.dxf" : variant == "right" ? "
 
 module envelope() import(env_file);
 module pcb2d()    import(pcb_file);
-module cavity2d() offset(delta = pcb_gap) pcb2d();
+// battery notch in the PCB (see ergogen-thin pcb_mono): the cell drops through it onto the floor
+cell_floor = 0.6;
+module cell2d() {
+    if (variant != "right") translate([-4.5, -35.5]) square([41, 32.5]);
+    if (variant != "left")  translate([mx(36.5), -35.5]) square([41, 32.5]);
+}
+module cavity2d() offset(delta = pcb_gap) union() { pcb2d(); cell2d(); }
 module caps2d()   offset(delta = 0.5) import(str(odir, "caps.dxf"));
 
 // the raised deck: controller, battery, charge parts and LEDs. Keys stay open through it.
-module deck2d() difference() {
+module centre_deck2d() difference() {
     intersection() {
         envelope();
         if (variant == "left")  translate([103, -1.5]) square([cx - 103 + 1, 100]);
         if (variant == "right") translate([cx - 1, -1.5]) square([mx(103) - cx + 1, 100]);
         if (variant == "mono")  translate([121, -1.5]) square([20, 100]);
+    }
+    caps2d();
+}
+// the decks: over the centre parts, and over the cell in the front corner
+module deck2d() difference() {
+    union() {
+        centre_deck2d();
+        intersection() { envelope(); offset(delta = lip + 0.8) cell2d(); }
     }
     caps2d();
 }
@@ -111,6 +126,8 @@ module tray() difference() {
         translate([0, 0, -0.01]) cylinder(d = screw_d, h = floor_t + 0.02, $fn = 24);
         translate([0, 0, -0.01]) cylinder(d1 = csk_d, d2 = screw_d, h = (csk_d - screw_d) / 2, $fn = 24);
     }
+    // the cell's pocket: floor thinned to 0.6 mm under it
+    translate([0, 0, cell_floor]) linear_extrude(floor_t) offset(delta = 0.3) cell2d();
     // docking magnets: blind pockets opened from the inside, under the PCB
     for (p = dock) translate([p[0], p[1], dock_skin]) cylinder(d = dock_mag_d, h = dock_mag_h + 0.01, $fn = 32);
     // USB-C opening (nice!nano soldered flat on the PCB, mid-mount port)

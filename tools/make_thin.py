@@ -7,8 +7,8 @@ Starts from ergogen-3row/config.yaml (run tools/make_3row.py first) and changes:
 * diodes: SOD-123 on the TOP side, in the gap between columns, so the bottom of the PCB is flat and
   sits on the case floor;
 * everything else SMD on the top side too: side slide switch, 1206 fuse and resistor, SOD-123FL TVS,
-  0805 status LEDs and resistors (no nice!view: it's too tall), reset pads; the battery (301230, 3 mm)
-  lies on the PCB beside the controller;
+  0805 status LEDs and resistors (no nice!view: it's too tall), reset pads;
+* battery: a 4 x 30 x 40 mm cell (403040) in a notch in the PCB's front corner, on a thinned floor;
 * PCB ordered at 0.8 mm.
 usage: python3 tools/make_thin.py
 """
@@ -26,6 +26,16 @@ for name, size in (('keycaps', '[16.05, 16.25]'), ('caps', '[17.05, 17.25]')):
     assert m, name
     s = s[:m.start()] + m.group(1) + f'    - what: rectangle\n      where: true\n      size: {size}' + s[m.end():]
 s = s.replace('# 17.5 x 16.5 Choc keycap footprints', '# 16.05 x 16.25 PG1316S keycaps')
+
+# --- battery notches in the front corners (x -4.5 .. 36.5, open to the front edge), both sides
+CELL = '''    - what: rectangle
+      operation: subtract
+      size: [41, 40]
+      adjust.shift: [{x}, -23]
+'''
+m = re.search(r'(  pcb_mono:\n    - what: rectangle\n      size: [^\n]*\n      corner: [^\n]*\n      adjust.shift: [^\n]*\n)', s)
+assert m
+s = s[:m.end()] + CELL.format(x=16) + CELL.format(x=246) + s[m.end():]
 
 # --- footprint blocks, section by section
 def blocks(sec):
@@ -61,7 +71,9 @@ def centre(side, keys_where, col_net, row_net):
          fp('diode', 'diode_sod123', where=keys_where, adjust='{shift: [9, 0], rotate: 90}',
             params=f'{{side: F, from: "{{{{colrow}}}}", to: "{{{{{row_net}}}}}"}}')]
     t.append(fp('power', 'power_switch', X(93) + m, 68, 0, '{from: BAT_P, to: RAW}'))
-    t.append(fp('battery', 'battery_pads', Y(112), 32.6, 0, '{pos: BAT_P, neg: GND}'))
+    # the cell (403040, 4 x 30 x 40 mm) sits in a notch in the PCB in the front corner, on a thinned
+    # floor, so it's 4 mm thick without making the case thicker; its leads go to these pads
+    t.append(fp('battery', 'battery_pads', 39.5 if side != 'right' else 262 - 39.5, -8, 90, '{pos: BAT_P, neg: GND}'))
     t.append(fp('reset', 'tht2', Y(118.3), 33, 0,
                 '{designator: SW, from: RST, to: GND, pitch: 2.54, value: "reset pads (short with tweezers)", label: RST}'))
     if side != 'mono':

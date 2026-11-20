@@ -101,6 +101,14 @@ outlines:
       size: [board_w - 2*wall, board_h - 2*wall]
       corner: 3.5
       adjust.shift: [cx, cy]
+    - what: rectangle
+      operation: subtract
+      size: [41, 40]
+      adjust.shift: [16, -23]
+    - what: rectangle
+      operation: subtract
+      size: [41, 40]
+      adjust.shift: [246, -23]
   _left_clip:
     - what: rectangle
       size: [board_w/2, board_h + 10]
@@ -161,7 +169,7 @@ pcbs:
         params: {from: BAT_P, to: RAW}
       battery:
         what: battery_pads
-        adjust: {shift: [112, 32.6], rotate: 0}
+        adjust: {shift: [39.5, -8], rotate: 90}
         params: {pos: BAT_P, neg: GND}
       reset:
         what: tht2
@@ -255,7 +263,7 @@ pcbs:
         params: {from: BAT_P, to: RAW}
       battery:
         what: battery_pads
-        adjust: {shift: [150, 32.6], rotate: 0}
+        adjust: {shift: [222.5, -8], rotate: 90}
         params: {pos: BAT_P, neg: GND}
       reset:
         what: tht2
@@ -349,7 +357,7 @@ pcbs:
         params: {from: BAT_P, to: RAW}
       battery:
         what: battery_pads
-        adjust: {shift: [130, 32.6], rotate: 0}
+        adjust: {shift: [39.5, -8], rotate: 90}
         params: {pos: BAT_P, neg: GND}
       reset:
         what: tht2
