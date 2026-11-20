@@ -19,6 +19,14 @@ PARTS = {  # footprint name -> (comment, footprint label, LCSC)
     # charge link (split halves only); the pogo connector itself is hand-fitted
     'SMD_1206:10R': ('10R 1206 0.25W resistor', '1206', 'C17903?'),
     'SMD_1206:PTC': ('PTC resettable fuse 1206, 0.1 A hold', '1206', 'C70069?'),
+    # thin build (pcb-thin/): everything is machine-placed on the top side
+    'PG1316S': ('Kailh PG1316S switch (consign if LCSC has none)', 'PG1316S', '?'),
+    'TVS': ('SMF10A TVS diode, SOD-123FL', 'SOD-123FL', '?'),
+    'SMD_0805_LED:red': ('red LED 0805', '0805', '?'),
+    'SMD_0805_LED:green': ('green LED 0805', '0805', '?'),
+    'SMD_0805_LED:blue': ('blue LED 0805', '0805', '?'),
+    'SMD_0805:680R': ('680R 0805 resistor', '0805', '?'),
+    'SMD_0805:150R': ('150R 0805 resistor', '0805', '?'),
 }
 
 rows, groups = [], collections.defaultdict(list)
@@ -28,6 +36,10 @@ for fp in b.GetFootprints():
     key = f'{lib}:{name}' if lib else name
     if name == 'SMD_1206':
         key = 'SMD_1206:' + ('PTC' if 'PTC' in fp.GetValue() else '10R')
+    if name == 'D_SOD-123' and any(pd.GetNetname() == 'LINK_B' for pd in fp.Pads()):
+        key = name = 'TVS'
+    if name.startswith('SMD_0805'):
+        key = name + ':' + fp.GetValue().split()[0]
     if key not in PARTS and name not in PARTS or (name == 'SMD_1206' and key not in PARTS):
         continue
     part = PARTS.get(key) or PARTS[name]

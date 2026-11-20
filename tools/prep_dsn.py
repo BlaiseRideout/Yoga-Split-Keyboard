@@ -48,3 +48,25 @@ t = t[:m.start(1)] + ' '.join(keep) + t[m.end(1):]
 t = t.replace('(class Power\n', '(class Power ' + ' '.join(moved) + '\n', 1)
 open(dsn, 'w').write(t)
 print('power nets', moved)
+# Freerouting keeps wires only the default clearance (0.2 mm) from the board edge, under the 0.5 mm
+# edge rule, which shows up on the join edges. Add a 0.45 mm wire keep-out band inside the outline.
+try:
+    from shapely.geometry import Polygon, box
+    m = re.search(r'\(boundary\s*\(path pcb 0\s+([-\d.\s]+)\)', t)
+    v = [float(x) for x in m.group(1).split()]
+    poly = Polygon(list(zip(v[0::2], v[1::2])))
+    band = poly.difference(poly.buffer(-450, join_style=2))
+    x0, y0, x1, y1 = poly.bounds; xm, ym = (x0 + x1) / 2, (y0 + y1) / 2
+    kos = []
+    for q in (box(x0 - 1, y0 - 1, xm, ym), box(xm, y0 - 1, x1 + 1, ym), box(x0 - 1, ym, xm, y1 + 1), box(xm, ym, x1 + 1, y1 + 1)):
+        piece = band.intersection(q)
+        for g in getattr(piece, 'geoms', [piece]):
+            if g.geom_type != 'Polygon' or g.is_empty: continue
+            pts = ' '.join(f'{x:.1f} {y:.1f}' for x, y in g.exterior.coords)
+            kos.append(f'    (keepout "" (polygon signal 0 {pts}))')
+    i = t.index('(boundary')
+    t = t[:i] + '\n'.join(kos).strip() + '\n    ' + t[i:]
+    open(dsn, 'w').write(t)
+    print('edge keep-outs', len(kos))
+except ImportError:
+    print('shapely missing: no edge keep-outs')

@@ -74,6 +74,10 @@ every layout (4-row and 3-row, Choc and MX, THT and SMT):
 * **Caps:** two 1.5u caps per keyboard in place of two 1u caps (MBK and Corne-style sets include them).
 * **Source:** `tools/tall_thumb.py` applied it to each ergogen config; the 3-row config inherits it.
 
+## Thin build (PG1316S)
+
+A 6.4 mm version of the 3-row split with Kailh PG1316S switches: see [thin.md](thin.md).
+
 ## 3-row variant: angled key blocks (`ergogen-3row/`, `pcb-3row/`)
 
 **This is the default layout** (blaise's choice, Nov 2026). The 4-row sections above remain as an option.
