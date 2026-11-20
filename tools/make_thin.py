@@ -101,9 +101,9 @@ def centre(side, keys_where, col_net, row_net):
         kind = 'male' if side == 'left' else 'female'
         ab = 'a: LINK_B, b: GND' if side == 'left' else 'a: GND, b: LINK_B'
         t.append(fp('chg_link', 'charge_link', X(125.5), 28, r, f'{{{ab}, kind: {kind}}}'))
-        t.append(fp('chg_fuse', 'smd_1206', X(121.5), 22, 90, '{designator: F, side: F, from: BAT_P, to: LINK_F, value: "PTC 0.1A hold 1206"}'))
-        t.append(fp('chg_res', 'smd_1206', X(121.5), 16.5, 90, '{designator: R, side: F, from: LINK_F, to: LINK_B, value: "10R 1206 0.25W"}'))
-        t.append('      # ESD clamp on the exposed charge-link contact (SMF10A, SOD-123FL, 10 V standoff)')
+        # the link carries USB 5 V (CHG_IN, below), not the cell: each half's own charger charges its own cell
+        t.append(fp('chg_fuse', 'smd_1206', X(121.5), 22, 90, '{designator: F, side: F, from: CHG_IN, to: LINK_B, value: "PTC 0.2A hold 1206"}'))
+        t.append('      # ESD clamp on the exposed charge-link contact (SMF5.0A, SOD-123FL, 5 V standoff)')
         t.append(fp('chg_tvs', 'diode_sod123', X(124.2), 20, 90, '{designator: D, side: F, from: GND, to: LINK_B}'))
     t.append('      # status LEDs (0805, red/green/blue) on the display pins, driven by zmk-rgbled-widget')
     for y, c, net, pin, val in ((3, 'r', 'LED_R', 'CS', '680R'), (6.5, 'g', 'LED_G', 'MOSI', '150R'), (10, 'b', 'LED_B', 'SCK', '150R')):
@@ -129,6 +129,7 @@ def controller(side, Y, mcu_nets):
         nets[PROMICRO_TO_PAD[pin]] = net
     params = ', '.join(f'P{k}: {v}' for k, v in sorted(nets.items()))
     r = lambda d, f, to, v: f'{{designator: {d}, from: {f}, to: {to}, value: "{v}"}}'
+    cin = 'VBUS' if side == 'mono' else 'CHG_IN'
     t = ['      # on-board controller: Raytac MDBT50Q-1MV2 (nRF52840), antenna at the back edge',
          fp('mcu', 'mdbt50q', Y(106.3), 64.85, 0, f'{{designator: IC, value: "MDBT50Q-1MV2", {params}}}'),
          fp('usb', 'usbc_mid', mx, 72.6 - 5.5, 0,
@@ -136,10 +137,11 @@ def controller(side, Y, mcu_nets):
          fp('esd', 'sot23', mx, 62, 0, '{designator: IC, value: "USBLC6-2SC6", P1: USB_DP, P6: USB_DP, P3: USB_DM, P4: USB_DM, P2: GND, P5: VBUS}'),
          fp('r_cc1', 'smd_0805', mx + 3.7, 62, 90, r('R', 'CC1', 'GND', '5.1k 0805')),
          fp('r_cc2', 'smd_0805', mx - 3.7, 62, 90, r('R', 'CC2', 'GND', '5.1k 0805')),
-         '      # Li-ion charger, 100 mA (PROG 10k); its CHRG output is unused',
-         fp('chg', 'sot23', mx, 56, 0, '{designator: IC, value: "TP4054", pins: 5, P2: GND, P3: BAT_P, P4: VBUS, P5: PROG}'),
+         '      # Li-ion charger, 100 mA (PROG 10k); its CHRG output is unused. On the split halves it runs from',
+         '      # CHG_IN: this half\'s USB 5 V through a Schottky, or the other half\'s over the charge link',
+         fp('chg', 'sot23', mx, 56, 0, f'{{designator: IC, value: "TP4054", pins: 5, P2: GND, P3: BAT_P, P4: {cin}, P5: PROG}}'),
          fp('r_prog', 'smd_0805', mx + 3.7, 56, 90, r('R', 'PROG', 'GND', '10k 0805')),
-         fp('c_chg', 'smd_0805', mx - 3.7, 56, 90, r('C', 'VBUS', 'GND', '4.7uF 0805')),
+         fp('c_chg', 'smd_0805', mx - 3.7, 56, 90, r('C', cin, 'GND', '4.7uF 0805')),
          fp('c_bat', 'smd_0805', mx, 52.5, 0, r('C', 'BAT_P', 'GND', '4.7uF 0805')),
          '      # power path as on the nRFMicro: USB feeds RAW through the Schottky and turns the P-MOSFET off;',
          '      # without USB the MOSFET connects the (switched) cell to RAW. RAW is the nRF52840\'s VDDH.',
@@ -153,6 +155,8 @@ def controller(side, Y, mcu_nets):
          fp('c_xl1', 'smd_0805', Y(102.25), 51, 90, r('C', 'XL1', 'GND', '20pF 0805')),
          fp('c_xl2', 'smd_0805', Y(104.75), 51, 90, r('C', 'XL2', 'GND', '20pF 0805')),
          fp('swd', 'swd_pads', Y(106.5), 45.5, 0, '{}')]
+    if side != 'mono':
+        t.append(fp('d_chg', 'diode_sod123', mx, 59, 0, '{designator: D, side: F, from: VBUS, to: CHG_IN, value: "B5819W"}'))
     return t
 
 def mcu_params(bl):

@@ -10,7 +10,7 @@
 (rule "usb-c notch"
   (constraint edge_clearance (min 0.05mm))
   (condition "A.Type == 'Pad' && (A.Pad_Number == 'A*' || A.Pad_Number == 'B*' || A.Pad_Number == 'S*')"))
-# ... and the tracks leaving those pads may come 0.2 mm from the notch (Freerouting's clearance)
+# ... and the tracks leaving those pads may come 0.15 mm from the notch (the board's clearance)
 (rule "usb-c tracks"
   (constraint edge_clearance (min 0.15mm))
   (condition "A.Type != 'Pad' && A.insideArea('usb_area')"))

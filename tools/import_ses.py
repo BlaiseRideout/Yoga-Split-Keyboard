@@ -36,7 +36,8 @@ for ps in find(find(routes, 'library_out')[0], 'padstack') if find(routes, 'libr
 
 layers = {'F.Cu': pcbnew.F_Cu, 'B.Cu': pcbnew.B_Cu}
 for t in list(b.GetTracks()):
-    b.Remove(t)
+    if not t.IsLocked():   # locked tracks are pre-routed by prep_dsn.py (they come back as fixed wires too)
+        b.Remove(t)
 nw = nv = 0
 for net in find(find(routes, 'network_out')[0], 'net'):
     ni = b.FindNet(net[1])

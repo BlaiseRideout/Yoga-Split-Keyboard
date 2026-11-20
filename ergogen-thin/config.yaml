@@ -192,12 +192,8 @@ pcbs:
       chg_fuse:
         what: smd_1206
         adjust: {shift: [121.5, 22], rotate: 90}
-        params: {designator: F, side: F, from: BAT_P, to: LINK_F, value: "PTC 0.1A hold 1206"}
-      chg_res:
-        what: smd_1206
-        adjust: {shift: [121.5, 16.5], rotate: 90}
-        params: {designator: R, side: F, from: LINK_F, to: LINK_B, value: "10R 1206 0.25W"}
-      # ESD clamp on the exposed charge-link contact (SMF10A, SOD-123FL, 10 V standoff)
+        params: {designator: F, side: F, from: CHG_IN, to: LINK_B, value: "PTC 0.2A hold 1206"}
+      # ESD clamp on the exposed charge-link contact (SMF5.0A, SOD-123FL, 5 V standoff)
       chg_tvs:
         what: diode_sod123
         adjust: {shift: [124.2, 20], rotate: 90}
@@ -248,11 +244,12 @@ pcbs:
         what: smd_0805
         adjust: {shift: [115.2, 62], rotate: 90}
         params: {designator: R, from: CC2, to: GND, value: "5.1k 0805"}
-      # Li-ion charger, 100 mA (PROG 10k); its CHRG output is unused
+      # Li-ion charger, 100 mA (PROG 10k); its CHRG output is unused. On the split halves it runs from
+      # CHG_IN: this half's USB 5 V through a Schottky, or the other half's over the charge link
       chg:
         what: sot23
         adjust: {shift: [118.9, 56], rotate: 0}
-        params: {designator: IC, value: "TP4054", pins: 5, P2: GND, P3: BAT_P, P4: VBUS, P5: PROG}
+        params: {designator: IC, value: "TP4054", pins: 5, P2: GND, P3: BAT_P, P4: CHG_IN, P5: PROG}
       r_prog:
         what: smd_0805
         adjust: {shift: [122.6, 56], rotate: 90}
@@ -260,7 +257,7 @@ pcbs:
       c_chg:
         what: smd_0805
         adjust: {shift: [115.2, 56], rotate: 90}
-        params: {designator: C, from: VBUS, to: GND, value: "4.7uF 0805"}
+        params: {designator: C, from: CHG_IN, to: GND, value: "4.7uF 0805"}
       c_bat:
         what: smd_0805
         adjust: {shift: [118.9, 52.5], rotate: 0}
@@ -307,6 +304,10 @@ pcbs:
         what: swd_pads
         adjust: {shift: [106.5, 45.5], rotate: 0}
         params: {}
+      d_chg:
+        what: diode_sod123
+        adjust: {shift: [118.9, 59], rotate: 0}
+        params: {designator: D, side: F, from: VBUS, to: CHG_IN, value: "B5819W"}
       h1: {what: mounting_hole, adjust.shift: [-8, 66]}
       h2: {what: mounting_hole, adjust.shift: [-8, -28]}
       h3: {what: mounting_hole, adjust.shift: [40, -24]}
@@ -345,12 +346,8 @@ pcbs:
       chg_fuse:
         what: smd_1206
         adjust: {shift: [140.5, 22], rotate: 90}
-        params: {designator: F, side: F, from: BAT_P, to: LINK_F, value: "PTC 0.1A hold 1206"}
-      chg_res:
-        what: smd_1206
-        adjust: {shift: [140.5, 16.5], rotate: 90}
-        params: {designator: R, side: F, from: LINK_F, to: LINK_B, value: "10R 1206 0.25W"}
-      # ESD clamp on the exposed charge-link contact (SMF10A, SOD-123FL, 10 V standoff)
+        params: {designator: F, side: F, from: CHG_IN, to: LINK_B, value: "PTC 0.2A hold 1206"}
+      # ESD clamp on the exposed charge-link contact (SMF5.0A, SOD-123FL, 5 V standoff)
       chg_tvs:
         what: diode_sod123
         adjust: {shift: [137.8, 20], rotate: 90}
@@ -401,11 +398,12 @@ pcbs:
         what: smd_0805
         adjust: {shift: [139.4, 62], rotate: 90}
         params: {designator: R, from: CC2, to: GND, value: "5.1k 0805"}
-      # Li-ion charger, 100 mA (PROG 10k); its CHRG output is unused
+      # Li-ion charger, 100 mA (PROG 10k); its CHRG output is unused. On the split halves it runs from
+      # CHG_IN: this half's USB 5 V through a Schottky, or the other half's over the charge link
       chg:
         what: sot23
         adjust: {shift: [143.1, 56], rotate: 0}
-        params: {designator: IC, value: "TP4054", pins: 5, P2: GND, P3: BAT_P, P4: VBUS, P5: PROG}
+        params: {designator: IC, value: "TP4054", pins: 5, P2: GND, P3: BAT_P, P4: CHG_IN, P5: PROG}
       r_prog:
         what: smd_0805
         adjust: {shift: [146.8, 56], rotate: 90}
@@ -413,7 +411,7 @@ pcbs:
       c_chg:
         what: smd_0805
         adjust: {shift: [139.4, 56], rotate: 90}
-        params: {designator: C, from: VBUS, to: GND, value: "4.7uF 0805"}
+        params: {designator: C, from: CHG_IN, to: GND, value: "4.7uF 0805"}
       c_bat:
         what: smd_0805
         adjust: {shift: [143.1, 52.5], rotate: 0}
@@ -460,6 +458,10 @@ pcbs:
         what: swd_pads
         adjust: {shift: [155.5, 45.5], rotate: 0}
         params: {}
+      d_chg:
+        what: diode_sod123
+        adjust: {shift: [143.1, 59], rotate: 0}
+        params: {designator: D, side: F, from: VBUS, to: CHG_IN, value: "B5819W"}
       h1: {what: mounting_hole, adjust.shift: [270, 66]}
       h2: {what: mounting_hole, adjust.shift: [270, -28]}
       h3: {what: mounting_hole, adjust.shift: [222, -24]}
@@ -537,7 +539,8 @@ pcbs:
         what: smd_0805
         adjust: {shift: [133.2, 62], rotate: 90}
         params: {designator: R, from: CC2, to: GND, value: "5.1k 0805"}
-      # Li-ion charger, 100 mA (PROG 10k); its CHRG output is unused
+      # Li-ion charger, 100 mA (PROG 10k); its CHRG output is unused. On the split halves it runs from
+      # CHG_IN: this half's USB 5 V through a Schottky, or the other half's over the charge link
       chg:
         what: sot23
         adjust: {shift: [136.9, 56], rotate: 0}

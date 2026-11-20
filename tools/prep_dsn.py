@@ -22,9 +22,9 @@ ns.m_NetClasses['Power'] = pwr
 # The thin build's on-board module has 0.8 mm-pitch pads that only escape outwards, so its boards use
 # 0.2 mm tracks with 0.15 mm gaps (JLC's standard 2-layer process does 0.1 / 0.1).
 if any(str(f.GetFPID().GetLibItemName()) == 'Raytac_MDBT50Q' for f in b.GetFootprints()):
-    ds.m_TrackMinWidth = pcbnew.FromMM(0.15); ds.m_MinClearance = pcbnew.FromMM(0.15)
+    ds.m_TrackMinWidth = pcbnew.FromMM(0.15); ds.m_MinClearance = pcbnew.FromMM(0.15); ds.m_ViasMinSize = pcbnew.FromMM(0.5)
     dflt.SetTrackWidth(pcbnew.FromMM(0.2)); dflt.SetClearance(pcbnew.FromMM(0.15)); pwr.SetClearance(pcbnew.FromMM(0.15))
-POWER = ('GND', 'RAW', 'BAT_P', 'VCC', 'LINK_F', 'LINK_B', 'VBUS', 'SW_OUT')
+POWER = ('GND', 'RAW', 'BAT_P', 'VCC', 'LINK_F', 'LINK_B', 'VBUS', 'SW_OUT', 'CHG_IN')
 
 # On-board nRF52840 module (thin build): an all-copper keep-out at the antenna end, per the KiCad library
 # footprint (moved 0.2 mm off the antenna-end pads so Freerouting's 0.2 mm clearance to it holds), and a
@@ -71,6 +71,20 @@ for fp in list(b.GetFootprints()):
         f(False)
     ls = pcbnew.LSET(); ls.AddLayer(pcbnew.F_Cu); ls.AddLayer(pcbnew.B_Cu)
     z.SetLayerSet(ls); z.SetZoneName('usb_area'); b.Add(z)
+    # The receptacle's D+ and D- each have two pads (A6/B6, A7/B7), interleaved at 0.5 mm, and Freerouting
+    # often leaves one pair unjoined. So the two ties are drawn here and locked: D+ as a U on F.Cu under the
+    # pads, D- through two small vias (one inside the U) and a B.Cu link.
+    nd = {pd.GetNumber(): pd.GetNet() for pd in fp.Pads()}
+    def seg(pts, layer, w, net):
+        for (x0, y0), (x1, y1) in zip(pts, pts[1:]):
+            t = pcbnew.PCB_TRACK(b); t.SetStart(local_pt(fp, x0, y0)); t.SetEnd(local_pt(fp, x1, y1))
+            t.SetWidth(pcbnew.FromMM(w)); t.SetLayer(layer); t.SetNet(net); t.SetLocked(True); b.Add(t)
+    seg([(0.245, 0.6), (0.245, 2.0), (-0.755, 2.0), (-0.755, 0.6)], pcbnew.F_Cu, 0.15, nd['A6'])
+    for x in (-0.255, 0.745):
+        seg([(x, 0.6), (x, 1.35)], pcbnew.F_Cu, 0.15, nd['A7'])
+        v = pcbnew.PCB_VIA(b); v.SetPosition(local_pt(fp, x, 1.35)); v.SetWidth(pcbnew.FromMM(0.5))
+        v.SetDrill(pcbnew.FromMM(0.3)); v.SetNet(nd['A7']); v.SetLayerPair(pcbnew.F_Cu, pcbnew.B_Cu); v.SetLocked(True); b.Add(v)
+    seg([(-0.255, 1.35), (0.745, 1.35)], pcbnew.B_Cu, 0.2, nd['A7'])
 if has_module:
     b.GetDesignSettings().m_CopperEdgeClearance = 0
     open(os.path.splitext(dst)[0] + '.kicad_dru', 'w').write('''(version 1)
@@ -85,7 +99,7 @@ if has_module:
 (rule "usb-c notch"
   (constraint edge_clearance (min 0.05mm))
   (condition "A.Type == 'Pad' && (A.Pad_Number == 'A*' || A.Pad_Number == 'B*' || A.Pad_Number == 'S*')"))
-# ... and the tracks leaving those pads may come 0.2 mm from the notch (Freerouting's clearance)
+# ... and the tracks leaving those pads may come 0.15 mm from the notch (the board's clearance)
 (rule "usb-c tracks"
   (constraint edge_clearance (min 0.15mm))
   (condition "A.Type != 'Pad' && A.insideArea('usb_area')"))
