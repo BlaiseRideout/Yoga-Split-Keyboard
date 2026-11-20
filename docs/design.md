@@ -68,6 +68,12 @@ run both. Only the physical layout ZMK Studio draws is the Choc one. The Choc ho
 rotated **10° inward** so the column tops lean toward the centre, the way your hands sit when
 your elbows are relaxed. Choc spacing.
 
+* **1.5u inner thumb key, like the Corne:** the innermost thumb key on each half takes a vertical
+  1.5u cap (17.5 × 25 mm). Its switch sits 4.25 mm further up along the key's axis, so the cap
+  grows toward the key block, and the switch is turned 90° under it, because a Choc v1 stem only
+  takes a cap one way round. The frame opening is 1.5u to match. You need two 1.5u Choc caps (MBK
+  and Corne-style sets include them) in place of two 1u caps. The firmware's physical layout shows
+  the tall key, so keymap editors draw it correctly.
 * **Generated, not hand-edited:** `tools/make_3row.py [angle] [x] [y]` writes
   `ergogen-3row/config.yaml` from the 4-row config. It drops the number row, renumbers the rows,
   rotates the key block and keeps the mirror axis on the split line. Try another angle by

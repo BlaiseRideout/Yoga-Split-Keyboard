@@ -340,10 +340,6 @@
       },
       {
         "netclass": "Default",
-        "pattern": "reachy_one"
-      },
-      {
-        "netclass": "Default",
         "pattern": "mirror_outer_bottom"
       },
       {
@@ -421,6 +417,10 @@
       {
         "netclass": "Default",
         "pattern": "mirror_home_one"
+      },
+      {
+        "netclass": "Default",
+        "pattern": "reachy_one"
       },
       {
         "netclass": "Default",

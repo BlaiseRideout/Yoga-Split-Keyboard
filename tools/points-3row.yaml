@@ -4231,6 +4231,10 @@ thumb_tucky_one:
                         origin:
                             - -9
                             - -8.5
+                        shift:
+                            - 0
+                            - 4.25
+                        height: 25
                         column_net: C5
                         col_i: 5
                     rows: {}
@@ -4333,6 +4337,10 @@ thumb_home_one:
                         origin:
                             - -9
                             - -8.5
+                        shift:
+                            - 0
+                            - 4.25
+                        height: 25
                         column_net: C5
                         col_i: 5
                     rows: {}
@@ -4365,8 +4373,8 @@ thumb_home_one:
             - 0
             - 0
 thumb_reachy_one:
-    x: 97.9686328
-    'y': -21.331827
+    x: 100.0936328
+    'y': -17.651219
     r: -30
     meta:
         stagger: 0
@@ -4378,11 +4386,11 @@ thumb_reachy_one:
         orient: 0
         shift:
             - 0
-            - 0
+            - 4.25
         rotate: 0
         adjust: {}
         width: 17.5
-        height: 16.5
+        height: 25
         padding: 17
         autobind: 10
         skip: false
@@ -4439,6 +4447,10 @@ thumb_reachy_one:
                         origin:
                             - -9
                             - -8.5
+                        shift:
+                            - 0
+                            - 4.25
+                        height: 25
                         column_net: C5
                         col_i: 5
                     rows: {}
@@ -4459,6 +4471,10 @@ thumb_reachy_one:
                 origin:
                     - -9
                     - -8.5
+                shift:
+                    - 0
+                    - 4.25
+                height: 25
                 column_net: C5
                 col_i: 5
             rows: {}
@@ -8703,6 +8719,10 @@ mirror_thumb_tucky_one:
                         origin:
                             - -9
                             - -8.5
+                        shift:
+                            - 0
+                            - 4.25
+                        height: 25
                         column_net: C5
                         col_i: 5
                     rows: {}
@@ -8805,6 +8825,10 @@ mirror_thumb_home_one:
                         origin:
                             - -9
                             - -8.5
+                        shift:
+                            - 0
+                            - 4.25
+                        height: 25
                         column_net: C5
                         col_i: 5
                     rows: {}
@@ -8837,8 +8861,8 @@ mirror_thumb_home_one:
             - 0
             - 0
 mirror_thumb_reachy_one:
-    x: 164.0316518
-    'y': -21.331827
+    x: 161.9066518
+    'y': -17.651219
     r: 30
     meta:
         stagger: 0
@@ -8850,11 +8874,11 @@ mirror_thumb_reachy_one:
         orient: 0
         shift:
             - 0
-            - 0
+            - 4.25
         rotate: 0
         adjust: {}
         width: 17.5
-        height: 16.5
+        height: 25
         padding: 17
         autobind: 10
         skip: false
@@ -8911,6 +8935,10 @@ mirror_thumb_reachy_one:
                         origin:
                             - -9
                             - -8.5
+                        shift:
+                            - 0
+                            - 4.25
+                        height: 25
                         column_net: C5
                         col_i: 5
                     rows: {}
@@ -8931,6 +8959,10 @@ mirror_thumb_reachy_one:
                 origin:
                     - -9
                     - -8.5
+                shift:
+                    - 0
+                    - 4.25
+                height: 25
                 column_net: C5
                 col_i: 5
             rows: {}

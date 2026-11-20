@@ -63,5 +63,40 @@ s = s.replace('    distance: 82   # puts the mirror axis at x = cx', f'    dista
 s = s.replace('          P8: R4\n', '')
 s = re.sub(r'          P10: MC7\n', '', s)
 s = re.sub(r'          P0: MC8\n', '', s)
+# --- innermost thumb key is a vertical 1.5u, like the Corne's: switch moved 4.25 mm up (along the
+# key's own axis) so the cap grows toward the key block; caps/keycaps outlines get a 1.5u entry for it
+TALL = 17 * 0.5 / 2   # half of the extra 0.5u at 17 mm row pitch
+s = s.replace('splay: -10, origin: [-9, -8.5], column_net: C5, col_i: 5}',
+              f'splay: -10, origin: [-9, -8.5], shift: [0, {TALL}], height: 25, column_net: C5, col_i: 5}}')
+assert f'shift: [0, {TALL}]' in s
+NOT_TALL = '/^(?!(mirror_)?thumb_reachy)/'
+TALL_ONLY = '/^(mirror_)?thumb_reachy/'
+for name, w, h in (('keycaps', 17.5, 16.5), ('caps', 18.5, 17.5)):
+    i = s.index(f'  {name}:', s.index('outlines:'))
+    j = s.index('\n  ', s.index('size:', i)) if False else s.index('\n', s.index('size:', i))
+    block = s[i:j]
+    new = block.replace('where: true', f'where: {NOT_TALL}') + \
+        f'\n    - what: rectangle\n      where: {TALL_ONLY}\n      size: [{w}, {h + 8.5}]'
+    s = s[:i] + new + s[j:]
+
+# the tall key's switch turns 90 deg: a Choc v1 stem only takes a cap one way round, so a 1.5u cap
+# standing vertical needs the switch rotated under it (as on the Corne Chocolate)
+def tall_choc(where_all, where_main, talls, net):
+    global s
+    old = (f'      choc:\n        what: choc\n        where: {where_all}\n'
+           f'        params: {{hotswap: false, keycaps: true, from: "{{{{colrow}}}}", to: "{{{{{net}}}}}"}}\n')
+    assert old in s, where_all
+    new = old.replace(f'where: {where_all}', f'where: {where_main}')
+    for i, (where_tall, rot) in enumerate(talls):
+        new += (f'      choc_tall{i or ""}:\n        what: choc\n        where: {where_tall}\n        adjust: {{rotate: {rot}}}\n'
+                f'        params: {{hotswap: false, keycaps: false, from: "{{{{colrow}}}}", to: "{{{{{net}}}}}"}}\n')
+    s = s.replace(old, new, 1)
+# ergogen mirrors the adjust rotation on the right half; -90 there keeps the switch's pins on the
+# same side of its diode as on the left (+90 would land a switch pin on the diode's pad)
+L, R = ('/^thumb_reachy/', 90), ('/^mirror_thumb_reachy/', -90)
+tall_choc('/^(matrix|thumb)_/', '/^(matrix|thumb)_(?!reachy)/', [L], 'column_net')
+tall_choc('/^mirror_/', '/^mirror_(?!thumb_reachy)/', [R], 'column_net')
+tall_choc('/^(matrix|thumb|mirror)_/', '/^(?!(mirror_)?thumb_reachy)(matrix|thumb|mirror)_/', [L, R], 'mono_col')
+
 open(os.path.join(ROOT, 'ergogen-3row/config.yaml'), 'w').write(s)
 print('wrote ergogen-3row/config.yaml')

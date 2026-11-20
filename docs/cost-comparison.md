@@ -163,12 +163,12 @@ controller, screen or LEDs, charge link, case and docking. Choc spacing only so 
 | Per build | 4-row (54 keys) | 3-row (42 keys) | Saves |
 |---|---|---|---|
 | Sunset tactile switches, 10-packs | 60 = $59 | 50 = $49 | **$10** |
-| Choc keycaps (MBK-style) | 54 = $40 | 42 = $31 | **$9** |
+| Choc keycaps (MBK-style) | 54 = $40 | 40 × 1u + 2 × 1.5u ≈ $32 | **$8** |
 | Diodes (THT) | 100-pack, ~$2 | same pack | — |
 | JLC assembly parts (SMT: 12 fewer sockets and diodes per pair) | | | ~$4 (SMT only) |
 | Joints to solder (THT split) | ~220 | ~172 | 48 fewer, about 25 minutes |
-| **Split, first build** | THT ≈ $319 / SMT ≈ $400 | THT **≈ $300** / SMT **≈ $377** | **~$19–23** |
-| **Mono, first build** | THT ≈ $255 / SMT ≈ $300 | THT **≈ $236** / SMT **≈ $277** | **~$19–23** |
+| **Split, first build** | THT ≈ $319 / SMT ≈ $400 | THT **≈ $301** / SMT **≈ $378** | **~$18–22** |
+| **Mono, first build** | THT ≈ $255 / SMT ≈ $300 | THT **≈ $237** / SMT **≈ $278** | **~$18–22** |
 
 PCB prices don't change: the boards are the same size, and JLC prices by area and quantity.
 The saving is real but small, about 6%. The bigger reasons to pick 3 rows are the angled blocks
