@@ -1,0 +1,6 @@
+file_format: "1"
+id: yoga_thin_mcu
+name: Yoga thin build controller pin map
+type: shield
+url: https://github.com/BlaiseRideout/Yoga-Split-Keyboard
+requires: [pro_micro]

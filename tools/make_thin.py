@@ -7,8 +7,13 @@ Starts from ergogen-3row/config.yaml (run tools/make_3row.py first) and changes:
 * diodes: SOD-123 on the TOP side, in the gap between columns, so the bottom of the PCB is flat and
   sits on the case floor;
 * everything else SMD on the top side too: side slide switch, 1206 fuse and resistor, SOD-123FL TVS,
-  0805 status LEDs and resistors (no nice!view: it's too tall), reset pads;
+  0805 status LEDs and resistors (no nice!view: it's too tall), no reset (P0.18 is an inner pad; &bootloader on the Adjust layer and SWD instead);
 * battery: a 4 x 30 x 40 mm cell (403040) in a notch in the PCB's front corner, on a thinned floor;
+* no nice!nano: its nRF52840 goes on the board as a Raytac MDBT50Q-1MV2 module (2.05 mm tall, antenna at
+  the back edge) with a mid-mount USB-C in a notch in the back edge, a TP4054 charger, a USBLC6-2SC6 ESD
+  clamp, a P-MOSFET power path (USB runs the board with the switch off, as on a nice!nano), a 32.768 kHz
+  crystal and a 1 x 4 through-hole SWD header. The module pins are wired so that the nice!nano firmware runs on it
+  (see config/boards/shields/yoga_thin_mcu); footprints come from tools/gen_ctrl_footprints.py;
 * PCB ordered at 0.8 mm.
 usage: python3 tools/make_thin.py
 """
@@ -37,6 +42,22 @@ m = re.search(r'(  pcb_mono:\n    - what: rectangle\n      size: [^\n]*\n      c
 assert m
 s = s[:m.end()] + CELL.format(x=16) + CELL.format(x=246) + s[m.end():]
 
+# --- USB-C notches in the back edge (9.14 x 5.5 mm, see ergogen/footprints/usbc_mid.js): one per board, so
+# the left/right/mono outlines each get their own. USB_X is the connector's centre for each board.
+USB_X = {'left': 118.9, 'right': 262 - 118.9, 'mono': 118.9 + 18}
+USB_Y = 72.6 - 5.5        # footprint origin: the notch runs from here to the back edge (y = 72.6)
+s = s.replace('  pcb_mono:\n', '  _pcb_base:\n', 1)
+NOTCH = '''    - what: rectangle
+      operation: subtract
+      size: [9.14, 6.5]
+      adjust.shift: [{x:g}, {y:g}]
+'''
+s = s.replace('  _left_clip:\n', '  pcb_mono:\n    - _pcb_base\n' + NOTCH.format(x=USB_X['mono'], y=USB_Y + 3.25) +
+              '  _left_clip:\n', 1)
+for side in ('left', 'right'):
+    s = s.replace(f'  pcb_{side}:\n    - pcb_mono\n', f'  pcb_{side}:\n    - _pcb_base\n' +
+                  NOTCH.format(x=USB_X[side], y=USB_Y + 3.25), 1)
+
 # --- footprint blocks, section by section
 def blocks(sec):
     """split a pcbs section's footprints into (name, text) blocks, comments kept with the next block"""
@@ -62,6 +83,7 @@ def fp(name, what, x=None, y=None, rot=0, params=None, where=None, adjust=None):
     if params: t += f'        params: {params}\n'
     return t.rstrip('\n')
 
+mcu_nets = {}
 def centre(side, keys_where, col_net, row_net):
     """centre-area parts for one board; side = 'left' | 'right' | 'mono'"""
     X = (lambda x: x) if side != 'right' else (lambda x: 262 - x)
@@ -70,12 +92,10 @@ def centre(side, keys_where, col_net, row_net):
     t = [fp('switch', 'pg1316s', where=keys_where, params=f'{{from: "{{{{colrow}}}}", to: "{{{{{col_net}}}}}", keycaps: true}}'),
          fp('diode', 'diode_sod123', where=keys_where, adjust='{shift: [9, 0], rotate: 90}',
             params=f'{{side: F, from: "{{{{colrow}}}}", to: "{{{{{row_net}}}}}"}}')]
-    t.append(fp('power', 'power_switch', X(93) + m, 68, 0, '{from: BAT_P, to: RAW}'))
+    t.append(fp('power', 'power_switch', X(93) + m, 68, 0, '{from: BAT_P, to: SW_OUT}'))
     # the cell (403040, 4 x 30 x 40 mm) sits in a notch in the PCB in the front corner, on a thinned
     # floor, so it's 4 mm thick without making the case thicker; its leads go to these pads
     t.append(fp('battery', 'battery_pads', 39.5 if side != 'right' else 262 - 39.5, -8, 90, '{pos: BAT_P, neg: GND}'))
-    t.append(fp('reset', 'tht2', Y(118.3), 33, 0,
-                '{designator: SW, from: RST, to: GND, pitch: 2.54, value: "reset pads (short with tweezers)", label: RST}'))
     if side != 'mono':
         r = 0 if side == 'left' else 180
         kind = 'male' if side == 'left' else 'female'
@@ -89,12 +109,64 @@ def centre(side, keys_where, col_net, row_net):
     for y, c, net, pin, val in ((3, 'r', 'LED_R', 'CS', '680R'), (6.5, 'g', 'LED_G', 'MOSI', '150R'), (10, 'b', 'LED_B', 'SCK', '150R')):
         t.append(fp(f'led_{c}', 'smd_0805', Y(119.5), y, 0, f'{{designator: LED, led: true, from: {net}, to: GND, value: "{ {"r": "red", "g": "green", "b": "blue"}[c]} LED 0805"}}'))
         t.append(fp(f'led_{c}_res', 'smd_0805', Y(123.2), y, 0, f'{{designator: R, from: {pin}, to: {net}, value: "{val} 0805"}}'))
+    t += controller(side, Y, mcu_nets)
     return t
 
-KEEP = ('mcu',)
+# nice!nano (pro micro) pin -> MDBT50Q-1MV2 pad. Only pads on the module's outer rows, so everything routes
+# on two layers; P0.13 and P0.15 (the nice!nano's VCC switch and LED) stay unused. The firmware side of
+# this table is config/boards/shields/yoga_thin_mcu/yoga_thin_mcu.overlay: keep the two in step.
+PROMICRO_TO_PAD = {21: 3, 20: 4, 19: 6, 18: 8, 15: 10, 14: 12, 16: 14,   # P1.10 P1.11 P1.13 P1.15 P0.29 P0.31 P0.30
+                   4: 16, 5: 20, 6: 22, 7: 24, 8: 26, 9: 41,             # P0.27 P0.04 P0.06 P0.08 P1.09 P0.17
+                   1: 44, 2: 46, 3: 48}                                   # P0.20 P0.22 P0.24
+MODULE_FIXED = {1: 'GND', 2: 'GND', 15: 'GND', 33: 'GND', 55: 'GND', 17: 'XL1', 18: 'XL2', 28: 'VDD',
+                30: 'RAW', 32: 'VBUS', 34: 'USB_DM', 35: 'USB_DP', 51: 'SWDIO', 53: 'SWDCLK'}
+
+def controller(side, Y, mcu_nets):
+    """the on-board nRF52840 and its support parts, around the old nice!nano spot"""
+    mx = 118.9 + 18 if side == 'mono' else (262 - 118.9 if side == 'right' else 118.9)
+    nets = dict(MODULE_FIXED)
+    for pin, net in mcu_nets.items():
+        nets[PROMICRO_TO_PAD[pin]] = net
+    params = ', '.join(f'P{k}: {v}' for k, v in sorted(nets.items()))
+    r = lambda d, f, to, v: f'{{designator: {d}, from: {f}, to: {to}, value: "{v}"}}'
+    t = ['      # on-board controller: Raytac MDBT50Q-1MV2 (nRF52840), antenna at the back edge',
+         fp('mcu', 'mdbt50q', Y(106.3), 64.85, 0, f'{{designator: IC, value: "MDBT50Q-1MV2", {params}}}'),
+         fp('usb', 'usbc_mid', mx, 72.6 - 5.5, 0,
+            '{designator: J, value: "USB-C 16P mid-mount", A1: GND, S1: GND, A4: VBUS, A5: CC1, B5: CC2, A6: USB_DP, B6: USB_DP, A7: USB_DM, B7: USB_DM}'),
+         fp('esd', 'sot23', mx, 62, 0, '{designator: IC, value: "USBLC6-2SC6", P1: USB_DP, P6: USB_DP, P3: USB_DM, P4: USB_DM, P2: GND, P5: VBUS}'),
+         fp('r_cc1', 'smd_0805', mx + 3.7, 62, 90, r('R', 'CC1', 'GND', '5.1k 0805')),
+         fp('r_cc2', 'smd_0805', mx - 3.7, 62, 90, r('R', 'CC2', 'GND', '5.1k 0805')),
+         '      # Li-ion charger, 100 mA (PROG 10k); its CHRG output is unused',
+         fp('chg', 'sot23', mx, 56, 0, '{designator: IC, value: "TP4054", pins: 5, P2: GND, P3: BAT_P, P4: VBUS, P5: PROG}'),
+         fp('r_prog', 'smd_0805', mx + 3.7, 56, 90, r('R', 'PROG', 'GND', '10k 0805')),
+         fp('c_chg', 'smd_0805', mx - 3.7, 56, 90, r('C', 'VBUS', 'GND', '4.7uF 0805')),
+         fp('c_bat', 'smd_0805', mx, 52.5, 0, r('C', 'BAT_P', 'GND', '4.7uF 0805')),
+         '      # power path as on the nRFMicro: USB feeds RAW through the Schottky and turns the P-MOSFET off;',
+         '      # without USB the MOSFET connects the (switched) cell to RAW. RAW is the nRF52840\'s VDDH.',
+         fp('q_pp', 'sot23_3', mx + 3.7, 50.5, 0, '{designator: Q, value: "AO3401A", P1: VBUS, P2: RAW, P3: SW_OUT}'),
+         fp('r_gate', 'smd_0805', mx - 3.7, 50.5, 90, r('R', 'VBUS', 'GND', '100k 0805')),
+         fp('d_pp', 'diode_sod123', mx, 48, 0, '{designator: D, side: F, from: VBUS, to: RAW, value: "B5819W"}'),
+         fp('c_vdd', 'smd_0805', Y(107.9), 54.5, 90, r('C', 'VDD', 'GND', '4.7uF 0805')),
+         fp('c_vddh', 'smd_0805', Y(110.4), 54.5, 90, r('C', 'RAW', 'GND', '4.7uF 0805')),
+         fp('c_vbus', 'smd_0805', Y(112.9), 54.5, 90, r('C', 'VBUS', 'GND', '4.7uF 0805')),
+         fp('xtal', 'xtal_3215', Y(103.5), 54.5, 0, '{designator: Y, value: "32.768kHz 12.5pF", P1: XL2, P2: XL1}'),
+         fp('c_xl1', 'smd_0805', Y(102.25), 51, 90, r('C', 'XL1', 'GND', '20pF 0805')),
+         fp('c_xl2', 'smd_0805', Y(104.75), 51, 90, r('C', 'XL2', 'GND', '20pF 0805')),
+         fp('swd', 'swd_pads', Y(106.5), 45.5, 0, '{}')]
+    return t
+
+def mcu_params(bl):
+    """the nice!nano footprint's pin -> net table from the 3-row config"""
+    text = dict(bl)['mcu']
+    return {int(k): v for k, v in re.findall(r'\n\s+P(\d+): (\w+)', text)}
+
 def rebuild(sec, side, keys_where, col_net, row_net):
     head, bl = blocks(sec)
-    kept = [b for n, b in bl if n in KEEP or re.match(r'h\d+$', n)]
+    global mcu_nets
+    mcu_nets = mcu_params(bl)
+    kept = [b for n, b in bl if re.match(r'h\d+$', n)]
+    # the controller pushes one screw hole 2.5 mm left and 5 mm forward
+    kept = [b.replace('[101.3, 68]', '[98.8, 63]').replace('[160.7, 68]', '[163.2, 63]') for b in kept]
     return head + '    footprints:\n' + '\n'.join(centre(side, keys_where, col_net, row_net) + kept) + '\n'
 
 i = s.index('pcbs:\n')

@@ -1,0 +1,31 @@
+/*
+ * SPDX-License-Identifier: MIT
+ *
+ * The thin build (pcb-thin/) has no nice!nano: its nRF52840 is a Raytac MDBT50Q-1MV2 module on the
+ * PCB, wired like a nice!nano v2 (VDDH from the battery, P0.18 reset, 32.768 kHz crystal, DC/DC
+ * inductor inside the module), so it runs the nice_nano_v2 firmware. Only the GPIOs behind the
+ * pro micro pins differ: this shield points them at the module pads the PCB uses, so the yoga3_*
+ * and yoga_status_leds shields work unchanged. Keep in step with PROMICRO_TO_PAD in
+ * tools/make_thin.py.
+ * Use with: shield: yoga3_split_left yoga_status_leds yoga_thin_mcu  (board nice_nano_v2).
+ */
+&pro_micro {
+    gpio-map
+        = <1 0 &gpio0 20 0>     /* D1  -> pad 44, status LED red   */
+        , <2 0 &gpio0 22 0>     /* D2  -> pad 46, status LED green */
+        , <3 0 &gpio0 24 0>     /* D3  -> pad 48, status LED blue  */
+        , <4 0 &gpio0 27 0>     /* D4  -> pad 16, row 0 */
+        , <5 0 &gpio0 4 0>      /* D5  -> pad 20, row 1 */
+        , <6 0 &gpio0 6 0>      /* D6  -> pad 22, row 2 */
+        , <7 0 &gpio0 8 0>      /* D7  -> pad 24, row 3 */
+        , <8 0 &gpio1 9 0>      /* D8  -> pad 26, mono row 4 */
+        , <9 0 &gpio0 17 0>     /* D9  -> pad 41, mono row 5 */
+        , <14 0 &gpio0 31 0>    /* D14 -> pad 12 */
+        , <15 0 &gpio0 29 0>    /* D15 -> pad 10 */
+        , <16 0 &gpio0 30 0>    /* D16 -> pad 14, mono column 6 */
+        , <18 0 &gpio1 15 0>    /* D18 -> pad 8  */
+        , <19 0 &gpio1 13 0>    /* D19 -> pad 6  */
+        , <20 0 &gpio1 11 0>    /* D20 -> pad 4  */
+        , <21 0 &gpio1 10 0>    /* D21 -> pad 3  */
+        ;
+};

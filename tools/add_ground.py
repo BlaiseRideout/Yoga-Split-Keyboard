@@ -7,11 +7,29 @@ board, rpt = sys.argv[1:3]
 mm, to = pcbnew.FromMM, pcbnew.ToMM
 b = pcbnew.LoadBoard(board)
 gnd = b.FindNet('GND')
+# the mid-mount USB-C's rule area (see prep_dsn.py), which the board's edge rule refers to
+if not any(z.GetZoneName() == 'usb_area' for z in b.Zones()):
+    for fp in b.GetFootprints():
+        if 'C168688' not in str(fp.GetFPID().GetLibItemName()):
+            continue
+        bb = None
+        for pd in fp.Pads():
+            if bb is None: bb = pd.GetBoundingBox()
+            else: bb.Merge(pd.GetBoundingBox())
+        bb.Inflate(pcbnew.FromMM(1.0))
+        z = pcbnew.ZONE(b); o = z.Outline(); o.NewOutline()
+        for x, y in ((bb.GetLeft(), bb.GetTop()), (bb.GetRight(), bb.GetTop()), (bb.GetRight(), bb.GetBottom()), (bb.GetLeft(), bb.GetBottom())):
+            o.Append(x, y)
+        z.SetIsRuleArea(True)
+        for f in (z.SetDoNotAllowCopperPour, z.SetDoNotAllowTracks, z.SetDoNotAllowVias, z.SetDoNotAllowPads, z.SetDoNotAllowFootprints):
+            f(False)
+        ls = pcbnew.LSET(); ls.AddLayer(pcbnew.F_Cu); ls.AddLayer(pcbnew.B_Cu)
+        z.SetLayerSet(ls); z.SetZoneName('usb_area'); b.Add(z)
 
 # start clean: drop earlier zones and stitching vias (locked 0.6 mm GND vias)
 old = [t for t in b.GetTracks()
        if t.GetClass() == 'PCB_VIA' and t.GetNetname() == 'GND' and t.GetWidth() == mm(0.6) and t.IsLocked()]
-old += [z for z in b.Zones()]
+old += [z for z in b.Zones() if z.GetZoneName() not in ('antenna_keepout', 'usb_area')]
 for item in old:
     b.Remove(item)
 
@@ -51,12 +69,15 @@ for layer, name in ((pcbnew.F_Cu, 'GND_F'), (pcbnew.B_Cu, 'GND_B')):
     b.Add(z)
 
 # No pour under the controller (keeps copper away from its antenna) or within 2 mm of it.
-m = b.FindFootprintByReference('MCU1').GetBoundingBox(False, False)
-k = rect_zone(to(m.GetLeft()) - 2, to(m.GetTop()) - 2, to(m.GetRight()) + 2, to(m.GetBottom()) + 2)
-k.SetIsRuleArea(True); k.SetDoNotAllowCopperPour(True)
-k.SetDoNotAllowTracks(False); k.SetDoNotAllowVias(False); k.SetDoNotAllowPads(False); k.SetDoNotAllowFootprints(False)
-k.SetLayerSet(layers(pcbnew.F_Cu, pcbnew.B_Cu)); k.SetZoneName('no_pour_controller')
-b.Add(k)
+# (The thin build's on-board module has its own antenna keep-out instead, from prep_dsn.py.)
+mcu = b.FindFootprintByReference('MCU1')
+m = mcu.GetBoundingBox(False, False) if mcu else None
+if m: k = rect_zone(to(m.GetLeft()) - 2, to(m.GetTop()) - 2, to(m.GetRight()) + 2, to(m.GetBottom()) + 2)
+if m:
+    k.SetIsRuleArea(True); k.SetDoNotAllowCopperPour(True)
+    k.SetDoNotAllowTracks(False); k.SetDoNotAllowVias(False); k.SetDoNotAllowPads(False); k.SetDoNotAllowFootprints(False)
+    k.SetLayerSet(layers(pcbnew.F_Cu, pcbnew.B_Cu)); k.SetZoneName('no_pour_controller')
+    b.Add(k)
 
 filler = pcbnew.ZONE_FILLER(b)
 filler.Fill(b.Zones())

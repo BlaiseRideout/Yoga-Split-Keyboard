@@ -96,7 +96,7 @@ outlines:
       corner: 6
       adjust.shift: [cx, cy]
   # PCB of the monolithic board
-  pcb_mono:
+  _pcb_base:
     - what: rectangle
       size: [board_w - 2*wall, board_h - 2*wall]
       corner: 3.5
@@ -109,6 +109,12 @@ outlines:
       operation: subtract
       size: [41, 40]
       adjust.shift: [246, -23]
+  pcb_mono:
+    - _pcb_base
+    - what: rectangle
+      operation: subtract
+      size: [9.14, 6.5]
+      adjust.shift: [136.9, 70.35]
   _left_clip:
     - what: rectangle
       size: [board_w/2, board_h + 10]
@@ -118,10 +124,18 @@ outlines:
       size: [board_w/2, board_h + 10]
       adjust.shift: [cx + board_w/4 + join_wall, cy]
   pcb_left:
-    - pcb_mono
+    - _pcb_base
+    - what: rectangle
+      operation: subtract
+      size: [9.14, 6.5]
+      adjust.shift: [118.9, 70.35]
     - ~_left_clip
   pcb_right:
-    - pcb_mono
+    - _pcb_base
+    - what: rectangle
+      operation: subtract
+      size: [9.14, 6.5]
+      adjust.shift: [143.1, 70.35]
     - ~_right_clip
   # envelope halves (case outer shape of each split half)
   _env_left_clip:
@@ -166,15 +180,11 @@ pcbs:
       power:
         what: power_switch
         adjust: {shift: [93, 68], rotate: 0}
-        params: {from: BAT_P, to: RAW}
+        params: {from: BAT_P, to: SW_OUT}
       battery:
         what: battery_pads
         adjust: {shift: [39.5, -8], rotate: 90}
         params: {pos: BAT_P, neg: GND}
-      reset:
-        what: tht2
-        adjust: {shift: [118.3, 33], rotate: 0}
-        params: {designator: SW, from: RST, to: GND, pitch: 2.54, value: "reset pads (short with tweezers)", label: RST}
       chg_link:
         what: charge_link
         adjust: {shift: [125.5, 28], rotate: 0}
@@ -217,28 +227,91 @@ pcbs:
         what: smd_0805
         adjust: {shift: [123.2, 10], rotate: 0}
         params: {designator: R, from: SCK, to: LED_B, value: "150R 0805"}
+      # on-board controller: Raytac MDBT50Q-1MV2 (nRF52840), antenna at the back edge
       mcu:
-        what: promicro
-        adjust: {shift: [113, 52], rotate: -90}
-        params:
-          P4: R0
-          P5: R1
-          P6: R2
-          P7: R3
-          P21: C0
-          P20: C1
-          P19: C2
-          P18: C3
-          P15: C4
-          P14: C5
-          P1: CS
-          P2: MOSI
-          P3: SCK
+        what: mdbt50q
+        adjust: {shift: [106.3, 64.85], rotate: 0}
+        params: {designator: IC, value: "MDBT50Q-1MV2", P1: GND, P2: GND, P3: C0, P4: C1, P6: C2, P8: C3, P10: C4, P12: C5, P15: GND, P16: R0, P17: XL1, P18: XL2, P20: R1, P22: R2, P24: R3, P28: VDD, P30: RAW, P32: VBUS, P33: GND, P34: USB_DM, P35: USB_DP, P44: CS, P46: MOSI, P48: SCK, P51: SWDIO, P53: SWDCLK, P55: GND}
+      usb:
+        what: usbc_mid
+        adjust: {shift: [118.9, 67.1], rotate: 0}
+        params: {designator: J, value: "USB-C 16P mid-mount", A1: GND, S1: GND, A4: VBUS, A5: CC1, B5: CC2, A6: USB_DP, B6: USB_DP, A7: USB_DM, B7: USB_DM}
+      esd:
+        what: sot23
+        adjust: {shift: [118.9, 62], rotate: 0}
+        params: {designator: IC, value: "USBLC6-2SC6", P1: USB_DP, P6: USB_DP, P3: USB_DM, P4: USB_DM, P2: GND, P5: VBUS}
+      r_cc1:
+        what: smd_0805
+        adjust: {shift: [122.6, 62], rotate: 90}
+        params: {designator: R, from: CC1, to: GND, value: "5.1k 0805"}
+      r_cc2:
+        what: smd_0805
+        adjust: {shift: [115.2, 62], rotate: 90}
+        params: {designator: R, from: CC2, to: GND, value: "5.1k 0805"}
+      # Li-ion charger, 100 mA (PROG 10k); its CHRG output is unused
+      chg:
+        what: sot23
+        adjust: {shift: [118.9, 56], rotate: 0}
+        params: {designator: IC, value: "TP4054", pins: 5, P2: GND, P3: BAT_P, P4: VBUS, P5: PROG}
+      r_prog:
+        what: smd_0805
+        adjust: {shift: [122.6, 56], rotate: 90}
+        params: {designator: R, from: PROG, to: GND, value: "10k 0805"}
+      c_chg:
+        what: smd_0805
+        adjust: {shift: [115.2, 56], rotate: 90}
+        params: {designator: C, from: VBUS, to: GND, value: "4.7uF 0805"}
+      c_bat:
+        what: smd_0805
+        adjust: {shift: [118.9, 52.5], rotate: 0}
+        params: {designator: C, from: BAT_P, to: GND, value: "4.7uF 0805"}
+      # power path as on the nRFMicro: USB feeds RAW through the Schottky and turns the P-MOSFET off;
+      # without USB the MOSFET connects the (switched) cell to RAW. RAW is the nRF52840's VDDH.
+      q_pp:
+        what: sot23_3
+        adjust: {shift: [122.6, 50.5], rotate: 0}
+        params: {designator: Q, value: "AO3401A", P1: VBUS, P2: RAW, P3: SW_OUT}
+      r_gate:
+        what: smd_0805
+        adjust: {shift: [115.2, 50.5], rotate: 90}
+        params: {designator: R, from: VBUS, to: GND, value: "100k 0805"}
+      d_pp:
+        what: diode_sod123
+        adjust: {shift: [118.9, 48], rotate: 0}
+        params: {designator: D, side: F, from: VBUS, to: RAW, value: "B5819W"}
+      c_vdd:
+        what: smd_0805
+        adjust: {shift: [107.9, 54.5], rotate: 90}
+        params: {designator: C, from: VDD, to: GND, value: "4.7uF 0805"}
+      c_vddh:
+        what: smd_0805
+        adjust: {shift: [110.4, 54.5], rotate: 90}
+        params: {designator: C, from: RAW, to: GND, value: "4.7uF 0805"}
+      c_vbus:
+        what: smd_0805
+        adjust: {shift: [112.9, 54.5], rotate: 90}
+        params: {designator: C, from: VBUS, to: GND, value: "4.7uF 0805"}
+      xtal:
+        what: xtal_3215
+        adjust: {shift: [103.5, 54.5], rotate: 0}
+        params: {designator: Y, value: "32.768kHz 12.5pF", P1: XL2, P2: XL1}
+      c_xl1:
+        what: smd_0805
+        adjust: {shift: [102.25, 51], rotate: 90}
+        params: {designator: C, from: XL1, to: GND, value: "20pF 0805"}
+      c_xl2:
+        what: smd_0805
+        adjust: {shift: [104.75, 51], rotate: 90}
+        params: {designator: C, from: XL2, to: GND, value: "20pF 0805"}
+      swd:
+        what: swd_pads
+        adjust: {shift: [106.5, 45.5], rotate: 0}
+        params: {}
       h1: {what: mounting_hole, adjust.shift: [-8, 66]}
       h2: {what: mounting_hole, adjust.shift: [-8, -28]}
       h3: {what: mounting_hole, adjust.shift: [40, -24]}
       h4: {what: mounting_hole, adjust.shift: [47.5, 69]}
-      h5: {what: mounting_hole, adjust.shift: [101.3, 68]}
+      h5: {what: mounting_hole, adjust.shift: [98.8, 63]}
       h6: {what: mounting_hole, adjust.shift: [122.5, -30]}
 
   right:
@@ -260,15 +333,11 @@ pcbs:
       power:
         what: power_switch
         adjust: {shift: [169, 68], rotate: 0}
-        params: {from: BAT_P, to: RAW}
+        params: {from: BAT_P, to: SW_OUT}
       battery:
         what: battery_pads
         adjust: {shift: [222.5, -8], rotate: 90}
         params: {pos: BAT_P, neg: GND}
-      reset:
-        what: tht2
-        adjust: {shift: [143.7, 33], rotate: 0}
-        params: {designator: SW, from: RST, to: GND, pitch: 2.54, value: "reset pads (short with tweezers)", label: RST}
       chg_link:
         what: charge_link
         adjust: {shift: [136.5, 28], rotate: 180}
@@ -311,28 +380,91 @@ pcbs:
         what: smd_0805
         adjust: {shift: [138.8, 10], rotate: 0}
         params: {designator: R, from: SCK, to: LED_B, value: "150R 0805"}
+      # on-board controller: Raytac MDBT50Q-1MV2 (nRF52840), antenna at the back edge
       mcu:
-        what: promicro
-        adjust: {shift: [149, 52], rotate: -90}
-        params:
-          P4: R0
-          P5: R1
-          P6: R2
-          P7: R3
-          P21: C0
-          P20: C1
-          P19: C2
-          P18: C3
-          P15: C4
-          P14: C5
-          P1: CS
-          P2: MOSI
-          P3: SCK
+        what: mdbt50q
+        adjust: {shift: [155.7, 64.85], rotate: 0}
+        params: {designator: IC, value: "MDBT50Q-1MV2", P1: GND, P2: GND, P3: C0, P4: C1, P6: C2, P8: C3, P10: C4, P12: C5, P15: GND, P16: R0, P17: XL1, P18: XL2, P20: R1, P22: R2, P24: R3, P28: VDD, P30: RAW, P32: VBUS, P33: GND, P34: USB_DM, P35: USB_DP, P44: CS, P46: MOSI, P48: SCK, P51: SWDIO, P53: SWDCLK, P55: GND}
+      usb:
+        what: usbc_mid
+        adjust: {shift: [143.1, 67.1], rotate: 0}
+        params: {designator: J, value: "USB-C 16P mid-mount", A1: GND, S1: GND, A4: VBUS, A5: CC1, B5: CC2, A6: USB_DP, B6: USB_DP, A7: USB_DM, B7: USB_DM}
+      esd:
+        what: sot23
+        adjust: {shift: [143.1, 62], rotate: 0}
+        params: {designator: IC, value: "USBLC6-2SC6", P1: USB_DP, P6: USB_DP, P3: USB_DM, P4: USB_DM, P2: GND, P5: VBUS}
+      r_cc1:
+        what: smd_0805
+        adjust: {shift: [146.8, 62], rotate: 90}
+        params: {designator: R, from: CC1, to: GND, value: "5.1k 0805"}
+      r_cc2:
+        what: smd_0805
+        adjust: {shift: [139.4, 62], rotate: 90}
+        params: {designator: R, from: CC2, to: GND, value: "5.1k 0805"}
+      # Li-ion charger, 100 mA (PROG 10k); its CHRG output is unused
+      chg:
+        what: sot23
+        adjust: {shift: [143.1, 56], rotate: 0}
+        params: {designator: IC, value: "TP4054", pins: 5, P2: GND, P3: BAT_P, P4: VBUS, P5: PROG}
+      r_prog:
+        what: smd_0805
+        adjust: {shift: [146.8, 56], rotate: 90}
+        params: {designator: R, from: PROG, to: GND, value: "10k 0805"}
+      c_chg:
+        what: smd_0805
+        adjust: {shift: [139.4, 56], rotate: 90}
+        params: {designator: C, from: VBUS, to: GND, value: "4.7uF 0805"}
+      c_bat:
+        what: smd_0805
+        adjust: {shift: [143.1, 52.5], rotate: 0}
+        params: {designator: C, from: BAT_P, to: GND, value: "4.7uF 0805"}
+      # power path as on the nRFMicro: USB feeds RAW through the Schottky and turns the P-MOSFET off;
+      # without USB the MOSFET connects the (switched) cell to RAW. RAW is the nRF52840's VDDH.
+      q_pp:
+        what: sot23_3
+        adjust: {shift: [146.8, 50.5], rotate: 0}
+        params: {designator: Q, value: "AO3401A", P1: VBUS, P2: RAW, P3: SW_OUT}
+      r_gate:
+        what: smd_0805
+        adjust: {shift: [139.4, 50.5], rotate: 90}
+        params: {designator: R, from: VBUS, to: GND, value: "100k 0805"}
+      d_pp:
+        what: diode_sod123
+        adjust: {shift: [143.1, 48], rotate: 0}
+        params: {designator: D, side: F, from: VBUS, to: RAW, value: "B5819W"}
+      c_vdd:
+        what: smd_0805
+        adjust: {shift: [154.1, 54.5], rotate: 90}
+        params: {designator: C, from: VDD, to: GND, value: "4.7uF 0805"}
+      c_vddh:
+        what: smd_0805
+        adjust: {shift: [151.6, 54.5], rotate: 90}
+        params: {designator: C, from: RAW, to: GND, value: "4.7uF 0805"}
+      c_vbus:
+        what: smd_0805
+        adjust: {shift: [149.1, 54.5], rotate: 90}
+        params: {designator: C, from: VBUS, to: GND, value: "4.7uF 0805"}
+      xtal:
+        what: xtal_3215
+        adjust: {shift: [158.5, 54.5], rotate: 0}
+        params: {designator: Y, value: "32.768kHz 12.5pF", P1: XL2, P2: XL1}
+      c_xl1:
+        what: smd_0805
+        adjust: {shift: [159.75, 51], rotate: 90}
+        params: {designator: C, from: XL1, to: GND, value: "20pF 0805"}
+      c_xl2:
+        what: smd_0805
+        adjust: {shift: [157.25, 51], rotate: 90}
+        params: {designator: C, from: XL2, to: GND, value: "20pF 0805"}
+      swd:
+        what: swd_pads
+        adjust: {shift: [155.5, 45.5], rotate: 0}
+        params: {}
       h1: {what: mounting_hole, adjust.shift: [270, 66]}
       h2: {what: mounting_hole, adjust.shift: [270, -28]}
       h3: {what: mounting_hole, adjust.shift: [222, -24]}
       h4: {what: mounting_hole, adjust.shift: [214.5, 69]}
-      h5: {what: mounting_hole, adjust.shift: [160.7, 68]}
+      h5: {what: mounting_hole, adjust.shift: [163.2, 63]}
       h6: {what: mounting_hole, adjust.shift: [139.5, -30]}
 
   mono:
@@ -354,15 +486,11 @@ pcbs:
       power:
         what: power_switch
         adjust: {shift: [111, 68], rotate: 0}
-        params: {from: BAT_P, to: RAW}
+        params: {from: BAT_P, to: SW_OUT}
       battery:
         what: battery_pads
         adjust: {shift: [39.5, -8], rotate: 90}
         params: {pos: BAT_P, neg: GND}
-      reset:
-        what: tht2
-        adjust: {shift: [136.3, 33], rotate: 0}
-        params: {designator: SW, from: RST, to: GND, pitch: 2.54, value: "reset pads (short with tweezers)", label: RST}
       # status LEDs (0805, red/green/blue) on the display pins, driven by zmk-rgbled-widget
       led_r:
         what: smd_0805
@@ -388,36 +516,96 @@ pcbs:
         what: smd_0805
         adjust: {shift: [141.2, 10], rotate: 0}
         params: {designator: R, from: SCK, to: LED_B, value: "150R 0805"}
+      # on-board controller: Raytac MDBT50Q-1MV2 (nRF52840), antenna at the back edge
       mcu:
-        what: promicro
-        adjust: {shift: [131, 52], rotate: -90}
-        params:
-          P4: MR0
-          P5: MR1
-          P6: MR2
-          P7: MR3
-          P8: MR4
-          P9: MR5
-          P21: MC0
-          P20: MC1
-          P19: MC2
-          P18: MC3
-          P15: MC4
-          P14: MC5
-          P16: MC6
-          P1: CS
-          P2: MOSI
-          P3: SCK
+        what: mdbt50q
+        adjust: {shift: [124.3, 64.85], rotate: 0}
+        params: {designator: IC, value: "MDBT50Q-1MV2", P1: GND, P2: GND, P3: MC0, P4: MC1, P6: MC2, P8: MC3, P10: MC4, P12: MC5, P14: MC6, P15: GND, P16: MR0, P17: XL1, P18: XL2, P20: MR1, P22: MR2, P24: MR3, P26: MR4, P28: VDD, P30: RAW, P32: VBUS, P33: GND, P34: USB_DM, P35: USB_DP, P41: MR5, P44: CS, P46: MOSI, P48: SCK, P51: SWDIO, P53: SWDCLK, P55: GND}
+      usb:
+        what: usbc_mid
+        adjust: {shift: [136.9, 67.1], rotate: 0}
+        params: {designator: J, value: "USB-C 16P mid-mount", A1: GND, S1: GND, A4: VBUS, A5: CC1, B5: CC2, A6: USB_DP, B6: USB_DP, A7: USB_DM, B7: USB_DM}
+      esd:
+        what: sot23
+        adjust: {shift: [136.9, 62], rotate: 0}
+        params: {designator: IC, value: "USBLC6-2SC6", P1: USB_DP, P6: USB_DP, P3: USB_DM, P4: USB_DM, P2: GND, P5: VBUS}
+      r_cc1:
+        what: smd_0805
+        adjust: {shift: [140.6, 62], rotate: 90}
+        params: {designator: R, from: CC1, to: GND, value: "5.1k 0805"}
+      r_cc2:
+        what: smd_0805
+        adjust: {shift: [133.2, 62], rotate: 90}
+        params: {designator: R, from: CC2, to: GND, value: "5.1k 0805"}
+      # Li-ion charger, 100 mA (PROG 10k); its CHRG output is unused
+      chg:
+        what: sot23
+        adjust: {shift: [136.9, 56], rotate: 0}
+        params: {designator: IC, value: "TP4054", pins: 5, P2: GND, P3: BAT_P, P4: VBUS, P5: PROG}
+      r_prog:
+        what: smd_0805
+        adjust: {shift: [140.6, 56], rotate: 90}
+        params: {designator: R, from: PROG, to: GND, value: "10k 0805"}
+      c_chg:
+        what: smd_0805
+        adjust: {shift: [133.2, 56], rotate: 90}
+        params: {designator: C, from: VBUS, to: GND, value: "4.7uF 0805"}
+      c_bat:
+        what: smd_0805
+        adjust: {shift: [136.9, 52.5], rotate: 0}
+        params: {designator: C, from: BAT_P, to: GND, value: "4.7uF 0805"}
+      # power path as on the nRFMicro: USB feeds RAW through the Schottky and turns the P-MOSFET off;
+      # without USB the MOSFET connects the (switched) cell to RAW. RAW is the nRF52840's VDDH.
+      q_pp:
+        what: sot23_3
+        adjust: {shift: [140.6, 50.5], rotate: 0}
+        params: {designator: Q, value: "AO3401A", P1: VBUS, P2: RAW, P3: SW_OUT}
+      r_gate:
+        what: smd_0805
+        adjust: {shift: [133.2, 50.5], rotate: 90}
+        params: {designator: R, from: VBUS, to: GND, value: "100k 0805"}
+      d_pp:
+        what: diode_sod123
+        adjust: {shift: [136.9, 48], rotate: 0}
+        params: {designator: D, side: F, from: VBUS, to: RAW, value: "B5819W"}
+      c_vdd:
+        what: smd_0805
+        adjust: {shift: [125.9, 54.5], rotate: 90}
+        params: {designator: C, from: VDD, to: GND, value: "4.7uF 0805"}
+      c_vddh:
+        what: smd_0805
+        adjust: {shift: [128.4, 54.5], rotate: 90}
+        params: {designator: C, from: RAW, to: GND, value: "4.7uF 0805"}
+      c_vbus:
+        what: smd_0805
+        adjust: {shift: [130.9, 54.5], rotate: 90}
+        params: {designator: C, from: VBUS, to: GND, value: "4.7uF 0805"}
+      xtal:
+        what: xtal_3215
+        adjust: {shift: [121.5, 54.5], rotate: 0}
+        params: {designator: Y, value: "32.768kHz 12.5pF", P1: XL2, P2: XL1}
+      c_xl1:
+        what: smd_0805
+        adjust: {shift: [120.25, 51], rotate: 90}
+        params: {designator: C, from: XL1, to: GND, value: "20pF 0805"}
+      c_xl2:
+        what: smd_0805
+        adjust: {shift: [122.75, 51], rotate: 90}
+        params: {designator: C, from: XL2, to: GND, value: "20pF 0805"}
+      swd:
+        what: swd_pads
+        adjust: {shift: [124.5, 45.5], rotate: 0}
+        params: {}
       h1: {what: mounting_hole, adjust.shift: [-8, 66]}
       h2: {what: mounting_hole, adjust.shift: [-8, -28]}
       h3: {what: mounting_hole, adjust.shift: [40, -24]}
       h4: {what: mounting_hole, adjust.shift: [47.5, 69]}
-      h5: {what: mounting_hole, adjust.shift: [101.3, 68]}
+      h5: {what: mounting_hole, adjust.shift: [98.8, 63]}
       h6: {what: mounting_hole, adjust.shift: [122.5, -30]}
       h7: {what: mounting_hole, adjust.shift: [270, 66]}
       h8: {what: mounting_hole, adjust.shift: [270, -28]}
       h9: {what: mounting_hole, adjust.shift: [222, -24]}
       h10: {what: mounting_hole, adjust.shift: [214.5, 69]}
-      h11: {what: mounting_hole, adjust.shift: [160.7, 68]}
+      h11: {what: mounting_hole, adjust.shift: [163.2, 63]}
       h12: {what: mounting_hole, adjust.shift: [139.5, -30]}
 

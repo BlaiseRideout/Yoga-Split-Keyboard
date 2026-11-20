@@ -5,16 +5,17 @@
 //   openscad -D 'variant="left"' -D 'part="frame"' -o stl-thin/frame_left.stl case_thin.scad
 // variant: "left" | "right" | "mono"     part: "tray" | "frame" | "assembly"
 //
-// Stack-up (z = 0 on the laptop's lower screen). Everything stays inside the stock keyboard's 7.8 mm.
-// The top is one flat plate with the keycaps 1.7 mm proud of it (thumb keys pressed with the side of
-// the thumb), plus one raised bump over the nice!nano that still stays under the key tops.
+// Stack-up (z = 0 on the laptop's lower screen). Everything stays inside the stock keyboard's 7.8 mm,
+// and the top is one flat plate with the keycaps 1.7 mm proud of it (thumb keys pressed with the side
+// of the thumb). There's no nice!nano: the nRF52840 is a 2.05 mm module on the PCB, under a pocket in
+// the plate's underside.
 //   0.0 - 1.0  floor; 0.6 mm under the cell
 //   0.6 - 4.6  403040 cell (4 x 30 x 40 mm) through a notch in the PCB's front corner
+//   2.0 - 5.2  mid-mount USB-C, in a notch in the PCB's back edge
 //   2.8 - 3.6  PCB (0.8 mm), on standoffs; screws from the top
+//   3.6 - 5.65 MDBT50Q-1MV2 module; the plate above it is pocketed to a 0.3 mm skin
 //   3.6 - 7.8  PG1316S switch + cap (4.2 mm): the key tops
-//   3.6 - 6.8  nice!nano, soldered flat on top as usual (components facing the PCB)
 //   5.3 - 6.1  flat top plate. Other top-side parts must stay under 1.5 mm (diodes, LEDs, side switch)
-//   6.9 - 7.7  bump over the nice!nano
 
 variant = "left";
 part = "assembly";
@@ -29,10 +30,8 @@ pcb_z     = pcb_top - pcb_t;        // 2.8
 plate_t   = 0.8;
 top_z     = key_top - cap_proud;    // 6.1: flat top
 wall_top  = top_z - plate_t;        // 5.3: tray walls, plate underside
-nano_h    = 3.2;
-bump_z    = pcb_top + nano_h + 0.1; // 6.9: underside of the bump over the nice!nano
-bump_top  = bump_z + plate_t;       // 7.7
-bump_wall = 1.2;
+module_h  = 2.05;                   // Raytac MDBT50Q-1MV2
+skin      = 0.3;                    // plate left over the module and the pogo connector
 wall      = 2.0;
 pcb_gap   = 0.5;
 cx        = 131;
@@ -46,7 +45,7 @@ dowel_d    = 2.1;  dowel_h    = 5.2;  dowel_z    = 2.4;   // 2 x 10 mm steel pin
 cell_floor = 0.6;                                         // 403040 cell: 0.6 - 4.6
 
 function mx(x) = 2 * cx - x;
-holes_left  = [[-8,66],[-8,-28],[40,-24],[47.5,69],[101.3,68],[122.5,-30]];
+holes_left  = [[-8,66],[-8,-28],[40,-24],[47.5,69],[98.8,63],[122.5,-30]];   // see ergogen-thin
 holes_right = [for (h = holes_left) [mx(h[0]), h[1]]];
 dock_left   = [[-9,71],[20,71],[40,71],[75,71],[110,71],
                [-10.5,40],[-10.5,10],
@@ -58,9 +57,9 @@ dowel_y     = [-24, 66];
 link_y      = 28;
 
 side_x   = function(x) variant == "right" ? mx(x) : variant == "mono" ? x + 18 : x;
-nano_x   = side_x(113);
+usb_x    = side_x(118.9);           // USB-C centre (tools/make_thin.py USB_X)
+module_xy = [side_x(106.3), 64.85];  // MDBT50Q-1MV2 centre
 switch_x = variant == "mono" ? 111 : side_x(93);
-reset_xy = [side_x(118.3), 33];
 led_xy   = [for (y = [3, 6.5, 10]) [side_x(119.5), y]];
 
 holes = variant == "left" ? holes_left : variant == "right" ? holes_right : concat(holes_left, holes_right);
@@ -76,9 +75,11 @@ module cell2d() {
     if (variant != "right") translate([-4.5, -35.5]) square([41, 32.5]);
     if (variant != "left")  translate([mx(36.5), -35.5]) square([41, 32.5]);
 }
-module cavity2d() offset(delta = pcb_gap) union() { pcb2d(); cell2d(); }
-// the nice!nano on the PCB (18 x 33 mm, USB end at the back edge)
-module nano2d() translate([nano_x - 9.5, 35.5]) square([19, 39.5]);
+// the PCB's USB-C notch (ergogen-thin): the receptacle fills it, so the walls stay out of it
+module usb2d() translate([usb_x - 4.57, 67.1]) square([9.14, 6]);
+module cavity2d() offset(delta = pcb_gap) union() { pcb2d(); cell2d(); usb2d(); }
+// the controller module (10.5 x 15.5 mm, antenna at the back edge)
+module module2d() translate(module_xy) square([11.1, 16.1], center = true);
 
 /* rounded outer edges, as on the standard case */
 edge_r_bottom = 1.0; edge_r_top = 1.2; edge_steps = 6;
@@ -97,21 +98,6 @@ module round_mask() {
     translate([0, 0, rb]) linear_extrude(top_z - rb - rt + 0.001) env_inset(0);
     for (i = [0 : n - 1]) translate([0, 0, top_z - rt + i * rt / n])
         linear_extrude(rt / n + 0.001) env_inset(fillet_inset(rt, rt - (i + 0.5) * rt / n));
-    // the bump over the nice!nano runs out to the back edge, rounded the same way
-    intersection() {
-        translate([0, 0, top_z - rt]) linear_extrude(bump_top - top_z + rt) bump2d();
-        union() {
-            translate([0, 0, top_z - rt]) linear_extrude(bump_top - top_z) env_inset(0);
-            for (i = [0 : n - 1]) translate([0, 0, bump_top - rt + i * rt / n])
-                linear_extrude(rt / n + 0.001) env_inset(fillet_inset(rt, rt - (i + 0.5) * rt / n));
-        }
-    }
-}
-// the bump's outline, kept clear of the keycap openings and the reset hole (thinner wall at those corners)
-module bump2d() difference() {
-    intersection() { envelope(); offset(delta = 0.3 + bump_wall) nano2d(); }
-    offset(delta = 0.2) caps2d();
-    translate(reset_xy) circle(d = 2.9, $fn = 24);
 }
 
 module tray() difference() {
@@ -126,13 +112,17 @@ module tray() difference() {
     // pocket for the cell through the PCB notch
     translate([0, 0, cell_floor]) linear_extrude(floor_t) offset(delta = 0.3) cell2d();
     usb_cut();
+    usb_notch();
     // side slide switch lever (top side of the PCB)
     translate([switch_x, 80, pcb_top + 0.75]) cube([6, 20, 2.0], center = true);
     if (variant != "mono") join_features();
 }
 
-// USB-C opening (nice!nano soldered flat on the PCB, mid-mount port), through the wall and the bump
-module usb_cut() translate([nano_x, 80, pcb_top + 1.6]) cube([10, 20, 3.8], center = true);
+// USB-C: the mid-mount receptacle straddles the PCB (pcb_top +/- 1.58 mm), its face at the PCB's back edge.
+// A plug's overmold is taller than the case, so the case gets a full-height 12.5 mm notch in its back edge,
+// down to the receptacle's face, plus a little room around the receptacle itself.
+module usb_cut() translate([usb_x, 72.6, pcb_top]) cube([9.6, 4, 3.4], center = true);
+module usb_notch() translate([usb_x - 6.25, 72.6 + 0.2, -1]) cube([12.5, 10, 20]);
 
 module join_features() {
     s = variant == "left" ? -1 : 1;
@@ -149,24 +139,21 @@ module join_features() {
 module frame() difference() {
     union() {
         translate([0, 0, wall_top]) linear_extrude(plate_t) difference() { envelope(); caps2d(); }
-        // the bump over the nice!nano: walls up from the plate, and its lid
-        translate([0, 0, top_z - 0.01]) linear_extrude(bump_z - top_z + 0.01) difference() { bump2d(); offset(delta = 0.3) nano2d(); }
-        translate([0, 0, bump_z]) linear_extrude(plate_t) bump2d();
         // locating rim inside the walls
         translate([0, 0, wall_top - 0.8]) linear_extrude(0.8) difference() {
             offset(delta = -0.15) cavity2d(); offset(delta = -1.15) cavity2d(); caps2d();
-            offset(delta = 0.5) nano2d(); offset(delta = 0.5) cell2d();
+            offset(delta = 0.5) module2d(); offset(delta = 0.5) cell2d(); offset(delta = 1) usb2d();
             if (variant != "mono") translate([variant == "left" ? cx - 9 : cx, link_y - 4.5]) square([9, 9]);
         }
     }
-    // room for the nice!nano under the bump
-    translate([0, 0, wall_top - 1]) linear_extrude(bump_z - wall_top + 1) offset(delta = 0.3) nano2d();
+    // pocket over the module, leaving a 0.3 mm skin
+    translate([0, 0, wall_top - 1]) linear_extrude(1 + top_z - wall_top - skin) module2d();
     usb_cut();
+    usb_notch();
     for (p = led_xy) translate([p[0], p[1], wall_top - 1]) cylinder(d = 2.2, h = 5, $fn = 24);   // LED light holes
-    translate([reset_xy[0], reset_xy[1], wall_top - 1]) cylinder(d = 2.5, h = 5, $fn = 24);   // reset access
     // room for the pogo connector's body under the plate (2.2 mm above the PCB)
     if (variant != "mono") translate([variant == "left" ? cx - 7 : cx - 0.01, link_y - 3.5, wall_top - 1])
-        cube([7.01, 7, 1 + top_z - wall_top - 0.3]);
+        cube([7.01, 7, 1 + top_z - wall_top - skin]);
 }
 
 module tray_r()  intersection() { tray();  round_mask(); }

@@ -49,7 +49,7 @@ include:
     snippet: studio-rpc-usb-uart
     cmake-args: -DCONFIG_ZMK_STUDIO=y
     artifact-name: yoga3_mono
-  # thin PG1316S build (ergogen-thin/, pcb-thin/): same matrix and pins as the 3-row, status LEDs only
+  # 3-row with status LEDs instead of the nice!view
   - board: nice_nano_v2
     shield: yoga3_split_left yoga_status_leds
     snippet: studio-rpc-usb-uart
@@ -64,5 +64,20 @@ include:
     snippet: studio-rpc-usb-uart
     cmake-args: -DCONFIG_ZMK_STUDIO=y -DCONFIG_ZMK_DISPLAY=n
     artifact-name: yoga3_mono_leds
+  # thin build with the on-board nRF52840 (pcb-thin/): nice!nano firmware plus a pin-remap shield
+  - board: nice_nano_v2
+    shield: yoga3_split_left yoga_status_leds yoga_thin_mcu
+    snippet: studio-rpc-usb-uart
+    cmake-args: -DCONFIG_ZMK_STUDIO=y -DCONFIG_ZMK_DISPLAY=n
+    artifact-name: yoga_thin_left
+  - board: nice_nano_v2
+    shield: yoga3_split_right yoga_status_leds yoga_thin_mcu
+    cmake-args: -DCONFIG_ZMK_DISPLAY=n
+    artifact-name: yoga_thin_right
+  - board: nice_nano_v2
+    shield: yoga3_mono yoga_status_leds yoga_thin_mcu
+    snippet: studio-rpc-usb-uart
+    cmake-args: -DCONFIG_ZMK_STUDIO=y -DCONFIG_ZMK_DISPLAY=n
+    artifact-name: yoga_thin_mono
   - board: nice_nano_v2
     shield: settings_reset

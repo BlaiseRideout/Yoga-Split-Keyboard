@@ -113,7 +113,7 @@ L['adjust'] = [
  '&bt BT_CLR','&bt BT_SEL 0','&bt BT_SEL 1','&bt BT_SEL 2','&bt BT_SEL 3','&bt BT_SEL 4',  '&none','&none','&none','&none','&none','&bootloader',
  '&out OUT_BLE','&none','&none','&none','&none','&none',  '&none','&none','&none','&none','&none','&sys_reset',
  '&out OUT_USB','&none','&none','&none','&none','&none',  '&none','&none','&none','&none','&none','&none',
- '&none','&none','&none','&none','&none','&none',  '&none','&none','&none','&none','&none','&none',
+ '&bootloader','&none','&none','&none','&none','&none',  '&none','&none','&none','&none','&none','&bootloader',
  '&trans','&trans','&trans',                 '&trans','&trans','&trans']
 
 def binding(b):
